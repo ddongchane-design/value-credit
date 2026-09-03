@@ -1,0 +1,341 @@
+<title>DD 컬럼 표준 명세</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F5F7F9; --surface:#FFFFFF; --surface-2:#FAFBFC;
+  --ink:#101720; --ink-mute:#5C6875; --ink-faint:#8A95A2;
+  --rule:#E1E6EB; --rule-strong:#CBD3DB;
+  --accent:#0E5566; --accent-soft:#E4EFF2; --accent-ink:#0E5566;
+  --ok:#1A7A55; --ok-soft:#E3F2EB;
+  --warn:#8F5F0E; --warn-soft:#FAF0DC;
+  --bad:#A8382F; --bad-soft:#FBE9E7;
+  --on-accent:#FFFFFF;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
+    --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
+    --rule:#232B34; --rule-strong:#323C47;
+    --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
+    --ok:#3FA97D; --ok-soft:#12291F;
+    --warn:#C9963C; --warn-soft:#2B2312;
+    --bad:#D2685C; --bad-soft:#2E1815;
+    --on-accent:#0E1216;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
+  --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
+  --rule:#232B34; --rule-strong:#323C47;
+  --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
+  --ok:#3FA97D; --ok-soft:#12291F;
+  --warn:#C9963C; --warn-soft:#2B2312;
+  --bad:#D2685C; --bad-soft:#2E1815;
+  --on-accent:#0E1216;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
+  font-size:14.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:600;letter-spacing:-.01em}
+code,.mono{font-family:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,monospace;
+  font-variant-numeric:tabular-nums}
+code{background:var(--surface-2);border:1px solid var(--rule);border-radius:3px;
+  padding:1px 5px;font-size:.88em}
+
+header.top{background:var(--surface);border-bottom:1px solid var(--rule)}
+.top-in{max-width:1000px;margin:0 auto;padding:26px 28px 22px}
+.top h1{font-size:23px;margin-bottom:6px}
+.top .lede{color:var(--ink-mute);font-size:14px;max-width:64ch}
+.top .meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;
+  background:var(--accent-soft);color:var(--accent-ink);padding:4px 9px;border-radius:3px}
+
+main{max-width:1000px;margin:0 auto;padding:26px 28px 80px;
+  display:flex;flex-direction:column;gap:26px}
+section{background:var(--surface);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.sec-hd{padding:14px 20px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+.sec-hd .n{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  width:20px;height:20px;flex:none;display:grid;place-items:center;border-radius:3px;
+  background:var(--accent-soft);color:var(--accent-ink);align-self:center}
+.sec-hd h2{font-size:15px;flex:1;min-width:180px}
+.sec-hd .sub{font-size:12.5px;color:var(--ink-faint)}
+.sec-body{padding:20px}
+.sec-body > p:first-child{margin-top:0}
+.sec-body > :last-child{margin-bottom:0}
+
+.tw{overflow-x:auto;margin:0 -20px;padding:0 20px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);
+  font-weight:600;border-bottom:1px solid var(--rule-strong);white-space:nowrap}
+tbody tr:hover{background:var(--surface-2)}
+td.name{white-space:nowrap;font-weight:500}
+td.alt{color:var(--ink-mute);font-size:12px}
+td.use{color:var(--ink-mute);font-size:12.5px}
+.req{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10.5px;
+  font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.req.must{background:var(--bad-soft);color:var(--bad)}
+.req.opt{background:var(--surface-2);color:var(--ink-faint);border:1px solid var(--rule)}
+
+.callout{border-left:3px solid var(--accent);background:var(--accent-soft);
+  padding:13px 16px;border-radius:0 5px 5px 0;font-size:13.5px}
+.callout.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.callout.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.callout strong{font-weight:600}
+.callout p{margin:0}
+.callout p + p{margin-top:8px}
+
+pre{background:var(--surface-2);border:1px solid var(--rule);border-radius:5px;
+  padding:13px 15px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;
+  font-size:12.5px;line-height:1.75;margin:0}
+pre .ok{color:var(--ok);font-weight:600}
+pre .no{color:var(--bad);font-weight:600}
+pre .cm{color:var(--ink-faint)}
+
+ul.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+ul.checks li{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;
+  padding:11px 13px;background:var(--surface-2);border:1px solid var(--rule);border-radius:5px}
+ul.checks .box{flex:none;width:15px;height:15px;border:1.5px solid var(--rule-strong);
+  border-radius:3px;margin-top:3px}
+ul.checks .why{display:block;color:var(--ink-mute);font-size:12.5px;margin-top:3px}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.card{border:1px solid var(--rule);border-radius:5px;padding:13px 15px;background:var(--surface-2)}
+.card h3{font-size:12.5px;margin-bottom:7px}
+.card p{margin:0;font-size:12.5px;color:var(--ink-mute)}
+
+p{margin:0 0 13px}
+.foot{max-width:1000px;margin:0 auto;padding:0 28px 46px;
+  color:var(--ink-faint);font-size:12px;line-height:1.7}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <h1>DD 컬럼 표준 명세</h1>
+    <p class="lede">채무조정채권 평가판이 DD 엑셀을 읽기 위해 필요한 컬럼과 그 표기 규칙입니다.
+      DD 제공처 전달용이자, 업로드 전 점검표로 씁니다.</p>
+    <div class="meta">
+      <span class="chip">설계 V8.4 기준</span>
+      <span class="chip">개인회생 9필수 · 신용회복 8필수 + 단계 30</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 1. 파일 형식 -->
+  <section>
+    <div class="sec-hd"><span class="n">1</span><h2>파일 형식</h2>
+      <span class="sub">여기까지는 자유롭습니다</span></div>
+    <div class="sec-body">
+      <p>아래 항목은 <strong>신경 쓰지 않으셔도 됩니다.</strong> 평가판이 알아서 처리합니다.</p>
+      <div class="grid2">
+        <div class="card"><h3>시트 이름</h3><p><code>개인회생</code>이든 <code>Sheet1</code>이든
+          무관합니다. 내용으로 제도를 판별합니다.</p></div>
+        <div class="card"><h3>헤더 위치</h3><p>1~12행 안에 있으면 찾아냅니다.
+          위에 제목·기준일 행이 있어도 됩니다.</p></div>
+        <div class="card"><h3>컬럼 순서</h3><p>이름으로 찾으므로 순서가 바뀌어도 됩니다.
+          쓰지 않는 컬럼이 섞여 있어도 무시합니다.</p></div>
+        <div class="card"><h3>띄어쓰기·줄바꿈</h3><p>공백을 모두 제거하고 비교합니다.
+          <code>자산확정일<br>원금잔액</code>처럼 줄바꿈이 있어도 됩니다.</p></div>
+        <div class="card"><h3>날짜 형식</h3><p><code>2025-04-03</code>이든 <code>20250403</code>이든
+          무관합니다. 값의 <strong>유무</strong>만 봅니다.</p></div>
+        <div class="card"><h3>파일 분리</h3><p>두 제도가 한 파일에 있어도, 파일을 나눠도 됩니다.</p></div>
+      </div>
+      <p style="margin:16px 0 0"><strong>확장자는 <code>.xlsx</code>만 됩니다.</strong>
+        <code>.xls</code>(구형)나 <code>.csv</code>는 읽지 못합니다.</p>
+    </div>
+  </section>
+
+  <!-- 2. 개인회생 -->
+  <section>
+    <div class="sec-hd"><span class="n">2</span><h2>개인회생 컬럼</h2>
+      <span class="sub">필수 9 · 선택 2</span></div>
+    <div class="sec-body">
+      <div class="tw">
+        <table>
+          <thead><tr><th>구분</th><th>표준 컬럼명</th><th>허용되는 다른 표기</th><th>쓰임</th></tr></thead>
+          <tbody>
+            <tr><td><span class="req must">필수</span></td><td class="name">접수일자</td>
+              <td class="alt">접수일</td><td class="use">진행단계 라우팅</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">개시일자</td>
+              <td class="alt">—</td><td class="use">진행단계 라우팅</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">인가일자</td>
+              <td class="alt">—</td><td class="use">진행단계 라우팅</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">납입회차</td>
+              <td class="alt">—</td><td class="use">폐지율 곡선 시작점</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">잔여회차</td>
+              <td class="alt">—</td><td class="use">스케줄 유무 판정 · 회차수</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">총변제예정금액</td>
+              <td class="alt">—</td><td class="use">잔여OPB 산출</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">기상환금액</td>
+              <td class="alt">—</td><td class="use">잔여OPB 차감분</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">자산확정일 원금잔액</td>
+              <td class="alt">채권원금잔액 · 원금잔액</td><td class="use">무스케줄 건 변제율 base</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">자산확정일 미상환채권잔액(OPB)</td>
+              <td class="alt">미상환채권잔액(OPB) · 미상환채권잔액</td><td class="use">회수율 분모</td></tr>
+            <tr><td><span class="req opt">선택</span></td><td class="name">채권구분</td>
+              <td class="alt">채권진행상황</td><td class="use"><strong>폐지항고 판별</strong> — 없으면 폐지항고를 가려낼 수 없습니다</td></tr>
+            <tr><td><span class="req opt">선택</span></td><td class="name">채권 가지급금잔액</td>
+              <td class="alt">가지급금잔액</td><td class="use">있으면 원금잔액에 합산</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin:18px 0 10px"><strong>채권구분 값</strong> — 폐지항고를 가려내려면 이 표기가 필요합니다.</p>
+      <pre><span class="ok">폐지항고</span>   ← 이 글자가 포함되면 폐지항고로 분류합니다
+<span class="cm">인가결정 · 개시결정 · 금지명령 · 개인회생접수 · 인가 · 미인가 등은
+그대로 두셔도 됩니다 (라우팅은 일자로 하므로 표기가 달라도 무방)</span></pre>
+      <div class="callout warn" style="margin-top:14px">
+        <p><strong>차주번호·채권번호는 보내지 않으셔도 됩니다.</strong>
+          계산에 쓰지 않습니다. 평가판이 <code>A00001</code> 형태로 식별번호를 자동 부여합니다.
+          다만 <strong>둘 중 하나라도 있으면 합계 행을 정확히 걸러낼 수 있어</strong> 권장합니다
+          (없으면 <code>No</code> 컬럼을 대신 씁니다).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 신용회복 -->
+  <section>
+    <div class="sec-hd"><span class="n">3</span><h2>신용회복 컬럼</h2>
+      <span class="sub">필수 8 · 선택 1 · 단계 30</span></div>
+    <div class="sec-body">
+      <div class="tw">
+        <table>
+          <thead><tr><th>구분</th><th>표준 컬럼명</th><th>허용되는 다른 표기</th><th>쓰임</th></tr></thead>
+          <tbody>
+            <tr><td><span class="req must">필수</span></td><td class="name">신청인진행상태</td>
+              <td class="alt">—</td><td class="use">확정 판별 (정상이행 = 확정)</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">상환방식</td>
+              <td class="alt">—</td><td class="use">제도·곡선 배정 (아래 값 규칙 참조)</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">납입회차</td>
+              <td class="alt">—</td><td class="use">곡선 시작점 · 기상환 제외</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">재조정횟수</td>
+              <td class="alt">—</td><td class="use">재조정 배수 판별</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">상환후잔액</td>
+              <td class="alt">신용회복위원회 상환후잔액 · 상환후잔액 (OPB)</td><td class="use">회수율 분모 1순위</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">원금균등채무액</td>
+              <td class="alt">—</td><td class="use">분모 2순위</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">조정후원금</td>
+              <td class="alt">—</td><td class="use">분모 3순위</td></tr>
+            <tr><td><span class="req must">필수</span></td><td class="name">조정전원금</td>
+              <td class="alt">—</td><td class="use">분모 4순위</td></tr>
+            <tr><td><span class="req opt">선택</span></td><td class="name">신청구분</td>
+              <td class="alt">—</td><td class="use">상환방식과의 교차검증용 (평가에는 영향 없음)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin:20px 0 10px"><strong>상환방식 값</strong> — 텍스트와 신복위 코드 모두 인식합니다.</p>
+      <pre><span class="ok">원금균등</span>    또는 <span class="ok">815002</span> · <span class="ok">815005</span>   →  개인워크아웃 (곡선 A)
+<span class="ok">원리금균등</span>  또는 <span class="ok">815001</span>            →  프리·신속   (곡선 B)
+
+<span class="cm">그 외 값이면 곡선 A로 폴백하고 경고를 띄웁니다.
+원리금균등 건이 A로 잘못 가면 평가액이 과대 산출됩니다.</span></pre>
+    </div>
+  </section>
+
+  <!-- 4. 단계 컬럼 -->
+  <section>
+    <div class="sec-hd"><span class="n">4</span><h2>신용회복 단계 컬럼 — 여기가 가장 까다롭습니다</h2>
+      <span class="sub">1~10단계 × 3개 = 30개</span></div>
+    <div class="sec-body">
+      <div class="callout bad">
+        <p><strong>이 30개만은 이름이 정확히 맞아야 합니다.</strong>
+          다른 컬럼은 부분일치까지 봐주고, 못 찾으면 화면에서 직접 지정할 수 있습니다.
+          그런데 단계 컬럼은 <strong>수동 지정 수단이 없습니다.</strong>
+          이름이 어긋나면 그 단계의 현금흐름이 <strong>0원</strong>이 됩니다.</p>
+      </div>
+
+      <p style="margin:16px 0 10px">필요한 것은 단계당 <strong>세 개</strong>입니다. 나머지 4개(납입구분·적용이율 2종·조정1 월상환액)는 있어도 읽지 않습니다.</p>
+
+      <pre><span class="ok">1단계시작회차</span>
+<span class="ok">1단계종료회차</span>
+<span class="ok">1단계개인채무조정2월상환액</span>   <span class="cm">← '개인'은 있어도 없어도 됩니다</span>
+<span class="ok">1단계채무조정2월상환액</span>       <span class="cm">← 이것도 인식</span>
+
+<span class="cm">2~10단계도 같은 형태로. 띄어쓰기·줄바꿈은 자유입니다.</span></pre>
+
+      <p style="margin:18px 0 10px"><strong>인식되지 않는 표기</strong> — 실제로 시험해 본 결과입니다.</p>
+      <pre><span class="no">1단계 월상환액</span>            <span class="cm">"채무조정2"가 빠짐</span>
+<span class="no">1단계 조정2 월상환액</span>       <span class="cm">"채무"가 빠짐</span>
+<span class="no">1단계 채무조정2 월변제액</span>    <span class="cm">"월상환액"이 아님</span>
+<span class="no">1차 채무조정2 월상환액</span>      <span class="cm">"단계"가 아님</span>
+<span class="no">1단계 개시회차</span>            <span class="cm">"시작회차"가 아님</span>
+<span class="no">단계1 채무조정2 월상환액</span>    <span class="cm">순서가 다름</span></pre>
+
+      <div class="callout warn" style="margin-top:16px">
+        <p><strong>실제로 겪은 사고입니다.</strong> 시작회차·종료회차는 이름이 같아 20개가 정상 인식되고
+          월상환액 10개만 빠지는 경우가 있었습니다. 이때 화면에는 인식 성공으로 보이는데
+          현금흐름은 전부 0이 됩니다.</p>
+        <p>지금은 <strong>세 개가 모두 갖춰진 단계만</strong> 세고
+          <code>시작 10 · 종료 10 · 월상환액 0</code>처럼 따로 표시하도록 고쳤습니다.
+          그래도 <strong>업로드 전에 컬럼명을 맞추는 것이 가장 확실합니다.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 하지 말아야 할 것 -->
+  <section>
+    <div class="sec-hd"><span class="n">5</span><h2>피해야 할 것</h2>
+      <span class="sub">실제 DD에서 나온 사례</span></div>
+    <div class="sec-body">
+      <div class="tw">
+        <table>
+          <thead><tr><th>사례</th><th>무슨 일이 일어나나</th></tr></thead>
+          <tbody>
+            <tr><td class="name">합계 행을 맨 아래 붙임</td>
+              <td class="use">채권 1건으로 잡혀 분모·PV가 이중 계상됩니다. 지금은 식별자 칸이 비어 있으면 걸러내지만,
+                <strong>아예 넣지 않는 편이 안전합니다.</strong></td></tr>
+            <tr><td class="name">헤더 칸이 비거나 깨짐</td>
+              <td class="use">한 DD에서 접수일자 헤더가 백틱 하나(<code>`</code>)로 들어와 컬럼을 찾지 못했습니다.
+                수동 지정으로 복구는 되지만 사람이 알아채야 합니다.</td></tr>
+            <tr><td class="name">전 필드가 빈 행을 섞음</td>
+              <td class="use">한 DD에 식별자만 있고 나머지가 전부 빈 행이 268건 섞여 있었습니다.
+                평가 불가로 제외되지만 <strong>올리기 전에 빼 주시는 것</strong>이 맞습니다.</td></tr>
+            <tr><td class="name">금액을 문자열로 저장</td>
+              <td class="use">천단위 구분기호나 통화기호가 들어가면 0으로 읽힐 수 있습니다. 숫자 서식으로 주세요.</td></tr>
+            <tr><td class="name">병합 셀로 헤더 구성</td>
+              <td class="use">병합된 헤더는 첫 칸에만 값이 있어 나머지 컬럼을 찾지 못합니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 점검표 -->
+  <section>
+    <div class="sec-hd"><span class="n">6</span><h2>업로드 전 점검표</h2>
+      <span class="sub">DD를 받으면 이 순서로 확인</span></div>
+    <div class="sec-body">
+      <ul class="checks">
+        <li><span class="box"></span><span>확장자가 <code>.xlsx</code>인가
+          <span class="why">.xls·.csv는 읽지 못합니다</span></span></li>
+        <li><span class="box"></span><span>맨 아래 <strong>합계 행</strong>이 있는가
+          <span class="why">있으면 삭제하고 올리는 편이 안전합니다</span></span></li>
+        <li><span class="box"></span><span>헤더에 <strong>빈 칸이나 깨진 글자</strong>가 없는가
+          <span class="why">엑셀에서 헤더 행만 훑어보면 금방 보입니다</span></span></li>
+        <li><span class="box"></span><span>신용회복 <strong>단계 컬럼 30개</strong>의 이름이 맞는가
+          <span class="why">1단계 세 개만 확인하면 나머지도 같은 형태입니다</span></span></li>
+        <li><span class="box"></span><span><strong>상환방식</strong> 값이 무엇인가
+          <span class="why">텍스트인지 코드(815xxx)인지, 처음 보는 코드가 있는지</span></span></li>
+        <li><span class="box"></span><span><strong>채권구분</strong>에 처음 보는 값이 있는가
+          <span class="why">특히 폐지 관련 값 — 폐지항고 외에는 규칙이 없습니다</span></span></li>
+        <li><span class="box"></span><span>업로드 후 <strong>「컬럼 인식」 화면</strong>을 반드시 확인
+          <span class="why">「평가 진행」을 누르기 전에. 여기가 마지막 방어선입니다</span></span></li>
+        <li><span class="box"></span><span>평가 후 <strong>「검산」 B구획</strong>이 전부 통과인가
+          <span class="why">라우팅 미분류 0건 · STEP1 배분 · 스트레칭 총액 보존</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<p class="foot">
+  이 명세는 채무조정채권 평가판(설계 V8.4)의 실제 인식 규칙에서 그대로 뽑은 것입니다.
+  평가판이 바뀌면 이 문서도 함께 갱신해야 합니다.
+</p>

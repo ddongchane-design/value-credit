@@ -1,0 +1,3357 @@
+<title>채무조정채권 평가판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F5F7F9; --surface:#FFFFFF; --surface-2:#FAFBFC;
+  --ink:#101720; --ink-mute:#5C6875; --ink-faint:#8A95A2;
+  --rule:#E1E6EB; --rule-strong:#CBD3DB;
+  --accent:#0E5566; --accent-soft:#E4EFF2; --accent-ink:#0E5566;
+  --ok:#1A7A55; --ok-soft:#E3F2EB;
+  --warn:#8F5F0E; --warn-soft:#FAF0DC;
+  --bad:#A8382F; --bad-soft:#FBE9E7;
+  --on-accent:#FFFFFF;
+  --shadow:0 1px 2px rgba(16,23,32,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
+    --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
+    --rule:#232B34; --rule-strong:#323C47;
+    --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
+    --ok:#3FA97D; --ok-soft:#12291F;
+    --warn:#C9963C; --warn-soft:#2B2312;
+    --bad:#D2685C; --bad-soft:#2E1815;
+    --on-accent:#0E1216;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
+  --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
+  --rule:#232B34; --rule-strong:#323C47;
+  --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
+  --ok:#3FA97D; --ok-soft:#12291F;
+  --warn:#C9963C; --warn-soft:#2B2312;
+  --bad:#D2685C; --bad-soft:#2E1815;
+  --on-accent:#0E1216;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
+  font-size:14px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.mono,td.n,th.n{font-family:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:600;letter-spacing:-.01em}
+button,input,select{font:inherit;color:inherit}
+
+/* ─── shell ─── */
+header.top{
+  position:sticky;top:0;z-index:30;background:var(--surface);
+  border-bottom:1px solid var(--rule);
+}
+.top-in{
+  max-width:1500px;margin:0 auto;padding:14px 28px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.top h1{font-size:17px}
+.brand{display:flex;flex-direction:column;gap:4px;min-width:0}
+.brand-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.byline{display:flex;align-items:center;gap:13px;margin-left:auto;flex:none;
+  padding-left:18px;border-left:1px solid var(--rule)}
+.by-col{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:0}
+.by-txt{display:flex;align-items:baseline;gap:10px;line-height:1.1;white-space:nowrap}
+.by-contact{display:flex;align-items:center;gap:8px;white-space:nowrap;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-mute)}
+.by-contact a{color:inherit;text-decoration:none;border-bottom:1px solid transparent;padding-bottom:1px}
+.by-contact a:hover{color:var(--accent-ink);border-bottom-color:var(--accent)}
+.by-contact a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.by-dot{color:var(--ink-faint)}
+.by-made{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+.by-name{font-size:21px;font-weight:700;letter-spacing:.01em;color:var(--ink);white-space:nowrap}
+.by-face{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;display:block;
+  box-shadow:0 0 0 1px var(--rule-strong),0 0 0 4px var(--surface),0 2px 6px rgba(16,23,32,.14)}
+@media(max-width:640px){
+  .byline{margin-left:0;padding-left:0;border-left:none;width:100%;justify-content:flex-start}
+  .by-col{align-items:flex-start}
+  .by-contact{flex-wrap:wrap;white-space:normal}
+  .by-name{font-size:18px}
+}
+.ver{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;
+  color:var(--accent-ink);background:var(--accent-soft);
+  padding:3px 8px;border-radius:3px;
+}
+.top .sub{color:var(--ink-faint);font-size:12.5px}
+
+.shell{max-width:1500px;margin:0 auto;padding:24px 28px 80px;display:grid;
+  grid-template-columns:288px minmax(0,1fr);gap:28px;align-items:start}
+@media(max-width:1080px){.shell{grid-template-columns:1fr;padding:20px 16px 60px}}
+
+/* ─── rail ─── */
+.rail{position:sticky;top:74px;max-height:calc(100vh - 98px);overflow-y:auto;
+  background:var(--surface);border:1px solid var(--rule);border-radius:6px}
+@media(max-width:1080px){.rail{position:static;max-height:none}}
+.rail-hd{padding:14px 16px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rail-hd h2{font-size:13px;letter-spacing:.02em}
+.rail-body{padding:6px 16px 18px}
+.grp{margin-top:14px}
+.grp>h3{
+  font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:600;padding:8px 0 6px;
+  border-bottom:1px solid var(--rule);margin-bottom:8px;
+}
+.fld{display:grid;grid-template-columns:1fr 74px 26px;gap:6px;align-items:center;padding:3.5px 0}
+.fld label{font-size:12.5px;color:var(--ink-mute);line-height:1.35}
+.fld .unit{font-size:11px;color:var(--ink-faint);white-space:nowrap}
+.fld input{
+  width:100%;padding:5px 6px;text-align:right;background:var(--surface-2);
+  border:1px solid var(--rule-strong);border-radius:4px;
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-variant-numeric:tabular-nums;
+}
+.fld input:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+.fld input.dirty{border-color:var(--accent);background:var(--accent-soft)}
+
+.presets{display:flex;gap:6px;padding:0 16px 14px}
+.presets button{
+  flex:1;padding:6px 4px;font-size:11.5px;background:var(--surface-2);
+  border:1px solid var(--rule-strong);border-radius:4px;cursor:pointer;color:var(--ink-mute);
+}
+.presets button:hover{border-color:var(--accent);color:var(--accent-ink)}
+.presets button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+
+/* ─── stages ─── */
+.stages{display:flex;flex-direction:column;gap:20px;min-width:0}
+section.stage{background:var(--surface);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.stage-hd{display:flex;align-items:center;gap:11px;padding:13px 18px;border-bottom:1px solid var(--rule)}
+.stage-hd .num{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  width:20px;height:20px;flex:none;display:grid;place-items:center;border-radius:3px;
+  background:var(--accent-soft);color:var(--accent-ink);
+}
+.stage-hd h2{font-size:14px;flex:1}
+.stage-hd .note{font-size:12px;color:var(--ink-faint)}
+.stage-body{padding:18px}
+section.stage[data-state="idle"]{opacity:.5}
+section.stage[data-state="idle"] .stage-hd .num{background:var(--surface-2);color:var(--ink-faint)}
+
+/* ─── drop ─── */
+.drop{
+  border:1.5px dashed var(--rule-strong);border-radius:6px;padding:34px 20px;text-align:center;
+  cursor:pointer;transition:border-color .15s,background .15s;background:var(--surface-2);
+}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.drop .big{font-size:14.5px;font-weight:500;margin-bottom:5px}
+.drop .small{font-size:12.5px;color:var(--ink-mute)}
+.files{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.files li{
+  display:flex;gap:10px;align-items:baseline;padding:9px 12px;background:var(--surface-2);
+  border:1px solid var(--rule);border-radius:5px;font-size:12.5px;
+}
+.files .fname{font-weight:500;min-width:0;overflow-wrap:anywhere}
+.files .meta{color:var(--ink-faint);margin-left:auto;white-space:nowrap;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+.bar{height:3px;background:var(--rule);border-radius:2px;overflow:hidden;margin-top:12px}
+.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+
+/* ─── tables ─── */
+.tw{overflow-x:auto;margin:0 -18px;padding:0 18px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+thead th{
+  font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);
+  font-weight:600;border-bottom:1px solid var(--rule-strong);
+}
+td.n,th.n{text-align:right}
+tbody tr:hover{background:var(--surface-2)}
+tr.sum td{font-weight:600;border-top:1px solid var(--rule-strong);border-bottom:none;background:var(--surface-2)}
+tr.sub td{color:var(--ink-mute)}
+td.dim{color:var(--ink-faint)}
+caption{caption-side:top;text-align:left;font-size:11px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-faint);font-weight:600;padding:2px 0 9px}
+
+/* ─── stats ─── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin-bottom:18px}
+.stat{background:var(--surface);padding:14px 16px}
+.stat .k{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+.stat .v{font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:500;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:3px}
+.stat .d{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint);
+  font-variant-numeric:tabular-nums;margin-top:1px}
+.stat.hero .v{color:var(--accent-ink)}
+
+/* ─── pills ─── */
+.pill{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10.5px;
+  font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.neutral{background:var(--surface-2);color:var(--ink-faint);border:1px solid var(--rule)}
+
+/* ─── misc ─── */
+.hint{font-size:12.5px;color:var(--ink-mute);margin:0 0 14px;max-width:68ch}
+.hint strong{color:var(--ink);font-weight:600}
+.empty{color:var(--ink-faint);font-size:13px;padding:22px 0;text-align:center}
+.err{background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad);
+  border-radius:5px;padding:11px 13px;font-size:12.5px;margin-top:12px}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);border-radius:5px;overflow:hidden}
+.map-row{background:var(--surface);padding:7px 11px;display:flex;gap:9px;align-items:center;font-size:12px}
+.map-row .role{color:var(--ink-mute);flex:none;width:118px}
+.map-row .src-sel{
+  flex:1;min-width:0;padding:4px 6px;border:1px solid var(--rule-strong);border-radius:4px;
+  background:var(--surface-2);font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+}
+.map-row .src-sel:hover{border-color:var(--accent)}
+.map-row .src-sel:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.map-row .src-sel.need{border-color:var(--bad);color:var(--bad);font-weight:600}
+.map-row .tag{flex:none;width:26px;font-size:10px;letter-spacing:.04em;color:var(--ink-faint);text-align:right}
+.map-row.miss{background:var(--bad-soft)}
+.stagebox{margin-top:9px;padding:10px 12px;border:1px solid var(--rule);border-radius:5px;
+  background:var(--surface-2);font-size:12px;color:var(--ink-mute)}
+.stagebox.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.stagebox code{font-family:"IBM Plex Mono",monospace;background:var(--surface);
+  padding:1px 4px;border-radius:3px;border:1px solid var(--rule);color:var(--ink)}
+.foot{max-width:1500px;margin:0 auto;padding:0 28px 40px;color:var(--ink-faint);font-size:11.5px;line-height:1.7}
+.foot code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);
+  padding:1px 4px;border-radius:3px;border:1px solid var(--rule)}
+details.detail{margin-top:14px;border-top:1px solid var(--rule);padding-top:12px}
+details.detail summary{cursor:pointer;font-size:12px;color:var(--ink-mute);font-weight:500}
+details.detail summary:hover{color:var(--accent-ink)}
+details.detail[open] summary{margin-bottom:11px}
+.tgl{background:none;border:1px solid var(--rule-strong);border-radius:4px;
+  padding:4px 9px;font-size:11.5px;cursor:pointer;color:var(--ink-mute)}
+.tgl:hover{border-color:var(--accent);color:var(--accent-ink)}
+.runbar{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:18px;
+  padding-top:16px;border-top:1px solid var(--rule-strong)}
+button.run{
+  background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);
+  border-radius:5px;padding:9px 20px;font-size:13.5px;font-weight:600;cursor:pointer;
+}
+button.run:hover{filter:brightness(1.12)}
+button.run:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.run.caution{background:var(--warn);border-color:var(--warn);color:var(--on-accent)}
+.runcap{font-size:12px;color:var(--ink-mute);flex:1;min-width:200px}
+
+/* ─── 접기/펴기 ─── */
+.stage-hd{cursor:pointer;user-select:none}
+.stage-hd:hover .chev{color:var(--accent-ink)}
+.stage-hd .chev{
+  flex:none;width:18px;height:18px;display:grid;place-items:center;border-radius:3px;
+  color:var(--ink-faint);font-size:10px;transition:transform .15s;transform:rotate(90deg);
+}
+section.stage[data-fold="1"] .chev{transform:rotate(0deg)}
+section.stage[data-fold="1"] .stage-body{display:none}
+
+/* ─── 채권별 목록 ─── */
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.tools input[type=search],.tools select{
+  padding:5px 8px;background:var(--surface-2);border:1px solid var(--rule-strong);
+  border-radius:4px;font-size:12.5px;
+}
+.tools input[type=search]{width:190px;font-family:"IBM Plex Mono",monospace}
+.tools input:focus,.tools select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.tools .sp{flex:1}
+.tools .cnt{font-size:12px;color:var(--ink-faint);font-family:"IBM Plex Mono",monospace}
+
+table.list tbody tr.brow{cursor:pointer}
+table.list tbody tr.brow>td:first-child{position:relative;padding-left:24px}
+table.list tbody tr.brow>td:first-child::before{
+  content:"▸";position:absolute;left:9px;color:var(--ink-faint);font-size:9px;transition:transform .12s;
+  display:inline-block;transform-origin:center;
+}
+table.list tbody tr.brow.open>td:first-child::before{transform:rotate(90deg);color:var(--accent-ink)}
+table.list tbody tr.brow.open>td{background:var(--accent-soft)}
+table.list tbody tr.brow.open:hover>td{background:var(--accent-soft)}
+tr.drow>td{padding:0;background:var(--surface-2);border-bottom:1px solid var(--rule-strong)}
+.dpanel{padding:16px 18px 18px;display:flex;flex-direction:column;gap:16px}
+.dpanel h4{margin:0 0 7px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:600}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);border-radius:5px;overflow:hidden}
+.kv>div{background:var(--surface);padding:6px 10px;display:flex;gap:10px;align-items:baseline;font-size:12px}
+.kv .k2{color:var(--ink-mute);flex:none;min-width:104px}
+.kv .v2{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  margin-left:auto;text-align:right;overflow-wrap:anywhere;min-width:0}
+.kv .v2.z{color:var(--ink-faint)}
+.kv .v2.hi{color:var(--accent-ink);font-weight:600}
+.dpanel table{font-size:11.5px}
+.dpanel th,.dpanel td{padding:4px 8px}
+.dpanel .tw{margin:0;padding:0;max-height:340px;overflow:auto}
+.dpanel .tw thead th{position:sticky;top:0;background:var(--surface-2);z-index:1}
+.formula{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-mute);
+  background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:7px 10px;
+  white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75}
+/* ─── 회차별 현금흐름 (가로 전개) ─── */
+.segs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.seg{display:flex;gap:7px;align-items:baseline;padding:5px 11px;font-size:12px;cursor:pointer;
+  background:var(--surface-2);border:1px solid var(--rule-strong);border-radius:4px;color:var(--ink-mute)}
+.seg:hover{border-color:var(--accent);color:var(--accent-ink)}
+.seg .c{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+.seg.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+.seg.on .c{color:var(--on-accent);opacity:.75}
+
+.tw.flush{margin:0;padding:0;border:1px solid var(--rule);border-radius:5px}
+table.cf{border-collapse:separate;border-spacing:0;font-size:12px;width:auto}
+table.cf th,table.cf td{border-bottom:1px solid var(--rule);padding:6px 11px;white-space:nowrap}
+table.cf thead th{background:var(--surface);font-size:10.5px;letter-spacing:.04em;text-transform:none;
+  color:var(--ink-faint);font-weight:600;border-bottom:1px solid var(--rule-strong);text-align:right}
+table.cf td.zero{color:var(--rule-strong)}
+table.cf .lab{position:sticky;left:0;z-index:2;background:var(--surface);text-align:left;
+  width:214px;min-width:214px;box-shadow:1px 0 0 var(--rule)}
+table.cf .tot{position:sticky;left:214px;z-index:2;background:var(--surface-2);text-align:right;
+  width:136px;min-width:136px;box-shadow:1px 0 0 var(--rule-strong);
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+table.cf thead .lab,table.cf thead .tot{z-index:3}
+table.cf tbody tr:hover td{background:var(--surface-2)}
+table.cf tr.loss td{color:var(--ink-mute)}
+table.cf tr.hl td{font-weight:600;background:var(--accent-soft);color:var(--ink)}
+table.cf tr.hl td.lab,table.cf tr.hl td.tot{background:var(--accent-soft);color:var(--accent-ink)}
+table.cf tbody tr.hl:hover td{background:var(--accent-soft)}
+/* ─── 실효폐지 곡선 : 사이드바 버튼 ─── */
+.railcurve{padding:0 16px 14px}
+.curvebtn{
+  width:100%;display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;
+  padding:9px 11px;background:var(--surface-2);border:1px solid var(--rule-strong);
+  border-radius:5px;cursor:pointer;text-align:left;
+}
+.curvebtn:hover{border-color:var(--accent);background:var(--accent-soft)}
+.curvebtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.curvebtn .cb-t{grid-column:1;grid-row:1;font-size:12.5px;font-weight:600;color:var(--ink)}
+.curvebtn .cb-s{grid-column:1;grid-row:2;font-size:11px;color:var(--ink-faint);
+  font-family:"IBM Plex Mono",monospace}
+.curvebtn .cb-x{grid-column:2;grid-row:1/3;align-self:center;
+  font-size:11px;color:var(--accent-ink);white-space:nowrap}
+.curvebtn.on{border-color:var(--accent);background:var(--accent-soft)}
+.curvebtn.on .cb-s{color:var(--accent-ink)}
+
+/* ─── 업로드 슬롯 ─── */
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:12px}
+.slot{border:1px solid var(--rule);border-radius:6px;background:var(--surface-2);padding:12px 13px}
+.slot.custom{border-color:var(--accent);background:var(--accent-soft)}
+.slot-hd{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+.slot-hd .nm{font-size:12.5px;font-weight:600}
+.slot-hd .pill{margin-left:auto}
+.slot dl{margin:0 0 10px;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:11.5px}
+.slot dt{color:var(--ink-mute)}
+.slot dd{margin:0;text-align:right;font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.slot-ax{display:flex;gap:6px;flex-wrap:wrap}
+.slot-ax button{
+  flex:1;min-width:0;padding:5px 8px;font-size:11.5px;background:var(--surface);
+  border:1px solid var(--rule-strong);border-radius:4px;cursor:pointer;color:var(--ink-mute);
+}
+.slot-ax button:hover{border-color:var(--accent);color:var(--accent-ink)}
+.slot-ax button:disabled{opacity:.4;cursor:default}
+.slot-ax button.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+.slot-ax button.pri:hover{filter:brightness(1.12);color:var(--on-accent)}
+
+/* ─── 모달 : 사이드바에서 가운데로 펼쳐지는 느낌 ─── */
+.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:28px}
+.modal[hidden]{display:none}
+.modal-bg{position:absolute;inset:0;background:rgba(16,23,32,.42);backdrop-filter:blur(2px);
+  animation:mfade .16s ease-out}
+:root[data-theme="dark"] .modal-bg{background:rgba(0,0,0,.6)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .modal-bg{background:rgba(0,0,0,.6)}}
+.modal-box{
+  position:relative;width:min(1080px,100%);max-height:calc(100vh - 56px);
+  display:flex;flex-direction:column;background:var(--surface);
+  border:1px solid var(--rule-strong);border-radius:8px;
+  box-shadow:0 18px 48px rgba(16,23,32,.22);
+  transform-origin:left center;animation:mopen .2s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+@keyframes mopen{
+  from{opacity:0;transform:translateX(-34%) scaleX(.62) scaleY(.9)}
+  to{opacity:1;transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .modal-bg,.modal-box{animation:none}
+}
+.modal-hd{display:flex;align-items:baseline;gap:11px;padding:15px 18px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.modal-hd h2{font-size:15px}
+.modal-sub{font-size:11.5px;color:var(--ink-faint);font-family:"IBM Plex Mono",monospace}
+.modal-x{margin-left:auto;background:none;border:1px solid var(--rule-strong);border-radius:4px;
+  width:26px;height:26px;line-height:1;cursor:pointer;color:var(--ink-mute);font-size:12px}
+.modal-x:hover{border-color:var(--bad);color:var(--bad)}
+.modal-tabs{display:flex;gap:7px;padding:12px 18px 0;flex-wrap:wrap}
+.modal-body{padding:14px 18px;overflow:auto;flex:1;min-height:0}
+.modal-ft{padding:12px 18px;border-top:1px solid var(--rule);background:var(--surface-2);
+  display:flex;gap:9px;align-items:center;flex-wrap:wrap;border-radius:0 0 8px 8px}
+.modal-ft .sp{flex:1}
+.modal-ft .warn{font-size:11.5px;color:var(--warn)}
+
+/* ─── 곡선 편집 표 ─── */
+.ced{width:100%;font-size:12px;border-collapse:collapse}
+.ced th{position:sticky;top:0;background:var(--surface);z-index:1;
+  font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);font-weight:600;
+  text-align:right;padding:7px 9px;border-bottom:1px solid var(--rule-strong);white-space:nowrap}
+.ced th:first-child,.ced td:first-child{text-align:left}
+.ced td{padding:3px 9px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap;
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.ced tbody tr:hover td{background:var(--surface-2)}
+.ced tr.edited td{background:var(--accent-soft)}
+.ced tr.tailrow td{border-top:1px solid var(--rule-strong);background:var(--surface-2);font-weight:600}
+.ced input.h{
+  width:96px;padding:3px 6px;text-align:right;background:var(--surface-2);
+  border:1px solid var(--rule-strong);border-radius:4px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;font-variant-numeric:tabular-nums;
+}
+.ced input.h:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.ced .stp{display:inline-flex;gap:3px;margin-left:7px;vertical-align:middle}
+.ced .stp button{
+  width:23px;height:23px;line-height:1;padding:0;font-size:13px;cursor:pointer;
+  background:var(--surface-2);border:1px solid var(--rule-strong);border-radius:4px;color:var(--ink-mute);
+}
+.ced .stp button:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
+.ced .del{width:23px;height:23px;line-height:1;padding:0;font-size:11px;cursor:pointer;
+  background:none;border:1px solid var(--rule);border-radius:4px;color:var(--ink-faint)}
+.ced .del:hover{border-color:var(--bad);color:var(--bad)}
+.cedwrap{border:1px solid var(--rule);border-radius:5px;overflow:auto;max-height:min(52vh,460px)}
+.cnote{font-size:11.5px;color:var(--ink-mute);margin:0 0 11px;line-height:1.65}
+.cnote code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);
+  padding:1px 4px;border-radius:3px;border:1px solid var(--rule)}
+.cstat{display:flex;gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:5px;overflow:hidden;margin-bottom:12px;flex-wrap:wrap}
+.cstat>div{background:var(--surface);padding:8px 12px;flex:1;min-width:118px}
+.cstat .k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+.cstat .v{font-family:"IBM Plex Mono",monospace;font-size:15px;margin-top:2px;font-variant-numeric:tabular-nums}
+.paste{width:100%;min-height:78px;padding:8px 10px;background:var(--surface-2);
+  border:1px solid var(--rule-strong);border-radius:5px;font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;resize:vertical}
+.paste:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.pager{display:flex;gap:7px;align-items:center;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.pager button{padding:4px 10px;font-size:12px;background:var(--surface-2);color:var(--ink-mute);
+  border:1px solid var(--rule-strong);border-radius:4px;cursor:pointer}
+.pager button:hover:not(:disabled){border-color:var(--accent);color:var(--accent-ink)}
+.pager button:disabled{opacity:.4;cursor:default}
+.pager .pg{font-size:12px;color:var(--ink-faint);font-family:"IBM Plex Mono",monospace;padding:0 6px}
+</style>
+
+<style id="skin-a">
+/* ══ 스킨 A — 고대비 지면 리포트 (구조·문구·계산 불변, 표현만) ══ */
+:root,:root[data-theme="light"]{
+  --ground:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F2EC;
+  --ink:#0C0C0B; --ink-mute:#4C4C46; --ink-faint:#8C8C83;
+  --rule:#DCD8CE; --rule-strong:#0C0C0B;
+  --accent:#0C0C0B; --accent-soft:#EFEBE1; --accent-ink:#0C0C0B;
+  --ok:#166A46; --ok-soft:#E6EFE9;
+  --warn:#8A5300; --warn-soft:#F6EEDF;
+  --bad:#A32218; --bad-soft:#F7E7E4;
+  --on-accent:#FFFFFF; --shadow:none;
+}
+:root[data-theme="dark"]{
+  --ground:#111110; --surface:#111110; --surface-2:#1A1A18;
+  --ink:#F2EFE8; --ink-mute:#A5A199; --ink-faint:#77736B;
+  --rule:#2C2C28; --rule-strong:#F2EFE8;
+  --accent:#F2EFE8; --accent-soft:#232320; --accent-ink:#F2EFE8;
+  --ok:#5FBF90; --ok-soft:#16261E; --warn:#D3A24A; --warn-soft:#2A2314;
+  --bad:#DE7365; --bad-soft:#2D1815; --on-accent:#111110; --shadow:none;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-theme="dark"]){
+  --ground:#111110; --surface:#111110; --surface-2:#1A1A18;
+  --ink:#F2EFE8; --ink-mute:#A5A199; --ink-faint:#77736B;
+  --rule:#2C2C28; --rule-strong:#F2EFE8;
+  --accent:#F2EFE8; --accent-soft:#232320; --accent-ink:#F2EFE8;
+  --ok:#5FBF90; --ok-soft:#16261E; --warn:#D3A24A; --warn-soft:#2A2314;
+  --bad:#DE7365; --bad-soft:#2D1815; --on-accent:#111110;
+}}
+
+header.top{border-bottom:2px solid var(--rule-strong)}
+.top-in{max-width:1560px;padding:20px 32px 14px;align-items:flex-end;gap:14px}
+.top h1{font-size:27px;font-weight:700;letter-spacing:-.025em;line-height:1}
+.ver{background:none;box-shadow:inset 0 0 0 1px var(--rule-strong);color:var(--ink);border-radius:0;
+  font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;padding:3px 7px}
+.top .sub{font-size:11px;letter-spacing:.03em}
+
+.shell{max-width:1560px;padding:0 32px 110px;gap:34px;grid-template-columns:286px minmax(0,1fr)}
+@media(max-width:1080px){.shell{padding:0 18px 70px;gap:0}}
+.rail{background:none;border:0;border-radius:0;border-right:1px solid var(--rule);
+  border-top:2px solid var(--rule-strong);padding:0 30px 24px 0;max-height:none}
+@media(min-width:1081px){.rail{position:sticky;top:0;max-height:100vh;overflow-y:auto}}
+@media(max-width:1080px){.rail{border-right:0;padding-right:0}}
+.rail-hd{padding:14px 0 12px;border-bottom:1px solid var(--rule)}
+.rail-hd h2{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint)}
+.presets{padding:12px 0 14px;gap:0}
+.presets button{border-radius:0;font-size:11px;padding:7px 4px;background:none;
+  border:1px solid var(--rule-strong);margin-left:-1px;color:var(--ink-mute)}
+.presets button:first-child{margin-left:0}
+.presets button.on{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.rail-body{padding:0 0 10px}
+.grp>h3{font-size:9.5px;letter-spacing:.18em;color:var(--ink);border-bottom:1.5px solid var(--rule-strong)}
+.fld input{border-radius:0;border-color:var(--rule);background:var(--surface-2)}
+.fld input.dirty{border-color:var(--ink);background:var(--accent-soft);font-weight:600}
+.tgl{border-radius:0;border-color:var(--rule-strong);font-size:10.5px;letter-spacing:.06em}
+
+.stages{gap:0}
+section.stage{background:none;border:0;border-radius:0;overflow:visible;position:relative;
+  padding:0 0 40px 54px;border-top:1px solid var(--rule)}
+section.stage:first-child{border-top:2px solid var(--rule-strong)}
+section.stage[data-state="idle"]{opacity:.62}
+section.stage::before{content:"";position:absolute;left:11px;top:0;bottom:0;width:1px;background:var(--rule)}
+section.stage:last-of-type::before{bottom:auto;height:52px}
+.stage-hd{padding:26px 0 16px;border-bottom:0;gap:12px;align-items:baseline}
+.stage-hd .num{position:absolute;left:0;top:22px;width:23px;height:23px;border-radius:50%;
+  background:var(--ground);box-shadow:inset 0 0 0 1.5px var(--rule-strong);color:var(--ink);
+  font-size:10.5px;z-index:1}
+section.stage[data-state="live"] .stage-hd .num{background:var(--ink);color:var(--ground);box-shadow:none}
+section.stage[data-state="idle"] .stage-hd .num{background:var(--ground);color:var(--ink-faint);
+  box-shadow:inset 0 0 0 1px var(--rule)}
+.stage-hd h2{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.stage-hd .note{font-size:11px}
+.stage-body{padding:0}
+section.stage[data-fold="1"]{padding-bottom:22px}
+
+#resStage[data-state="live"]{order:-1;border-top:0;padding:0 0 46px}
+#resStage[data-state="live"]::before{display:none}
+#resStage[data-state="live"] .stage-hd{padding:22px 0 14px}
+#resStage[data-state="live"] .stage-hd .num{display:none}
+#resStage[data-state="live"] .stage-hd h2{font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:600;color:var(--ink-faint)}
+#resStage[data-state="live"] .stage-hd .note{margin-left:auto}
+
+.stats{grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:0;background:none;border:0;
+  border-top:2.5px solid var(--rule-strong);border-bottom:1px solid var(--rule);border-radius:0;
+  margin-bottom:26px;overflow:visible}
+.stat{background:none;padding:18px 22px 22px;border-left:1px solid var(--rule)}
+.stat:first-child{border-left:0;padding-left:0}
+.stat .k{font-size:9.5px;letter-spacing:.18em;color:var(--ink-faint)}
+.stat .v{font-size:34px;line-height:1.02;font-weight:600;letter-spacing:-.035em;margin-top:10px}
+.stat .d{font-size:10.5px;margin-top:7px}
+.stat.hero{grid-column:span 2;background:var(--surface-2);padding-left:24px}
+.stat.hero .v{font-size:66px;color:var(--ink);letter-spacing:-.045em}
+.stat.hero .k{color:var(--ink)}
+@media(max-width:820px){.stat.hero{grid-column:auto;padding-left:22px}.stat.hero .v{font-size:44px}}
+
+th,td{padding:8px 12px}
+th:first-child,td:first-child{padding-left:0}
+thead th{font-size:9.5px;letter-spacing:.15em;color:var(--ink);border-bottom:1.5px solid var(--rule-strong);
+  padding-bottom:7px}
+tr.sum td{border-top:1.5px solid var(--rule-strong);background:none}
+caption{font-size:9.5px;letter-spacing:.18em;color:var(--ink);padding-bottom:11px}
+.tw{margin:0;padding:0}
+.dpanel .tw,.tw.flush{border-radius:0}
+table.cf thead th{font-size:10px;letter-spacing:.06em}
+table.cf .lab,table.cf td.lab{padding-left:11px}
+table.cf tr.hl td{background:var(--accent-soft)}
+.dpanel{padding:16px 0 18px}
+
+.pill{border-radius:0;font-size:9.5px;letter-spacing:.12em;padding:3px 7px}
+.pill.neutral{background:none;border:1px solid var(--rule);color:var(--ink-mute)}
+.kv .v2.hi{color:var(--ink)}
+
+.drop{border-radius:0;border:1.5px dashed var(--rule-strong);background:var(--surface-2);padding:44px 20px}
+.drop .big{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.drop:hover,.drop.over{background:var(--accent-soft);border-color:var(--ink)}
+.files li,.err,.stagebox,.map-grid,.kv,.formula,.map-row .src-sel,.pager button,.seg,
+.tools input[type=search],.tools select,.bar{border-radius:0}
+button.run{border-radius:0;background:var(--ink);border-color:var(--ink);color:var(--ground);
+  padding:13px 30px;font-size:13px;font-weight:600}
+button.run:hover{filter:none;opacity:.86}
+button.run.caution{background:var(--warn);border-color:var(--warn);color:#fff}
+.runbar{border-top:1.5px solid var(--rule-strong);padding-top:20px;margin-top:24px}
+.seg.on{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+.bar>i{background:var(--ink)}
+.foot{max-width:1560px;padding:22px 32px 56px;border-top:1px solid var(--rule)}
+
+.cfchart{margin:0 0 14px;padding:0 0 2px}
+.cfc-hd{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:9px}
+.cfc-t{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--ink)}
+.cfc-l{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--ink-mute)}
+.cfc-l .sw{width:9px;height:9px;display:block}
+.sw-e{background:var(--rule-strong);opacity:.35}
+.sw-p{background:var(--ink)}
+.cfc-r{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-faint)}
+.cfc-bars{display:flex;align-items:flex-end;gap:1px;height:110px;
+  border-bottom:1.5px solid var(--rule-strong);border-top:1px solid var(--rule)}
+.cfc-col{position:relative;flex:1 1 0;min-width:2px;height:100%;display:block}
+.cfc-col b{position:absolute;left:0;right:0;bottom:0;display:block}
+.cfc-e{background:var(--rule-strong);opacity:.28}
+.cfc-p{background:var(--ink)}
+.cfc-col.peak .cfc-p{background:var(--bad)}
+.cfc-col:hover .cfc-e{opacity:.55}
+.cfc-ax{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;
+  font-size:10px;color:var(--ink-faint);padding-top:5px}
+
+</style>
+
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <div class="brand-top">
+        <h1>채무조정채권 평가판</h1>
+        <span class="ver">설계 V8.1</span>
+      </div>
+      <span class="sub">DD가 브라우저를 떠나지 않습니다 — 전송·저장 없음</span>
+    </div>
+    <div class="byline">
+      <div class="by-col">
+        <div class="by-txt">
+          <span class="by-made">Made by</span>
+          <span class="by-name">이동찬</span>
+        </div>
+        <div class="by-contact">
+          <a href="mailto:ddongchane@gmail.com">ddongchane@gmail.com</a>
+          <span class="by-dot" aria-hidden="true">·</span>
+          <a href="tel:+821046177298">010-4617-7298</a>
+        </div>
+      </div>
+      <img class="by-face" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCADAAMADASIAAhEBAxEB/8QAHAAAAgMBAQEBAAAAAAAAAAAABQYDBAcCAQAI/8QAQBAAAgECBAQDBgQEBQMEAwAAAQIDBBEABRIhBhMxQSJRYQcUMnGBkSNCobEVUsHRQ2Jy4fAIFiQzU3PxY5Ky/8QAGgEAAgMBAQAAAAAAAAAAAAAAAgMBBAUABv/EAC8RAAICAgIBAgQFAwUAAAAAAAECABEDIRIxBCJBBRMyURRhcZHRgaHxI0JS4fD/2gAMAwEAAhEDEQA/ABtBE+T59vG0w5otr/OD6dO4xr3BCSLwhFJy2NRGz6dRtyzc/oMK+a5VRLm8cID6SlyxOyvovvb1GHSCWshyRKSjpOWZ08Uh/KCLkgfpjJw5EXJTdwTjYjUTeIOJPcppIqXmJNzlWnIAKk3uXLX6nc/bDLlmYRPHoqSkOYT6lCm+tyBcbfXC3muV0WV0o/iueZflgTdnkkDOx72HUDCzL7TuA+Gqn3qinr86rUBVWAKoLixte39cGyHINQ0wuO9frNH4jy2OrpKOncH3gy+C52uu/wCuJlpmmp0Q0zCJ47uX20G9rG/pjDs8/wCpXNZwyZVl9JRL0DveRx/TCBxD7QeKM5e2YZvVzI4B0CQqhB9BtgF+Hswpozig97n6D4v4i4fyiKOKvz+kBVgWihPMk26dP+bYQh7Y8mynK6mjy/LJqqScvrllOkWJ2NvTbGOxRVFfD+FHPJUF/wAikgrbzwTy3g7O6h9fKSEEWJlbex9MPHgYF2+5xy1oCM0vto4gigany+ZKGJiWIjF2JPqcLGa8SZrmumatr6ipLgn8SQm2D1F7NlZgamqdx3WNbD74YaLgjLaMjRSKx/mk8R/XDxkw4xSCKOUnVzNKSOsq5LRQSzDpZFONL4ZjYQx0tMjUtXAg5kk0yAXt6326bDBn3KOihJRYFsNg+wH0wNyeheuSpqAs1TUtIryIOXpKX+Eg2NrbbHDBl5zkNmQ5zQy8SVpfMKpZngJjtCNNx6nv3xzTcNUNGLx0iah3I1H9cc5tn8PCohp5suhp55Y+Zy4kK2FyN7k9Ol74Av7Ta9GPIpogp/n2wtlyMddQWsmOEGWVDnwQkDsW2GLhy2pK/iU7aT3AuMGuFHXPspo67l8vnxhivW2AHtF4xquEM1p6Cip42ZohKzMbbEkAW+mEorMaqFjapFNwrllbfnUUWr+ZRpP6YGZl7OIayERwV9TEisWWNzrRSeptirR+1Ely1bTWLG5KjbDFQce5LWgAypGfIm2D/wBVY8FD3EyD2fZlk9fFVGOPMIYXEnLjbSXt23wtZpHnNHXSS1dNLTtM7PodPDue3pjcosyy6pAMVTGfmcdzUFPXIpkijmQXtcBhiR5JH1CH8oH6TMeg4mrsip6SpjrpkqZS2qOF7ctBa1x674Z8j9pVZmDvHJRxVpVGlkJXlsqgbtcbbYYqz2fZDX6zJRCJ231RMVOA9X7N56Okqockrli96j5UvOS5KXBKgjpe2OL4n7nHE3uLh+LjDI+IaaGmqpZaIDqZBrjue+ofTBul9nWRVzCslz+StAOoLQqNIHlffGOpwDnOU1IkqRqpU8cjU7liVHUAdb2xVXiPNKXNpZKSkko4nlJijsyFF7C472xDYyRSGcmPEptlmkZ3/wBRFLBr/gmQRgsR+NWNq1EdPCP74Rs79sPGPEFNLK+cPBCjhTBTWhFjfy3I+uOsv9nEJjCVNZLKL6tCAKL4YKDgfKaFdS0UZYfmk8R/XCw+BPpFxDZ2MzCKSuzVpi8NTUTOPBIAWIa/cn0xdy7hDPJqiOXQkWk6hzmv+gxq8OUlFAiEaqe9+3yGBNVndPkrP74qqbnSC1tQ898GPJY6URXImLFL7Nw8gNXVOb7lYl0j7nDDScC5ZTAaKUOR3kOr98Cav2lqCRS0n1I/vgRU8b5zW7LIsS+m+J45m7Mjc0ZaOko4wGaKJR22GK0/EOS5cDrqVYjsuMtqaytqrGWrlYk9AbYi5K33Fz64lfG/5GdUf6r2k0UN/dKcyHzwFrfaJm1VcRKsK9sLhQAdNsehL/CPthy4UHtJoSabOszrHJlqpSL9AbYfZq5WmgiMNZI2kamaoEaWt0AsdsIFLRy1EmiNHdieij/7xodNlRnaNqrQsS7tGfE7bdLb2wTUOoSiLXGFMsuawwII4uTSxqVWQvqaxJN/mcCEyCqI1iFiu3iK2/3xprjLpDJN7usFS1iDKbOQBboDijVcQZVlwMTwRNI7b2TSQD32647kYXGaN7P6ZKbIcviZRGViA0nthC9sOWS1vFayQQmTTTIt9tI3bEH/AHnX0URpKOoWEuuqJ9yGA8r/AK+WI/4x/wBwJrrItVZACHTVpaw3Ohh3HWxvsb9MQNQVSjESoyushJeaCREvbVoNvkCNsVXiudh+xxo65NR1wE9LJZn2tcAOP5SowEz3hlqSMzoHCqSHWTYp9x0/5fEhpJWouZS1Qma0sEM0kYkexA8vkcfoXh2gP8Ep2I3YEn7nGF8PUwfiagQjozH06Y/SmR0oXJ6QW/w8BkS9w8bUYKagNybYryUhU9MMkyxRD8R0T/UQMCqzNMop2/FzGjQ+RmX++Kxwy0uWBqinKjpfALN8vhqInSaIMDv6g+d8MM+e5RK1oqnnb/4UbOPuBbC/nfEOVCNkNVFET/7rqn6E3/TEDGRCOQGL3F9XJwoGqIGZuY4RYx2+pwlScVZzVzqXnCqT8NrjDr7VFFTQU0kIuryKwPmDhAhTRMh2647Ai8ATszMEZuAa2uq+L0jnqZGR4nBTouw22xF7Vae2b0W2+lhfE/s2TXxrTjbeKTt/lxP7XYtGb5ft1V/6Yeq09yL3EFadb32JxKIvIHEioSf98SBPlh0mVnT4e3iGJRFv3/bHcq20f6hiSwG9sdOklFlnvjFVtqAuSNwvqfT64IHLaOgj01TRyTkgokLHVb/MT0/fFikRKKkWsKpI8i/goTsH/mPyB/bFWmVMuc1NQpnlcks7bkX7/PAFo1EuGaCBKeLWYo6WO+rTH8bfMnfF7LKihqaCvrp6p8ry6jkjgZ4Y9TmVztfzFtzgMEfPAz0c8UNHAuqpqZTpSnHm3qewHXFTMM4grcuiyHKkeOgWo94lq6nZqmXSVDNbZRboMVcmQt6FO/c/YTshr0rLlTwbn9RW+80WYZbU0I8QrxVqkVv8wJup9LY5z/hSGg4YXP5s+patXkESCKM6ZjexCN3tYm9uxwNyhcsjqUSriBiRvxDEeovuSfzbX6fri97W/exndJTBI48mipkOVrD/AOnyiBc/6tVwfp2wsPm+cmPlrvrsD99/pUUS/IAmBqORuWqNKzwFgyuNyjeYPnhtghQRwzuxSpABVkNhKo7g+Y3+R26HCfkiCNgQzKpNmSwYH5g2wySyUhjMNLUM0Q8Twm6PC38y6txjQMsiXK5JsvlM1I5TVabSg8JYdSo9RvbDtSJT5zlyVJcqyJ+Kqg30+duhG/0wkPDUihaFnEhjBeJhsbWPhI++GbhyWaClhn2BtZlO3lbEEakwHV1fCnC+Zh2p66eeDdZY2FmBHla3fzwOrPaxOxZYJswMA+CKWoCKg8hpHTE3tN4davkpZ6Qk8y4AsdItuVNvuPqMKUXAlbUIvMkiisLKQCbjzOODrWzFH0mWKv2gzzEsyUxbtr1yEfc4pTccZqhZRPyQR0giRP1tfBGD2axbc6tlb/QoA/XBWm9n+VR/+ossx/zyf2wJyoIPzDEOr4jrKq/Omnl/+WZm/TFZp3k0mIi7Dewub41mHhLKYANGXwD1KXP64vxZVTw25dPElthZAMCfIUdCRyg7jEPJkaxv4VSdNF+3XbCiqAbgMfXDvxNTNmGSQU4Vld5g4djZGYdsK5y6QWSzc69tBxU8FSmBeRilMMey6x43pv8A4pf/AOcW/bIunOMs2/LJ/THvs7y6Si4ypXkGm8cmx/04K+1XK4aqalrHL6oiYwAdrHe+NAVVzr9Uy8dRjq/bb74IrSQL/hg/PfEllUbKAPQYHlDgpopHK6VJs1+mLNNQyVM6RWCBjYs1th54sk3wR4fiWav8XwopY4FnoXCUWal5Ms5gQlNEaiyp3+Z9cEIMmptmkjDAdQe+JlOo3HQYtgeC+M18xJmkiACC5HnoveKemjpfdZrGSCWEMjkW7fQfbATNslNRlGXVGUQ+7jM6t6OopoCeWZV3QgdgRc/TBTNJzJMYozsBZj/TEGW8T1+QUdXDRxRvzDrjeT/Ba1tQHc4Aqy+vELa+r7/xo/0lPPio8kG5xmtbwrw1LHkVRw8uaPTRhaitjmMcjSndgCOtunp07Yq8RcWcOZnwlSZLltDXRyU9QJIXq21GBTfUA19wbgW7WHlhZdGeN4pXLSq2vUxuTc77/M3xSdWSTS6G4O9sWsfgqCrsxJG+zV/p/ET8qqJMYaGmWSnIZQrJuRa4Hr52/vi+9bZf/KpPeacCxeIamj9R3+mBuV1sXKVGLakFrMNmHlf64mmEcDF0nkdbalZSyuB8/wC4xdjoxZFKtTEqiZamFD4JOp0eTeo/UfLB2AmhopYnDKo6En4d8ZvSZ02WTNUQMUO5eWRQ7W9OxPzwwPxbU12UGSfSXdSyKQAQgHX53tgSTGAiOsDR11IyBdRBDHUvQ222xSpsvmrKuOipaaSWWRtKgEAXtfqTt0wP4Cz6OF4WmGsO2iUO1w/k2Ngpq7K4iJoKVdSguyxbE7W3P3xifFPNfxB6Eu/f2/r7xOQe8yavgzOgoUrHy2SOJqg0z8wMGicW+IW6G/UX6HDBUcHZxBl6wrLQtWysHVogXjC2AC6rbG7b7eWNBzXNDTUaokyRBnYzvJJ1j2Ohbb3PkP64A5zxnFSZPOaKdP4g7aHGga2JN7jy6bg9PpjIPxTysoXitG919vYb9/vK4M4bgXL5pJIedXKNEKjSdLpKCQ2xHwsPsenliWu4G53DywU5i/ibUqUwktYOQTdiOpJW/lcgXwoV/HtXSwpUSSiR9awzpq/EYXuDe+xuOw7YIcO8dQVvONZmU1O7WMXNS+vxWO4O21gCfXAPh808HLn0/wA++vtqcWr2md1Od5hIKijqKeBzF4To8RRO2k9v3OJuHaiOpzuk5iAa5FDa9mPzxzlXs84iqJDlEOmnqHhMiNJ4feFJsSTe+3XGjcFey2l4PeSXOHo81lkhSSHnXDU0umz27EHqp67Y9J5Xn4PHUMTfWhJVNcoN0Rw8bUJiUKvKI2HocE+LuEK/iHKmmo95EmQCIqblTtq+V7YdRRZNUzBoNKSIEYll3XYkBT8iR8jj568CmeKBiqs/LkC7i38vmeo//XFLN8f5LWJCP1/uJ3oF+8zCH2NV75dVcyrVMyjYcqEAGORdvzdien/3gNkfsyzfNpKhqnTR01LII55D4iLi5KgbNba+/fGuR5lTKdFfFGW20yw+TsRdl7mynb0wOk4vC18uXQAlCbh3fSDbfWBvvtbTiqPiPmDkNHV3XX8wXy8vpFRGX2LZ0IneZ1RnmWOAKQTovu726DTuLd7jHmZez6fg6OWqkqxOkj8pPBp1Kd1br3A6eeNOpuJhnckZhaWKdENoVN20p+1yN77jbzwP46q5a7hOshkFK7R1UcoaFtRXY+E26d8H+N8nJlCnS/p/6oeAnkLmW08t30+uL1S5p6R2HlthcgavWpEiqNF7BfPDFUIcxy1kAIe1yp2+mLjLRE1VNiLoI5Rbc3xG0QFKWYbsb4LU9FFOso5el4wV0+vnirWQXidFOkoBY+RxYVoDLFHNafS2pd9tvXA2OpDWSVSdPQ9xg1OhdnSTqNwVxzHkC1zOsRl5qbm6DTb1IOLy5ABuIKE9SnCyjxLIpA7WAx9X1Ur0/icBPMH9sNSezKr9xappZ4aiZV1ckCxb0G/X54z/ADZpgNy47EHY/btgseVMn0m5zoyfUJ9FKJpQjXEVrfO2DKOJqowqW0xposOwsBtgVk1OKiIMwJVgQfTBShCxZrFLJflTBQzfy3Fv3xL96gqLjXwxlElSykXSFGDPI53NuigD13w8VOeNSVSSEqtGgsHQXeRxbqD6/vhZyGkqctnSRjqpnLqzgdAFuCR53vj3M6HMhKoamqTEw5yELqUi3UW9MZub1Hc7IIdq89qq+jWGCoVWknsOeNIUrvrEnbftiCHJ8yzYzx1OZ5cA+uRGgYSOZBbVrNtlNzYdSdsApaCpp1Y1RlQoUhjV20shJvdl62+X1OJK7iOopIHJjp44450b3KJNKXUi519T3BNz3xVTCw+iVWQ/7YwZPw9wjm9W8NU0lLLBBYQoXAkkCfH4gehv4emF/LM7qMphqaaizCkTUCwWSm1uRtdVv06A22vijlWY1S5wK6aWMPMzNy52ZYwx6IbdV3Gx22x1WUr/AMSkinpCjKqE1DkBo7nUdlsLG9umwwePGeRDtY+0Bgb3NXajoclzOOpatqFrrLaJgr3RRa1+3i6DbF/PMyqc3oKf3CfkxuqBmKKjqNW/fpb9DgdxFUU5qYa7L6iComYtLKBUctSw6C573PTCvk8tRl7zBUrKiREdRCNRiZQwLWfyt1GM7Fi5AMT+X7f9weMvZlxNNBWSUb1FUI2ZQQNBBRd9TW7jsRglmOfyJBry6op4pqhVLlrgLfckodr22PfCjmnKzHMI8whKRUxS6xodO6ixUd79O2K+c5xUPVyQ0TIysBIzQqbElLkaiAbgHfF/8MrBWEM90RClfxRUQQ8uhmWijCLE8hIPPI6kDcrsT374B0WYpNncVSxmVYOgjk0s4XyO+k33JwIgpYKmoKz6YTIFMYEhsB3b1/pi1FDRwKGimm5ivuAdJC3O63+IHbfthgwKk4emHcr43r5K9/dZ5oiFY6pTq8ANwCew3HQXJ69cXMwnqqyuj5dZqV4lMpjHLjmt8S77E9bfUYCZS82X0cc7SrHLGefCxUks17XG3b7YIU2fZi9LNl9SzNCRzCg2BLDbUBgCm/SISElgANwHXZzl2UTItXOIy1yBpJuL4O5XX09dCs1M2uMjY2IvgNNk1PXTrNUQpIVa41C/TDFl9KscYVQBbtbE5VUAfeaqA3PGpwtY9tg8QJ+YOF2e7B0UXZnIGG147Tg9+WQPvgRS0Q50ikbqzC/1v/UYBMlRxWxAicPs9OZrEuQQR5jE6LFHlYSzAPIFmKdf+Xw0wQLpuBYWOF/OoWjq9MJUBogzd9RJOxH0GODlzxMhVo6hLIHWnpIpYpdbQlRJ8jhG9pWUx0+d1xjUASESiw7kAkff98OXCq89pYiNBcKpB6bG5OAfHNq2ukcA7lvtYAftg/GJx5jUPyFvGIjcPeGjnIvpuU387b4M5bRicrCxVrm1gemKNJS+60qqL2Ykt6En+wGD/C8UctUTIxRURmuBc37fqcabt2RM7qNtCFpKdIqmYmZVI17WJHW4vv54otWilkeYTqswXTEVUlHVtj4fp+mBU1UY3eFzIqRyjSj2Go73sT9P1x5FE7TK8YBLLp0pvtqsfmLg7jFI4yTcU5J9UNzZnHUTreEa2jSOSUrdrA+JmO973tfyt5YH1lNlkpq199Z9ItBZLhrN8PptfEzxTUitLzSWZeW6Fra1PWx7dN8Unp1keSSJyzKhaTTJZXQEX8JsSfTvghiK7MWte0+ooVr6l5nmm58EKCmVI1Il0t0J8gAd9+mPqbOMxoOdLEyn3hGhSVoxIVU9QDbY7W+mI5sqel5E/NjlSUghaViwjB3AJ7MPLtjxFqFhWjlvHTxSNMlwAQ1rXPn0xxxq13BuiQ0eamopxktYtXVqKqlVjEFFlcNYWFwe2/ngHFmSS08cQRYlqGENlmbULC5a1t73H1xezHKc8laHL1pk52YoSnu0muOXtcHzAN7X6YDU6z+zrMJMpziqSrjjtJp5YbZvzXI2Pbt0wlUxaCGz7D8onlcYmqDX5jSwSVKtHbSyKLaVHxH6kHpipxXFLl2Zl6ZX9ysJ2IAKIWBABPZTYdcBkzqllnMsRvA58QIuGNjbEdfxDWZ3TzS1V/CFB5Q0i42W48hf74to1ApCGzKQiFbK4pwIkFlMukhVYLuPUkYtimkemgE0b61FmNvCF7E9xbEuWZxSQwx04pwzRG7Xv4iPzH19fTFw10WccuPYWPiOuyjv+tsQ1cTvcNnrRnklVRTR01O1RMUpVZC6klQpNxsTsAew63xNQhGokkMiRqzlC57t6+trYAyVVEaskMwiDg6ACSw7kfpg3S18Gd0sEJpmLUTMsRRgvNF7gOB8Xn9MIbEwFjcZgy04IEkisCYwwcKxFxgvRrZRgVTxcqM+GxVyCLYJUz6QMVcjXozYQAy5NYaZB+Xr8sVngPNDrsSf1xcFpEII6jHfL8INumEE1GVIWTTGWCkG24HfAilhhlrZZ9BZ5LbPuBtbbB9PFt+mPBTIrlkRQT1PnjlY+05aHcGuI8sDPcc2TwkgfCMLGZoKmYsQOhPyw05ygQRqBuTsB98B1ysPqJJLndiO3ph+PRswHJaKD0b00budJQA7eeCnDcTDLJp42MDykRhRfxDqbnsMWKyg11CwgWA3+eGvKcopKnJjBLKEIuoAXoT0J+uNLl6LMoZtCJlPRI1VURy1UaSyxsiySoSVBFtVzcDra/Xri5lcUNIFhomWaNYikkgS4te9lPU9/LrhhzPhFKOpkqaCsieOKC7rOCxLAXYADa3TC9SV0FBJLUyTmMsbonLOk38hgFyMSOMps9gAS01NKzIyaEVbMEKXBHa+Kf8AD1q3aOV1ikBu0xJtp7C2L0ubwFXKu/wEhbHUMC6nMknRfdYmY30sSSWYk9bdsWcgBAgcjClVPS01BHTLqHLkZPj0829t7DbboMUquqkmpWvBGZApVpGWz6NQP/ALY4qaiGCZ0WeKV4msDGbi9x4r/PEFV7y00kDGNpYDokZXBUEdT8sVhiVejCX85peQUUOSUEdAjmZ6Z5Jg8MvXUARY3HU3NvTAriCZc2MlWKKnnjSHRzJirsgvck23uN+t+uE7LOL6ls5osvNCojBbRJE7WF9xp+Xl54YafkzQ1tNGssfNjkRqpWVSwbzPfbyxnZMLq6ue4njWjFWGgolBSRoqfUebfcjqdK+lx3xxNNBSu0qWRpFKKwsyqx2NvS2K1XQTUBkihrTWQ6FJBO2r+pF++PkWnpZI5JopKqHT4gxKgE+VuuNIAHdw1G+4UyjK456eSUQmWS9yFGostib/AC2xXqKYQZsY6OdYQyo6wrcKwtcgt1v6jvirR1tOJPd4KlwF0qDGpJGrz9NwDjqpzibKKxVaC6AamkZdZkB8z2HXbCwr2SIB7neaRpSkwtqjJAKShxcx9xbra5NzggtbRQ5cqUdEyqbHmP8AmPntieszanzGohmpqCP3Tls5iYeLfsGO48/rgBXUUqtCcpLvFd2RGBYktbY9rLY4f42UgcD2ZIWNlNVVEsq0s6kuIgHNvhcdBfvtti/C1gPPCnwdWZjLV1OXVv4jU6MTuCYwLW3HbthjZmjOo/XGZ5SlXqbPj5AV1DEU22JuftgEtdYbHHz5joHiaxxV3LHO4bWYKcTRTBm64WFzYM2nVgnRVBktY4JROBl6tp+fLGw3sT1+WJ4suX3cNbe1z88d02lyQ29+2LyQyLta6dr4sqtxoETKyDTXMhFjbE0LSRKTGdxsR/MPXBnNeHZqqY1NMwZgAGjB3PywHqqGroiDUxTQX2GtCt/uN8XFsCUci0xuU85zeSVGMqObQmOR2Y+MlgQ3rYbYUXo6TTK00lQZi34Yt4Bvux+XS3rhqrnKOPd9cblSdYAII7ix74V6l4Kqd5UndF1BGSSUKovt07j9sSmrqZ2RdwfmcyU8S6Zah1OoOCbsp7bdu2LsebUNLlhXLa2Za5gviksArDcMG6gg7euI62Sh93SKqjYuRdzHccxlvaxHQWI64H0GW0hheWcVKIzWTQ1wV3B/phyEMvq/zFg33L2WSSTTe91fNWpQlldjcA7klh37nfBOlr4njaKy1BnYpYKVuNt/U7Y+UyzTcpV0xQRqI2LWZh6+WIFrPdyEkeJpIWBVQLre97bd/TCGpia7kETQ6n2cpkdLVnJqs1Mk9nSKqsNJA/I3YnyP3wv0eXVtVMI60JTzQA3aYWVLDvbvvhmzLi2KSdYKd9QU7sMWJZVzzLZ6dGijqpI9CSuNrjpe2/17XwrI/wAwUsv5vCBHLH3EHNeHKaSnUUtcyz6tL2HgYdyD1GKVDk+YUsiIZEECvdizdVPqcEV4U4gjmeKTLp7ayPCdSnvdT32x1UUE9O0sEYqJWKhXTl/D6/P0xY5nqZ6ni0XXyytyqvqKigQOJ2KkMAzCMtfr9Bg57imZ5HUwyiSnq3s1zpaNyOqg9VuO/mMcQ5BnOYwrPTU0xjLD8W50hSbbkdMWXps1p1lohTAOW0Bju2xvt88Kzk5CADsSGNGB6ikOW0cM97zVAssYHwqGtuemK1bVT0hghpwytMbm6+Gw8j8+uGT/ALazGeNtccz8tdK+8eEAjcAD13+pxHWcJ1oomlhy2V44xvyzYgHc4djZL2Zyke8RaKfiHh+unqsrqY05pKtbS2oHa1j9vqcN9RxKy01JJJCi85QJSrMFRvIA3/fAmqoJqOoWFKWTmuFUxlCTqPf54MU3AtdW00YzKsSgVTdYz+I6j/SNgfmcMyqmSiwlrAzXSxkpuH1rMsrK2CepTkRs8ccsYBlZVuR12/fCS09TmMeqOUxsGsRa9ha46/XGuUc+Xw5PNRaZXhYHnzHZnZupv5n06YQny6CLwUsbrH2Mjamb1JxXfEiiwNy0nzOWzqD8ugIfclmHUnDNQB9J0j74pZfQ6CLjr1w0UMMYUDYDFT5dmXVE9y2GbXrYYNwCasmSlgVmudL6fzH+Uf18hivEUDaF2AF2b+UYccmo4MooGq6gaG0amv1RD0H+psXcOCzAy5eI13JaeGlyCmWWRVknY6V0Ddm8l8gO5xdhiq80iPvZiET/AOCyhl+oOESv4lapzFp2AsNkUdEUdAMFaHiqSwF8NObdL1BTEKt9mBON/ZJXs0tZkIjmgYanogSHRu5jubH/AEn6X6YxDOcnX+IMlQkyvF4JVI0EefX7b4/VVJxBrUatr+uBXGHBmQ8eUbpWx8isZNMddCoEqeV/5h6H9MSCpNjUr5fFJ2s/NVbBAVSNBpWA6kUganFrbj5YhhjhgtLT/gxsBcbkX23uemLfFvAPEHAmaiPMC08D3MFXACyTAeV9wd91P69cDJYoJgKpmm8FlZF2VT5nHFSOzYmeRRoy9C9TUTTBi1PqsOfIQqtvtYYIZjRVeRzJSsIqh2hWYPTtzAusatJNtmt1GAWbZoIpYEp1midUJvNZla/dRi6nHlZTTNyY4nh02VZk1FDa2oG/XCOOTRRbuQRZjBl67hr4YaKdoyCD0xb4+4Ll4RzA1dGuvKamQiMrciFuug+nkfS3bAanqAVFjiihvYmviyhhyWPeUcQGKySaXXuri4OC9dmuWLRyznKGqnZWuYQOYCRYAW3323xncNQVtvgtR5o8TDxH74a2JMv1dwc3jJl30YQ4NzCnakalq694hCgDI6kMo0WsBbse+C1HBSUtTzIJqWVZZhIeaukqmgi48mGxPniTJc9pt0qaaGRXN3ZkBJ2I38xY4J59nPD2VMrAxyS35gWDqL26noDt87HGbnw5Uy2ou5kZPFyK3GrluWfLVpoRVzQVHOKqpS3xBvLz+eOa/NMkyymeaYaL7JGpux8xb/gxn+c8WR17/wDj0MEKjobam2Nxc98AqirmqnLyyMxPmcGnhXRc1+Q/mWMXgHt4QzLO1mqZWp05QlI1EG5a17XP1xBRK1XUJGg1OxsMB6ubk2a+wOGbheK1O9SpXnygpEG6D1+9samI9KOpdYDEvplXO6pQ7UVOfwqcFSR+Z7eI/Tp98DlTVbHnjiDRSAq4Vg4brq6m/wBb4lgO42wbmFjFSaCMr2xfjn5SkvsBviBG2vi5RUNRmDWp4HmtvZV2HqT0GIRbMaz0Ia4Wove6zVMuqOG00o663PwJ+l/kPXBHivNWf/w43uqEmRh+Z+/0HT74s8MUklFlkvw+9JG9S9jfxnwr89Kj98L1QuuQ3ve+Hu3FeI94jH63L/aBmVmk9cWIWaNhviw1LY3xSqJBE5GKpaWIdoq1ltc7YP5fX3tdsJNJVXNr4N0M5VhvhitCEaM2y6i4kyifLMwTXBOtrj4o27OvkRjCovZbm0FVVZO6wNKznRM7WJCg2K/5WBvbtjcaOfUAL4XOP8vj5dPmwRjJTkxMytayt0P3/fE5cjKhKyn5mK05jsTMK/2JZzMYVmzSgijWMklgRo6/7frgLmXsdzOipDLDm1FUIFLKxJUML7KL9G67YeUqzaNXdpA99Ya5tbF2B6apikZUZkW1tJuNz0t54Qvm5R3McZGE1nOMtTN6M0FXTh6WeMo63079B16dL387YwfiLIqnhLOZMunfmxg6oZgLCVP6EdCPP0tj9C01QlciPTOtZCy3Ml9QBH9cCuL8louIMlkoqnL3Yu2pJUTxwsPzi3Q+Y6EXxlYX+WSWJqWPHynG2+phUM4a2+Lkc1j1xVz3h/NOFKtYMwhYRyX5NQAdEo9D2PmOoxBFVBgN8aKtexNdHBFiFps0ekp3ZD4iLD54pLI8igsxPzxVnYy6RfYNfE6yqEGGM0MmTCwGOS4HfELVKjviCSpW3XC4FyrnFQRGQMGMkrFjaiqwZJWipjDoU/C11LWHcksv2wu1aSVbhEUsWNgALknBfhhGgjhMzMpaVnOrYBVuTf7LiziGjK+c3Qjb73kmcuXkMckqMY2eKTQ9xsQR3PzGLlLkuTAFzLWWXszqB97YzGnydc1yDTJNF46hqrmabgWDE99viGCXC3DVLSvRxvUxSVE96hV16lAXba1wR4up89umH8BvfUrh2HRmoUI4cp05rpTEruObLzDb0HQ9D27Y5zDjKmEiUtFU0aDwljJMsaxgkAeEbkklQBt8QxRpuEYY8tZWpqO6xvEBoGwMXKv8Plc/Nm+WKfDvD6U2cMNMCRzMmohT1QqV3FtroPnhgpa3BNt3GThriKCTMZrVEMwikaCTQwItc3B+uofTFLOYhl+ZywX1IDdG81O4P2xRmyl8oz1pCymNw4ktq/M2vVuT0a9vTbBnMaM1uVxShby0a8tyN9UfUN9CfscVsvREseM3FqPRgaepECh3N0O18As5qVFVHpPhkUnBGsb8CSGW5Rha2FDM55KdYxIWkWFtpB1K9wf7+mKNm5o1D9HLa1jg7ST9LHfCnTTjQCDfBKkrSrDfDUeCI+ZdU9MFKqlgzOilpZlvHMhRreuE+gzEbb4YKKvuBviypjOIIqZlxNk1dw7WCnkd1p2A5dTa6uB5+R8xihA09KJZIDrJFiiggi4v1xsuYUNLndC9JVJqRx26qexB7EYzbNeHpMgnMRYsrC6t0Eo/51GE5MY+2pheZ4hwnkvUb+F+JW4czAwVE8oy2QuWjEIJEthY26jpv/vjSjX0jHxOqkeYIxjkgFfHplSS5Nt0I0MB4ive/X5YdeEM6q6uh/hwpGkmpB+JJPLqZrswH7fLFf4X5fMfLb26lsgRgzWLIs4opKLMUpqiCUWKuL/UHsfUb4yHir2VSZfK1Rw5XR18B391lkCzJ6AmwcfY/PGnVkeaRKXjpacX/l64pSU9cIdMtA0hO+ovvbGqcSN2JwtephT0Oawvy5ctrVcbWMDf2xbpeHeIK4gU+T173/8AwkD7m2Ndc1VwsdPLEf5dd8QzCuhXXUQTaSb3K7WwI8VfvC+YZn1N7MeK6pgGoY6cHvNOgt9AScG8t9jGYPMf4lWxpEFvem8dz5b2P1scHI4q+d3mggnIA3I6YsKubxorSRMFO99VsQ/hhloNRgM5PUKZPwXlHDUazUVDKKuNiRPIup7W337fQDGHzZnHTUVTUSq5vG6BI7KdTkADr6/pjXHll93cFJxdSDpc+X7YxjNJjNkzho45nmeKMKU2vrO5+2K+Hwfw7kluV1/aVwtEmTplUlLQ0UcFQ8cVKjSvdgC63Ybkbdh6fbDjw6okp4GK6yE+LUGJBN/iA37YXWqqeOmaFqmOOaKkIRC+k6QAGYne3i7+l98GsulrYaSmakWGVy6CQyubCO+5BtubemGkkncOo6iXVSFLkrba5/bAvIKJ6F6rnVMtU0sjShpWF13+EWHQYu0rWiEZe4I62x3DGFrGTb6dDhokTuu5dXVlgQ1vw2IN7MOoPr6Y9iaoy/TytN/yauh81PocVKTKaXJ2m9xh5SzymSQC/wARwcVIcyy5JYnWRSNmBuD/AMOBdL2IQ6gLPcj59M1Xl8ZdLXeAbvEe9v5l/UfrjOcxjVlYHcY1Ja2Slks7aHU7Sf3t++Os24Ty3iaIzTxciobf3ult4j/mHRv0PriuFDS1j8sr6cn7zFKPMfcJORK34V/Cx/L6fLB6GYMLg4uZ77H81hJkp8zo54j0LKyN9RY/vipTcOHJaYrLWEhRe7jYt0sPLfC3x8eoxsyHYMuU1Y0bDfphkyvMA9lvhOIeMrqVlJAYBhbY98WqOuaBw19scGIj8bzUqBw6je+LFdlMeaUxhlS46qw6qfMYUuHc8FbVLTjUx/lXqf8AbGi0iCyggD0HbD0PKPyKCtHYn//Z" alt="" width="48" height="48" decoding="async">
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <!-- ══ 가정값 레일 ══ -->
+  <aside class="rail">
+    <div class="rail-hd">
+      <h2>가정값</h2>
+      <button class="tgl" id="themeBtn" type="button">테마</button>
+    </div>
+    <div class="presets">
+      <button type="button" data-preset="wb" class="on">현재 워크북</button>
+      <button type="button" data-preset="doc">설계서 기본값</button>
+    </div>
+    <div class="railcurve">
+      <button type="button" class="curvebtn" id="curveBtn">
+        <span class="cb-t">실효폐지 데이터</span>
+        <span class="cb-s" id="curveBtnSub">내장 곡선 3종</span>
+        <span class="cb-x">열기</span>
+      </button>
+    </div>
+    <div class="rail-body" id="rail"></div>
+  </aside>
+
+  <main class="stages">
+    <!-- ① 파일 -->
+    <section class="stage" data-state="live">
+      <div class="stage-hd"><span class="num">1</span><h2>DD 업로드</h2>
+        <span class="note">개인회생 · 신용회복</span></div>
+      <div class="stage-body">
+        <p class="hint">DD 엑셀을 올리면 시트를 훑어 <strong>개인회생</strong>인지 <strong>신용회복</strong>인지 자동으로 가려냅니다.
+          두 제도가 한 파일에 있어도 되고, 파일을 나눠 올려도 됩니다.<br>올린 뒤 <strong>컬럼 인식 결과를 확인하고</strong> 「평가 진행」을 눌러야 계산이 시작됩니다.</p>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="DD 엑셀 파일 선택">
+          <div class="big">파일을 끌어다 놓거나 클릭해서 선택</div>
+          <div class="small">.xlsx — 여러 개 한꺼번에 가능</div>
+        </div>
+        <input type="file" id="file" accept=".xlsx" multiple hidden>
+        <div class="bar" id="bar" hidden><i></i></div>
+        <ul class="files" id="fileList"></ul>
+        <div id="fileErr"></div>
+      </div>
+    </section>
+
+    <!-- ② 실효폐지 곡선 -->
+    <section class="stage" data-state="live" id="curveStage">
+      <div class="stage-hd"><span class="num">2</span><h2>실효폐지 곡선</h2>
+        <span class="note" id="curveNote"></span></div>
+      <div class="stage-body">
+        <p class="hint" id="curveLead"></p>
+        <div class="slots" id="curveSlots"></div>
+        <input type="file" id="curveFile" accept=".xlsx,.csv,.txt" hidden>
+        <div id="curveErr"></div>
+      </div>
+    </section>
+
+    <!-- ③ 컬럼 인식 -->
+    <section class="stage" data-state="idle" id="mapStage">
+      <div class="stage-hd"><span class="num">3</span><h2>컬럼 인식</h2>
+        <span class="note" id="mapNote">대기 중</span></div>
+      <div class="stage-body" id="mapBody">
+        <div class="empty">DD를 올리면 인식 결과가 여기 표시됩니다.</div>
+      </div>
+    </section>
+
+    <!-- ④ 평가 결과 -->
+    <section class="stage" data-state="idle" id="resStage">
+      <div class="stage-hd"><span class="num">4</span><h2>평가 결과</h2>
+        <span class="note" id="resNote"></span></div>
+      <div class="stage-body" id="resBody">
+        <div class="empty">「평가 진행」을 누르면 계산합니다.</div>
+      </div>
+    </section>
+
+    <!-- ⑤ 채권별 평가 -->
+    <section class="stage" data-state="idle" id="listStage">
+      <div class="stage-hd"><span class="num">5</span><h2>채권별 평가</h2>
+        <span class="note" id="listNote">건별 계산 자취</span></div>
+      <div class="stage-body" id="listBody">
+        <div class="empty">평가를 진행하면 채권 한 건 한 건이 어떻게 계산됐는지 여기서 펼쳐 볼 수 있습니다.</div>
+      </div>
+    </section>
+
+    <!-- ⑥ POOL 회차별 현금흐름 -->
+    <section class="stage" data-state="idle" id="cfStage">
+      <div class="stage-hd"><span class="num">6</span><h2>회차별 현금흐름</h2>
+        <span class="note" id="cfNote">POOL 합계 · 단계별 가로 전개</span></div>
+      <div class="stage-body" id="cfBody">
+        <div class="empty">평가를 진행하면 회차별 현금흐름이 단계별로 펼쳐집니다.</div>
+      </div>
+    </section>
+
+    <!-- ⑦ 검산 -->
+    <section class="stage" data-state="idle" id="chkStage">
+      <div class="stage-hd"><span class="num">7</span><h2>검산</h2>
+        <span class="note" id="chkNote">엔진 자체점검 · DD 무관</span></div>
+      <div class="stage-body" id="chkBody"></div>
+    </section>
+
+    <!-- ⑧ 품질 -->
+    <section class="stage" data-state="idle" id="qStage">
+      <div class="stage-hd"><span class="num">8</span><h2>DD 데이터 품질</h2>
+        <span class="note">평가 오류가 아니라 DD 개선 안내</span></div>
+      <div class="stage-body" id="qBody">
+        <div class="empty">평가를 진행하면 점검 결과가 표시됩니다.</div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="curveModal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-label="실효폐지 데이터">
+    <div class="modal-hd">
+      <h2>실효폐지 데이터</h2>
+      <span class="modal-sub">월별 조건부 폐지율 h · 누적생존 S<sub>t</sub> = Π(1−h)</span>
+      <button type="button" class="modal-x" data-close aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-tabs" id="curveTabs"></div>
+    <div class="modal-body" id="curveEdit"></div>
+    <div class="modal-ft" id="curveFoot"></div>
+  </div>
+</div>
+
+<p class="foot">
+  누적생존 <code>S_t = Π(1−h_k)</code> · 곡선 읽기 시작점 <code>납입회차+1</code> · 지연구간 곡선 미소비 ·
+  분모는 OPB 기준 일관(변제율 미적용). 개인회생 라우팅은 일자 3종만 사용하며 채권구분 라벨은 참조용입니다.
+</p>
+
+<script>
+"use strict";
+
+/* ══════════════════════ 곡선 (부록 A, 꼬리 마지막값 유지) ══════════════════════ */
+const MAXT = 400;
+const expand = (head, tail) => { const a = head.slice(); while (a.length < MAXT) a.push(tail); return a; };
+/* 내장 곡선 (설계서 부록 A) — 값은 월별 조건부 폐지율(해저드) h 다.
+   누적생존은 엔진이 S_t = Π(1−h_k) 로 직접 만든다. 꼬리는 마지막 값을 MAXT 까지 유지.
+   사용자가 곡선을 올리거나 고치면 CURVE 만 바뀌고 이 원본은 초기화용으로 남는다. */
+const H_BASE = {
+  rehab: { head: [
+    .0119,.0038,.004,.0054,.0057,.005,.0062,.0048,.0049,.0057,.005,.0043,.0044,.004,.0035,.0034,
+    .0029,.0036,.0032,.0034,.0026,.0021,.0021,.0021,.0027,.0023,.0035,.0038
+  ], tail: .003 },
+  A: { head: [
+    .002735,.000138,0,.001635,.00573,.012055,.020611,.031397,.016209,.014797,.013453,.012179,
+    .010975,.009839,.008772,.007775,.006847,.005988,.005199,.004478,.003827,.003245,.002732,.002288,
+    .001914,.001609,.001373,.001206,.001108
+  ], tail: .00108 },
+  B: { head: [
+    0,.003918,.010733,.015567,.019317,.022382,.024972,.027216,.027116,.021864,.018792,.016612,
+    .014921,.01354,.012372,.01136,.010468,.009669,.008947,.008288,.007682,.00712,.006597,.006108,
+    .005649,.005216,.004806,.004418,.004048,.003695,.003359,.003036,.002727,.00243,.00225,.002077,
+    .00191,.001748,.001592,.001441,.001294,.001152,.001014
+  ], tail: .00088 },
+};
+const CURVE_KEYS = ['rehab', 'A', 'B'];
+const CURVE_LABEL = { rehab: '개인회생', A: '개인워크아웃 · 곡선 A', B: '프리·신속 · 곡선 B' };
+const CURVE_SHORT = { rehab: '개인회생', A: '개인워크', B: '프리·신속' };
+
+/* 지금 평가에 쓰이는 곡선. custom=false 면 내장값 그대로다. */
+const CURVE = {};
+const H = {};
+const resetCurve = k => { CURVE[k] = { head: H_BASE[k].head.slice(), tail: H_BASE[k].tail, custom: false, src: '' }; };
+const rebuildH = k => { H[k] = expand(CURVE[k].head, CURVE[k].tail); };
+for (const k of CURVE_KEYS) { resetCurve(k); rebuildH(k); }
+const anyCustom = () => CURVE_KEYS.some(k => CURVE[k].custom);
+function buildLS(h, mult) {
+  const ls = new Float64Array(MAXT + 1);
+  for (let k = 0; k < MAXT; k++) ls[k + 1] = ls[k] + Math.log(1 - Math.min(h[k] * mult, 1));
+  return ls;
+}
+const surv = (ls, o, t) => Math.exp(ls[Math.min(o + t, MAXT)] - ls[Math.min(o, MAXT)]);
+
+/* Excel ROUND — 사사오입. JS Math.round는 −2.5→−2라 음수에서만 갈리지만 규약을 맞춘다. */
+const xround = x => x >= 0 ? Math.floor(x + .5) : -Math.floor(-x + .5);
+
+/* ══════════════════════ 가정값 ══════════════════════ */
+/* [키, 라벨, 워크북값, 설계서값, 단위, 증감폭, 최소, 최대]
+   단위 '%'인 항목은 화면에 백분율로 보이고 내부에는 소수로 담는다 (5 ↔ 0.05).
+   증감폭은 실제로 조정하는 단위에 맞춘다 — 할인율은 0.25%p, 조정계수는 0.05씩. */
+const SPEC = [
+  ['공통', [
+    ['r', '공정가치 할인율 r (연)', .05, .05, '%', .25, 0, 100],
+    ['recovery', '재회수율', .15, .15, '%', 1, 0, 100],
+    ['mgmtCost', '관리비용', 0, 0, '%', .5, 0, 100],
+    ['notifyCost', '양도통지비용', 0, 0, '원', 1000, 0, 1e7],
+  ]],
+  ['개인회생', [
+    ['kpRehab', '조정계수', .85, .85, '배', .05, .05, 3],
+    ['payRate', '변제율 (무스케줄)', .53, .50, '%', 1, 0, 100],
+    ['stdTerms', '표준회차 (무스케줄)', 36, 36, '회', 1, 1, 400],
+    ['preFail', '인가전 폐지율', .10, .10, '%', 1, 0, 100],
+    ['delayFiling', '개시지연 — 접수금지', 8, 8, '개월', 1, 0, 60],
+    ['delayOpen', '개시지연 — 개시', 3, 3, '개월', 1, 0, 60],
+    ['pjDelay', '폐지항고 추가지연', 6, 6, '개월', 1, 0, 60],
+  ]],
+  ['신용회복', [
+    ['kpA', '조정계수 A (개인워크)', .80, .80, '배', .05, .05, 3],
+    ['kpB', '조정계수 B (프리·신속)', .75, .80, '배', .05, .05, 3],
+    ['kpUncf', '조정계수 (미확정)', .70, .70, '배', .05, .05, 3],
+    ['crRemult', '재조정 배수 cr_remult', 1.0, 1.5, '배', .1, 1, 5],
+    ['fee', '신복위 수수료', .0369, .0369, '%', .01, 0, 100],
+    ['payRateCr', '변제율 (미확정 4순위)', .60, .60, '%', 1, 0, 100],
+    ['uncfMonths', '미확정 변제기간', 84, 84, '개월', 1, 1, 400],
+    ['preFailCr', '확정전 폐지율', .10, .10, '%', 1, 0, 100],
+    ['delayConfirm', '확정지연', 4, 4, '개월', 1, 0, 60],
+  ]],
+];
+const A = {}, META = {};
+const DEF = { wb: {}, doc: {} };
+for (const [, rows] of SPEC)
+  for (const [k, label, wb, doc, unit, step, min, max] of rows) {
+    A[k] = wb; DEF.wb[k] = wb; DEF.doc[k] = doc;
+    META[k] = { label, unit, step, min, max };
+  }
+A.blankCurve = 'A';
+
+/* 저장값 ↔ 화면값. 0.0369×100 = 3.6900000000000004 같은 부동소수 잡음을 잘라낸다. */
+const toDisp = (k, v) => META[k].unit === '%' ? +(v * 100).toFixed(6) : +(+v).toFixed(6);
+const fromDisp = (k, x) => META[k].unit === '%' ? x / 100 : x;
+const rMonth = () => Math.pow(1 + A.r, 1 / 12) - 1;
+
+/* ══════════════════════ 평가 엔진 ══════════════════════ */
+function makeCurves() {
+  return {
+    rehab: buildLS(H.rehab, 1),
+    1: buildLS(H.A, 1), 2: buildLS(H.B, 1),
+    3: buildLS(H.A, A.crRemult), 4: buildLS(H.B, A.crRemult),
+  };
+}
+
+/* ── 개인회생 : STEP 0~9 ──
+   trace=true 를 주면 회차별 계산 자취를 함께 담는다. 채권별 상세를 펼칠 때만 켠다
+   (전건에 대해 담아 두면 수만 건에서 메모리가 터진다).
+   accFor(진행단계) 를 주면 POOL 회차별 표의 누적기에 같은 루프 안에서 바로 쌓는다 —
+   따로 한 번 더 돌면 전건 루프가 두 배가 된다. */
+function evalRehab(r, C, trace, accFor) {
+  // 폐지항고는 일자로 표현되지 않는 '사건 상태'다. 인가일자·스케줄이 있어도 미인가로 본다.
+  // → 일자 절대 우선 원칙은 인가/미인가 판별에 한한다 (설계서 V8 ⑲의 적용 범위를 좁힘).
+  const appealed = S(r.label).includes('폐지항고');
+  let stage;
+  if (appealed) stage = '폐지항고';
+  else if (nb(r.dtApprove)) stage = '인가';
+  else if (nb(r.dtOpen)) stage = '미인가-개시';
+  else if (nb(r.dtFiling)) stage = '미인가-접수금지';
+  else return null;
+
+  const totalPlan = N(r.totalPlan), repaid = N(r.repaid), remain = N(r.remainTerms), opbCol = N(r.opb);
+  // 설계서 부록 L ㉗ — 변제율 base = 원금잔액 + 가지급금잔액. 컬럼이 있으면 더하고 없으면 안 더한다.
+  const principal = N(r.principal) + N(r.advance);
+
+  const hasSched = totalPlan > 0 && remain > 0;
+  const paid = Math.trunc(N(r.paid));
+  const terms = hasSched ? remain : A.stdTerms;
+  const adjTerms = Math.max(1, xround(terms / A.kpRehab));               // STEP 0
+  const opb = hasSched ? totalPlan - repaid : principal * A.payRate;
+
+  // 분모 폴다운 — 어느 순위에서 잡혔는지 함께 남긴다 (검산용)
+  let denom, tier;
+  if (opbCol > 0) { denom = opbCol; tier = 1; }
+  else if (totalPlan - repaid > 0) { denom = totalPlan - repaid; tier = 2; }
+  else { denom = principal; tier = 3; }
+
+  // 폐지항고 = 개시결정과 동일하게 보되 항고 심리기간만큼 시작월을 미룬다
+  const delay = stage === '인가' ? 0
+              : stage === '폐지항고' ? A.delayOpen + A.pjDelay
+              : stage === '미인가-개시' ? A.delayOpen : A.delayFiling;
+  const pre = stage === '인가' ? 0 : A.preFail;      // 폐지항고도 미인가이므로 인가전폐지율 적용
+  const perTerm = adjTerms > 0 ? opb / adjTerms : 0;                     // STEP 1
+
+  const rm = rMonth(), keep = 1 - A.mgmtCost;
+  let nom = 0, pv = 0, probDev = 0;
+  const tr = trace ? [] : null;
+
+  // POOL 표의 열은 변제회차가 아니라 '평가시점부터의 경과 개월' = t + 지연 이다.
+  // 인가 건과 미인가 건을 같은 열에 더하려면 달력이 맞아야 한다 — 회차로 쌓으면
+  // 9개월 뒤에 들어올 돈과 이번 달 들어올 돈이 한 칸에 섞인다.
+  const pool = accFor ? accFor(stage) : null;
+  if (pool) {
+    pool.n++;
+    pool.maxT = Math.max(pool.maxT, Math.min(Math.max(terms, adjTerms) + delay, CFMAX));
+    const raw = terms > 0 ? opb / terms : 0;                 // 조정계수 적용 전 회차별 현금
+    for (let t = 1; t <= terms; t++) pool.rawCf[Math.min(t + delay, CFMAX)] += raw;
+  }
+
+  for (let t = 1; t <= adjTerms; t++) {
+    const S = surv(C.rehab, paid, t);                                    // STEP 2
+    const w = (1 - pre) * S                       // STEP 3 정상생존
+            + pre * A.recovery                    // STEP 4 인가전폐지 재회수
+            + (1 - pre) * (1 - S) * A.recovery;   // STEP 5 인가후폐지 재회수
+    nom += w;
+    const df = 1 / Math.pow(1 + rm, t + delay);
+    pv += w * df;
+    if (tr) tr.push({ t, m: t + delay, cf: perTerm, S, w, df, nom: w * perTerm * keep, pv: w * perTerm * keep * df });
+    if (pool) {
+      const i = Math.min(t + delay, CFMAX);
+      const alive = (1 - pre) * S * perTerm;                 // 살아남아 실제로 들어오는 변제금
+      const lostPre = pre * perTerm;                         // 인가전 폐지로 잃는 금액
+      const lostPost = (1 - pre) * (1 - S) * perTerm;        // 인가후 폐지로 잃는 금액
+      const rec = (pre + (1 - pre) * (1 - S)) * A.recovery * perTerm;
+      pool.cf[i] += perTerm; pool.alive[i] += alive;
+      pool.lostPre[i] += lostPre; pool.lostPost[i] += lostPost; pool.recov[i] += rec;
+      pool.mgmt[i] += (alive + rec) * (1 - keep);
+      pool.exp[i] += w * perTerm * keep;
+      pool.pv[i] += w * perTerm * keep * df;
+    }
+    // 확률가중 실측: 정상생존 + 인가전폐지 + 인가후폐지 = 1.0 이어야 한다
+    const dv = Math.abs((1 - pre) * S + pre + (1 - pre) * (1 - S) - 1);
+    if (dv > probDev) probDev = dv;
+  }
+  return { stage, sched: hasSched ? '스케줄有' : '스케줄無', denom, tier,
+           nominal: nom * perTerm * keep, pv: pv * perTerm * keep,
+           zeroBase: !hasSched && principal <= 0, probDev,
+           // DD 품질 플래그 — 평가에는 쓰지 않는다. 계산은 현행 그대로 두고 건수만 알린다.
+           // settled  : 회차는 남았는데 변제잔액이 0 → CF 0인데 분모만 원금잔액으로 폴다운
+           // termsZero: 스케줄 정보는 있는데 잔여회차 0 → 무스케줄로 분류돼 원금잔액×변제율 CF가 생김.
+           //            총변제예정 0인 '진짜 무스케줄'은 걸리지 않는다 (정상 경로).
+           settled: hasSched && totalPlan - repaid <= 0,
+           termsZero: totalPlan > 0 && remain <= 0,
+           step1Diff: perTerm * adjTerms - opb,   // STEP1 검산: 쪼갠 뒤 합치면 잔여OPB
+           paid, terms, adjTerms, opb, perTerm, delay, pre, principal, appealed, trace: tr };
+}
+
+/* ── 신용회복 : 확정 3분기 + 미확정 3-스트림 ── */
+function evalCcrs(r, C, trace, accFor) {
+  const status = (!nb(r.status) && !nb(r.method)) ? '데이터없음'
+               : (S(r.status) === '정상이행' ? '확정' : '미확정');
+  const paid = Math.trunc(N(r.paid));
+
+  // 단계별 유효회차
+  const eff = [];
+  for (let i = 0; i < 10; i++) {
+    const sn = N(r.stageStart[i]), en = N(r.stageEnd[i]), am = N(r.stageAmt[i]);
+    const bs = Math.max(sn - 1, paid);
+    eff.push((en > bs && am > 0) ? en - bs : 0);
+  }
+  const hasSched = eff.some(e => e > 0);
+
+  const method = payMethod(r.method);
+  const curve = !hasSched ? A.blankCurve
+              : (method === '원리금균등' ? 'B' : method === '원금균등' ? 'A' : A.blankCurve);
+  const scheme = SCHEME[curve];
+  const byApply = schemeByApply(r);
+  const remult = N(r.remultCount) >= 1 ? A.crRemult : 1;
+  const cidx = curve === 'A' ? (remult > 1 ? 3 : 1) : (remult > 1 ? 4 : 2);
+  const kp = status === '확정' ? (curve === 'B' ? A.kpB : A.kpA) : A.kpUncf;
+
+  // 단계별 스트레칭 — 개월수만 늘고 단계 총액 보존
+  const adjN = eff.map(e => xround(e / kp));
+  const adjAmt = adjN.map((an, i) => an > 0 ? N(r.stageAmt[i]) * eff[i] / an : 0);
+
+  const sch = adjN.reduce((a, b) => a + b, 0) > 0;
+  const nn = sch ? adjN.reduce((a, b) => a + b, 0) : xround(A.uncfMonths / A.kpUncf);
+  const o = sch ? paid : 0;
+  const delay = status === '확정' ? 0 : A.delayConfirm;
+
+  // OPB 폭포식 — CF base는 4순위에 변제율, 분모는 전 순위 미적용
+  const bal = N(r.balanceAfter), eqp = N(r.equalPrincipalDebt),
+        post = N(r.postAdjPrincipal), prev = N(r.preAdjPrincipal);
+  let cfBase, denom, tier;
+  if (bal > 0) { cfBase = denom = bal; tier = 1; }
+  else if (eqp > 0) { cfBase = denom = eqp; tier = 2; }
+  else if (post > 0) { cfBase = denom = post; tier = 3; }
+  else { cfBase = prev * A.payRateCr; denom = prev; tier = 4; }
+
+  const g = status === '확정' ? 1 : 1 - A.preFailCr;
+  const pre = status === '확정' ? 0 : A.preFailCr;
+
+  const cum = []; let acc = 0;
+  for (const an of adjN) { acc += an; cum.push(acc); }
+
+  const ls = C[cidx], rm = rMonth(), keep = 1 - A.mgmtCost;
+  let nom = 0, pv = 0, ptr = 0, probDev = 0, cfSum = 0;
+  const tr = trace ? [] : null;
+
+  // 세그먼트는 확정 건만 제도로 가른다 — 미확정은 제도와 무관하게 한 묶음으로 본다
+  const pool = accFor ? accFor(status === '데이터없음' ? '데이터없음'
+                            : status === '확정' ? scheme + ' (확정)' : '미확정') : null;
+  if (pool) {
+    pool.n++;
+    if (sch) {                          // 조정 전 스케줄을 첫 유입 시점부터 늘어놓는다
+      let q = 1;
+      for (let i = 0; i < 10; i++) {
+        const amt = N(r.stageAmt[i]);
+        for (let k = 0; k < eff[i]; k++) pool.rawCf[Math.min(q++ + delay, CFMAX)] += amt;
+      }
+      pool.maxT = Math.max(pool.maxT, Math.min(Math.max(q - 1, nn) + delay, CFMAX));
+    } else {
+      const rawN = Math.max(1, A.uncfMonths), raw = cfBase / rawN;
+      for (let t = 1; t <= rawN; t++) pool.rawCf[Math.min(t + delay, CFMAX)] += raw;
+      pool.maxT = Math.max(pool.maxT, Math.min(Math.max(rawN, nn) + delay, CFMAX));
+    }
+  }
+
+  for (let t = 1; t <= nn; t++) {
+    let cf, stg = 0;
+    if (sch) { while (ptr < cum.length && cum[ptr] < t) ptr++; cf = ptr < cum.length ? adjAmt[ptr] : 0; stg = ptr + 1; }
+    else cf = cfBase / nn;
+    cfSum += cf;
+    const Sv = surv(ls, o, t);
+    const w = g * Sv * (1 - A.fee)          // 정상생존 (수수료는 생존분만)
+            + pre * A.recovery              // 확정전 폐지 재회수
+            + g * (1 - Sv) * A.recovery;    // 확정후 효력상실 재회수
+    nom += cf * w;
+    const df = 1 / Math.pow(1 + rm, t + delay);
+    pv += cf * w * df;
+    if (tr) tr.push({ t, m: t + delay, stage: sch ? stg : 0, cf, S: Sv, w, df, nom: cf * w * keep, pv: cf * w * keep * df });
+    if (pool) {
+      const i = Math.min(t + delay, CFMAX);
+      const alive = g * Sv * cf;                             // 생존 변제금 (수수료 차감 전)
+      const feeAmt = alive * A.fee;                          // 신복위 수수료는 생존분에만 붙는다
+      const lostPre = pre * cf;                              // 확정전 폐지로 잃는 금액
+      const lostPost = g * (1 - Sv) * cf;                    // 확정후 효력상실로 잃는 금액
+      const rec = (pre + g * (1 - Sv)) * A.recovery * cf;
+      pool.cf[i] += cf; pool.alive[i] += alive; pool.fee[i] += feeAmt;
+      pool.lostPre[i] += lostPre; pool.lostPost[i] += lostPost; pool.recov[i] += rec;
+      pool.mgmt[i] += (alive - feeAmt + rec) * (1 - keep);
+      pool.exp[i] += cf * w * keep;
+      pool.pv[i] += cf * w * keep * df;
+    }
+    const dv = Math.abs(g * Sv + pre + g * (1 - Sv) - 1);
+    if (dv > probDev) probDev = dv;
+  }
+  // 스트레칭 총액 보존 검산: 조정 후 명목 합 = 조정 전 명목 합 (STEP0은 개월수만 늘린다)
+  const baseSum = sch ? eff.reduce((a, e, i) => a + N(r.stageAmt[i]) * e, 0) : cfBase;
+  return { status, scheme, method, sched: hasSched ? '스케줄有' : '스케줄無', curve, denom, tier,
+           unknownMethod: nb(r.method) && !method,
+           schemeMismatch: hasSched && byApply && byApply !== scheme,
+           nominal: nom * keep, pv: pv * keep, balZero: bal <= 0 && status !== '데이터없음',
+           probDev, stretchDiff: cfSum - baseSum, stretchBase: baseSum,
+           lostStage: sch && adjN.some((n2, i) => n2 === 0 && eff[i] > 0),
+           paid, nn, o, delay, kp, remult, cidx, cfBase, byApply, sch,
+           eff: trace ? eff : null, adjN: trace ? adjN : null, adjAmt: trace ? adjAmt : null,
+           trace: tr };
+}
+
+const N = v => { if (v == null || v === '') return 0; const x = typeof v === 'number' ? v : parseFloat(v); return isFinite(x) ? x : 0; };
+const S = v => v == null ? '' : String(v).trim();
+const nb = v => S(v) !== '';
+
+/* 상환방식 정규화 — DD마다 텍스트('원금균등')와 신복위 코드('815002')가 섞여 온다.
+   코드를 못 읽으면 전건이 곡선 A로 떨어져 원리금균등 건이 과대평가된다. */
+const PAY_CODE = {
+  '815001': '원리금균등',   // 프리워크아웃 · 신속채무조정
+  '815002': '원금균등',     // 개인워크아웃
+  '815005': '원금균등',     // 개인워크아웃
+};
+function payMethod(v) {
+  const s = S(v);
+  if (!s) return '';
+  if (s === '원금균등' || s === '원리금균등') return s;
+  if (PAY_CODE[s]) return PAY_CODE[s];
+  // '탄력조정(원금균등)' 처럼 수식어가 붙어 오는 값이 있다. 괄호 안이든 밖이든
+  // 방식 이름이 들어 있으면 그것으로 본다. 두 이름은 서로를 포함하지 않지만
+  // ('원리금균등'에 '원금균등'은 없다), 한 칸에 둘 다 적힌 값이 오면 더 구체적인
+  // 원리금균등이 이기도록 순서를 고정해 둔다.
+  const t = s.replace(/\s+/g, '');
+  if (t.includes('원리금균등')) return '원리금균등';
+  if (t.includes('원금균등')) return '원금균등';
+  return '';                         // 그래도 모르면 공란 취급, 품질 알림에 표출
+}
+
+/* 제도 = 상환방식으로 정한다 (설계서 2-1).
+   프리워크아웃과 신속채무조정은 둘 다 원리금균등이므로 '프리·신속' 하나로 본다.
+   표기는 실제 적용된 곡선을 따른다 — 스케줄無 건은 곡선 A 폴백이므로 개인워크아웃으로 잡힌다. */
+const SCHEME = { A: '개인워크아웃', B: '프리·신속' };
+
+/* 신청구분은 제도 배정에 쓰지 않는다. 상환방식과 어긋나는 건만 품질 알림으로 센다. */
+function schemeByApply(r) {
+  const g = S(r.applyType);
+  if (!g) return '';
+  return (g.includes('신속') || g.includes('사전')) ? '프리·신속' : '개인워크아웃';
+}
+
+/* ══════════════════════ XLSX 리더 (의존성 없음) ══════════════════════ */
+async function readZip(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let eocd = -1;
+  for (let i = u8.length - 22, min = Math.max(0, u8.length - 66000); i >= min; i--)
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error('xlsx(zip) 구조를 찾지 못했습니다. 파일이 손상되었거나 .xls 구형 형식일 수 있습니다.');
+
+  let count = dv.getUint16(eocd + 10, true), off = dv.getUint32(eocd + 16, true);
+  if (off === 0xFFFFFFFF || count === 0xFFFF) {           // ZIP64
+    const loc = eocd - 20;
+    if (loc >= 0 && dv.getUint32(loc, true) === 0x07064b50) {
+      const z = Number(dv.getBigUint64(loc + 8, true));
+      if (dv.getUint32(z, true) === 0x06064b50) {
+        count = Number(dv.getBigUint64(z + 32, true));
+        off = Number(dv.getBigUint64(z + 48, true));
+      }
+    }
+  }
+  const entries = new Map(); const td = new TextDecoder();
+  let p = off;
+  for (let i = 0; i < count; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true);
+    let csize = dv.getUint32(p + 20, true), usize = dv.getUint32(p + 24, true), lho = dv.getUint32(p + 42, true);
+    const nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+    const name = td.decode(u8.subarray(p + 46, p + 46 + nlen));
+    if (csize === 0xFFFFFFFF || lho === 0xFFFFFFFF || usize === 0xFFFFFFFF) {
+      let e = p + 46 + nlen; const end = e + elen;
+      while (e < end) {
+        const id = dv.getUint16(e, true), sz = dv.getUint16(e + 2, true);
+        if (id === 1) { let q = e + 4;
+          if (usize === 0xFFFFFFFF) { usize = Number(dv.getBigUint64(q, true)); q += 8; }
+          if (csize === 0xFFFFFFFF) { csize = Number(dv.getBigUint64(q, true)); q += 8; }
+          if (lho === 0xFFFFFFFF) lho = Number(dv.getBigUint64(q, true));
+          break; }
+        e += 4 + sz;
+      }
+    }
+    entries.set(name, { method, csize, off: lho });
+    p += 46 + nlen + elen + clen;
+  }
+  return { dv, u8, entries };
+}
+
+async function extract(zip, name) {
+  const e = zip.entries.get(name); if (!e) return null;
+  const { dv, u8 } = zip;
+  if (dv.getUint32(e.off, true) !== 0x04034b50) throw new Error('압축 항목이 손상되었습니다: ' + name);
+  const nlen = dv.getUint16(e.off + 26, true), elen = dv.getUint16(e.off + 28, true);
+  const data = u8.subarray(e.off + 30 + nlen + elen, e.off + 30 + nlen + elen + e.csize);
+  if (e.method === 0) return new TextDecoder('utf-8').decode(data);
+  if (e.method !== 8) throw new Error('지원하지 않는 압축 방식입니다 (method ' + e.method + ').');
+  const st = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new TextDecoder('utf-8').decode(await new Response(st).arrayBuffer());
+}
+
+const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+const unesc = s => s.indexOf('&') < 0 ? s : s.replace(/&(#x?[0-9A-Fa-f]+|amp|lt|gt|quot|apos);/g,
+  (m, g) => g[0] === '#' ? String.fromCodePoint(g[1] === 'x' || g[1] === 'X' ? parseInt(g.slice(2), 16) : +g.slice(1)) : ENT[g]);
+
+function parseSST(xml) {
+  if (!xml) return [];
+  const out = []; let i = 0;
+  for (;;) {
+    const si = xml.indexOf('<si', i); if (si < 0) break;
+    const oe = xml.indexOf('>', si);
+    if (xml[oe - 1] === '/') { out.push(''); i = oe + 1; continue; }
+    const se = xml.indexOf('</si>', oe);
+    const body = xml.slice(oe + 1, se < 0 ? xml.length : se);
+    let s = '', j = 0;
+    for (;;) {
+      const ts = body.indexOf('<t', j); if (ts < 0) break;
+      const te = body.indexOf('>', ts);
+      if (body[te - 1] === '/') { j = te + 1; continue; }
+      const tc = body.indexOf('</t>', te);
+      s += body.slice(te + 1, tc < 0 ? body.length : tc);
+      j = tc < 0 ? body.length : tc + 4;
+    }
+    out.push(unesc(s));
+    i = se < 0 ? xml.length : se + 5;
+  }
+  return out;
+}
+
+const colNum = ref => { let n = 0; for (let i = 0; i < ref.length; i++) { const c = ref.charCodeAt(i);
+  if (c < 65 || c > 90) break; n = n * 26 + (c - 64); } return n - 1; };
+
+/** 시트 XML을 행 단위로 훑는다. keep=null이면 전 셀, Set이면 해당 열만.
+ *  onRow가 false를 돌려주면 즉시 멈춘다 — 헤더만 볼 때 시트 전체를 파싱하지 않기 위함. */
+function scanRows(xml, fromRow, keep, onRow) {
+  let i = 0;
+  for (;;) {
+    const rs = xml.indexOf('<row', i); if (rs < 0) return;
+    const oe = xml.indexOf('>', rs);
+    const m = /\sr="(\d+)"/.exec(xml.slice(rs, oe));
+    const rn = m ? +m[1] : -1;
+    if (xml[oe - 1] === '/') { i = oe + 1; continue; }
+    const re = xml.indexOf('</row>', oe);
+    const end = re < 0 ? xml.length : re;
+    if (rn >= fromRow) {
+      const cells = {};
+      let j = oe + 1, auto = 0, filled = 0;
+      while (j < end) {
+        const cs = xml.indexOf('<c', j); if (cs < 0 || cs >= end) break;
+        const ce = xml.indexOf('>', cs);
+        const attr = xml.slice(cs, ce);
+        const rm2 = /\sr="([A-Z]+)/.exec(attr);
+        const col = rm2 ? colNum(rm2[1]) : auto;
+        auto = col + 1;
+        if (xml[ce - 1] === '/') { j = ce + 1; continue; }
+        filled++;   // 매핑 대상이 아니어도 '값이 있는 행'인지는 세어 둔다
+        const cend = xml.indexOf('</c>', ce);
+        if (!keep || keep.has(col)) {
+          const body = xml.slice(ce + 1, cend < 0 ? end : cend);
+          const tm = /\st="([^"]+)"/.exec(attr);
+          const ty = tm ? tm[1] : 'n';
+          let val = null;
+          if (ty === 'inlineStr') {
+            const ts = body.indexOf('<t'), te = ts < 0 ? -1 : body.indexOf('>', ts);
+            if (te >= 0) val = unesc(body.slice(te + 1, body.indexOf('</t>', te)));
+          } else {
+            const vs = body.indexOf('<v>');
+            if (vs >= 0) {
+              const raw = body.slice(vs + 3, body.indexOf('</v>', vs));
+              val = ty === 's' ? (SST[+raw] ?? '') : ty === 'str' || ty === 'b' || ty === 'e' ? unesc(raw) : +raw;
+            }
+          }
+          if (val !== null) cells[col] = val;
+        }
+        j = cend < 0 ? end : cend + 4;
+      }
+      if (onRow(rn, cells, filled) === false) return;
+    }
+    i = re < 0 ? xml.length : re + 6;
+  }
+}
+let SST = [];
+
+/* ══════════════════════ 컬럼 매핑 ══════════════════════ */
+const norm = s => String(s ?? '').replace(/\s+/g, '');
+
+/* 원본 식별자(차주번호·채권번호)는 읽지 않는다. 계산에 쓰이지 않고,
+   채권 식별은 업로드 시 자동 부여하는 채권식별번호(A0001·B0001)로 한다. */
+const MAP_REHAB = [
+  ['label', '채권구분 (폐지항고 판별)', ['채권구분', '채권진행상황'], true],
+  ['dtFiling', '접수일자', ['접수일자', '접수일']],
+  ['dtOpen', '개시일자', ['개시일자']],
+  ['dtApprove', '인가일자', ['인가일자']],
+  ['paid', '납입회차', ['납입회차']],
+  ['remainTerms', '잔여회차', ['잔여회차']],
+  ['principal', '원금잔액', ['자산확정일원금잔액', '채권원금잔액', '원금잔액']],
+  ['advance', '가지급금잔액 (있으면 합산)', ['채권가지급금잔액', '가지급금잔액'], true],
+  ['totalPlan', '총변제예정금액', ['총변제예정금액']],
+  ['repaid', '기상환금액', ['기상환금액']],
+  ['opb', '미상환채권잔액(OPB)', ['자산확정일미상환채권잔액(OPB)', '미상환채권잔액(OPB)', '미상환채권잔액']],
+];
+const MAP_CCRS = [
+  ['status', '신청인진행상태', ['신청인진행상태']],
+  ['method', '상환방식', ['상환방식']],
+  ['applyType', '신청구분 (제도 판별)', ['신청구분'], true],
+  ['paid', '납입회차', ['납입회차']],
+  ['remultCount', '재조정횟수', ['재조정횟수']],
+  ['preAdjPrincipal', '조정전원금', ['조정전원금']],
+  ['postAdjPrincipal', '조정후원금', ['조정후원금']],
+  ['equalPrincipalDebt', '원금균등채무액', ['원금균등채무액']],
+  ['balanceAfter', '상환후잔액', ['신용회복위원회상환후잔액', '상환후잔액']],
+];
+
+function buildMap(header, spec) {
+  const byName = new Map();
+  header.forEach((h, i) => { const k = norm(h); if (k && !byName.has(k)) byName.set(k, i); });
+  const map = {}, report = [];
+  for (const [key, role, cands, optional] of spec) {
+    let idx = -1;
+    for (const c of cands) if (byName.has(c)) { idx = byName.get(c); break; }
+    if (idx < 0) for (const c of cands) {                  // 완전일치 실패 → 부분일치
+      for (const [k, i] of byName) if (k.includes(c)) { idx = i; break; }
+      if (idx >= 0) break;
+    }
+    if (idx >= 0) map[key] = idx;
+    report.push({ key, role, idx, optional: !!optional, manual: false });
+  }
+  return { map, report };
+}
+
+/* 데이터 행 판정용 기준 열. 매핑에는 쓰지 않고(식별자는 읽지 않는다) 존재 여부만 본다.
+   합계 행은 금액만 있고 식별자가 비어 있으므로 이걸로 걸러진다.
+   반대로 '데이터없음' 건은 식별자만 있고 나머지가 비어 있으므로 살아남는다. */
+function findAnchor(header) {
+  const n = header.map(norm);
+  for (const c of ['채권번호', '차주번호']) { const i = n.indexOf(c); if (i >= 0) return i; }
+  for (let i = 0; i < n.length; i++) if (/^no\.?$/i.test(n[i])) return i;
+  return -1;
+}
+
+/* 열 번호 → 엑셀 열 문자 (0 → A). 드롭다운에서 어느 열인지 바로 알아보게. */
+const colLetter = n => { let s = ''; n++; while (n > 0) { s = String.fromCharCode(65 + (n - 1) % 26) + s; n = Math.floor((n - 1) / 26); } return s; };
+const headName = (header, i) => i == null || i < 0 ? null : String(header[i] ?? '').replace(/\s+/g, ' ').trim();
+
+/* 헤더 행 찾기 — 특정 컬럼(차주번호 등)에 의존하지 않고, 아는 컬럼명이 가장 많이
+   모인 행을 헤더로 본다. 식별자를 지우고 내려온 DD도 걸러지지 않도록. */
+const VOCAB = new Set(['차주번호', '채권번호', '총변제회차', '대출금액', '연체시작일', '금지일자']);
+for (const spec of [MAP_REHAB, MAP_CCRS])
+  for (const [, , cands] of spec) for (const c of cands) VOCAB.add(c);
+const STAGE_RE = /^\d+단계(?:시작회차|종료회차|납입구분|(?:개인)?채무조정[12](?:월상환액|적용이율))$/;
+
+function findHeader(rows) {
+  let best = null;
+  for (const [rn, cells] of rows) {
+    let score = 0;
+    for (const v of Object.values(cells)) {
+      const k = norm(v);
+      if (k && (VOCAB.has(k) || STAGE_RE.test(k))) score++;
+    }
+    if (score >= 4 && (!best || score > best.score)) best = { rn, cells, score };
+  }
+  return best;
+}
+
+/* 단계 컬럼명은 DD마다 '개인'이 붙기도, 빠지기도 한다.
+   '1단계 개인채무조정2 월상환액'  (기존 DD·현대커머셜)
+   '1단계 채무조정2 월상환액'      (JBC)  ← '개인' 없음 */
+function buildStageMap(header) {
+  const st = Array(10).fill(-1), en = Array(10).fill(-1), am = Array(10).fill(-1);
+  header.forEach((h, i) => {
+    const k = norm(h);
+    let m;
+    if ((m = /^(\d+)단계시작회차$/.exec(k))) { const n = +m[1]; if (n >= 1 && n <= 10) st[n - 1] = i; }
+    else if ((m = /^(\d+)단계종료회차$/.exec(k))) { const n = +m[1]; if (n >= 1 && n <= 10) en[n - 1] = i; }
+    else if ((m = /^(\d+)단계(?:개인)?채무조정2월상환액$/.exec(k))) { const n = +m[1]; if (n >= 1 && n <= 10) am[n - 1] = i; }
+  });
+  // 셋이 모두 갖춰진 단계만 센다 — 시작·종료만 잡히고 월상환액이 빠지면 CF가 0이 되므로
+  // 'found'가 시작회차만 세면 문제를 놓친다.
+  let full = 0;
+  for (let i = 0; i < 10; i++) if (st[i] >= 0 && en[i] >= 0 && am[i] >= 0) full++;
+  const cnt = a => a.filter(x => x >= 0).length;
+  return { st, en, am, found: full, nStart: cnt(st), nEnd: cnt(en), nAmt: cnt(am) };
+}
+
+/* 채권식별번호 — DD의 원본 식별자를 쓰지 않으므로 업로드 순서대로 부여한다.
+   개인회생 A, 신용회복 B. 엑셀에서 문자열 정렬해도 순서가 유지되도록 자리수를 맞춘다. */
+function assignIds(rows, prefix) {
+  const w = Math.max(4, String(rows.length).length);
+  rows.forEach((r, i) => { r.id = prefix + String(i + 1).padStart(w, '0'); });
+}
+const idRange = rows => rows.length ? rows[0].id + '–' + rows[rows.length - 1].id : '';
+
+/* ══════════════════════ 파일 처리 ══════════════════════ */
+const DATA = { rehab: null, ccrs: null };
+const $ = s => document.querySelector(s);
+const yield_ = () => new Promise(r => setTimeout(r, 0));
+
+async function handleFiles(files) {
+  hasRun = false;                    // 새 DD가 들어오면 다시 '평가 진행'을 눌러야 한다
+  DATA.rehab = null; DATA.ccrs = null;
+  resetResults();
+  $('#fileErr').innerHTML = '';
+  const list = $('#fileList'); list.innerHTML = '';
+  const bar = $('#bar'); bar.hidden = false;
+  const setBar = p => bar.firstElementChild.style.width = (p * 100) + '%';
+
+  let done = 0;
+  for (const f of files) {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="fname"></span><span class="meta">읽는 중…</span>`;
+    li.querySelector('.fname').textContent = f.name;
+    list.appendChild(li);
+    try {
+      await yield_();
+      const zip = await readZip(await f.arrayBuffer());
+      setBar(++done / files.length * .5);
+      const found = await parseWorkbook(zip, p => setBar((done - 1 + p) / files.length * .5 + .0));
+      li.querySelector('.meta').textContent = found.length
+        ? found.map(x => `${x.kind} ${x.rows.toLocaleString()}행`).join(' · ')
+        : '해당 시트 없음';
+      if (!found.length) li.querySelector('.meta').style.color = 'var(--warn)';
+    } catch (err) {
+      li.querySelector('.meta').textContent = '실패';
+      li.querySelector('.meta').style.color = 'var(--bad)';
+      const d = document.createElement('div');
+      d.className = 'err'; d.textContent = f.name + ' — ' + err.message;
+      $('#fileErr').appendChild(d);
+    }
+  }
+  setBar(1);
+  setTimeout(() => { bar.hidden = true; setBar(0); }, 400);
+  renderMapping();     // 인식 결과만 보여주고 멈춘다 — 계산은 '평가 진행'을 눌러야 시작
+}
+
+async function parseWorkbook(zip, onProg) {
+  SST = parseSST(await extract(zip, 'xl/sharedStrings.xml'));
+  const wbx = await extract(zip, 'xl/workbook.xml');
+  const rel = await extract(zip, 'xl/_rels/workbook.xml.rels');
+  if (!wbx) throw new Error('xl/workbook.xml 을 찾지 못했습니다.');
+
+  const targets = new Map();
+  for (const m of (rel || '').matchAll(/<Relationship\b[^>]*>/g)) {
+    const id = /Id="([^"]+)"/.exec(m[0]), tg = /Target="([^"]+)"/.exec(m[0]);
+    if (id && tg) targets.set(id[1], tg[1].replace(/^\/?xl\//, '').replace(/^\//, ''));
+  }
+  const sheets = [];
+  for (const m of wbx.matchAll(/<sheet\b[^>]*\/?>/g)) {
+    const nm = /name="([^"]*)"/.exec(m[0]), rid = /r:id="([^"]+)"/.exec(m[0]);
+    if (nm && rid && targets.has(rid[1])) sheets.push({ name: unesc(nm[1]), path: 'xl/' + targets.get(rid[1]) });
+  }
+
+  const found = [];
+  for (let s = 0; s < sheets.length; s++) {
+    const sh = sheets[s];
+    if (!zip.entries.has(sh.path)) continue;
+    // 헤더만 먼저 보고 제도를 가린 뒤, 필요한 시트만 본문을 읽는다
+    const xml = await extract(zip, sh.path);
+    const head = [];
+    scanRows(xml, 1, null, (rn, cells) => { if (rn > 12) return false; head.push([rn, cells]); });
+    const hit = findHeader(head);
+    if (!hit) continue;
+    const hdrRow = hit.rn;
+    const max = Math.max(...Object.keys(hit.cells).map(Number));
+    const header = Array(max + 1).fill(null);
+    for (const [c, v] of Object.entries(hit.cells)) header[+c] = v;
+    const nset = new Set(header.map(norm));
+    const sm = buildStageMap(header);
+    // 파생 시트(신용회복_평가 등)를 원본 DD로 오인하지 않도록 금액 컬럼으로 가른다.
+    // 단계 컬럼 유무는 판별에 쓰지 않는다 — 이름이 달라 못 찾았을 때도 수동 매핑을 열어줘야 하므로.
+    const kind = (nset.has('인가일자') && nset.has('총변제예정금액')) ? '개인회생'
+      : (nset.has('신청인진행상태') || (nset.has('상환방식') && (nset.has('조정전원금') || nset.has('원금균등채무액'))))
+        ? '신용회복' : null;
+    if (!kind) continue;
+
+    const spec = kind === '개인회생' ? MAP_REHAB : MAP_CCRS;
+    const { map, report } = buildMap(header, spec);
+    const d = { kind, sheet: sh.name, header, report, map, sm, hdrRow, xml,
+                anchor: findAnchor(header),
+                prefix: kind === '개인회생' ? 'A' : 'B' };
+    extractRows(d);
+    if (kind === '개인회생') DATA.rehab = d; else DATA.ccrs = d;
+    found.push({ kind, rows: d.rows.length });
+    if (onProg) onProg((s + 1) / sheets.length);
+    await yield_();
+  }
+  return found;
+}
+
+/** 현재 매핑으로 시트에서 행을 다시 뽑는다. 수동 매핑이 바뀌면 이것만 다시 부르면 된다. */
+function extractRows(d) {
+  const keep = new Set(Object.values(d.map).filter(i => i >= 0));
+  if (d.anchor >= 0) keep.add(d.anchor);
+  const isCcrs = d.kind === '신용회복';
+  if (isCcrs) for (const arr of [d.sm.st, d.sm.en, d.sm.am]) for (const i of arr) if (i >= 0) keep.add(i);
+  const ent = Object.entries(d.map).filter(([, i]) => i >= 0);
+  const rows = [];
+  scanRows(d.xml, d.hdrRow + 1, keep, (rn, c, filled) => {
+    // 식별자 열이 있으면 그것으로, 없으면 값 유무로 데이터 행을 가린다
+    if (d.anchor >= 0 ? (c[d.anchor] == null || c[d.anchor] === '') : !filled) return;
+    const o = isCcrs ? { stageStart: [], stageEnd: [], stageAmt: [] } : {};
+    for (const [k, i] of ent) o[k] = c[i] ?? null;
+    if (isCcrs) for (let i = 0; i < 10; i++) {
+      o.stageStart.push(d.sm.st[i] >= 0 ? c[d.sm.st[i]] ?? null : null);
+      o.stageEnd.push(d.sm.en[i] >= 0 ? c[d.sm.en[i]] ?? null : null);
+      o.stageAmt.push(d.sm.am[i] >= 0 ? c[d.sm.am[i]] ?? null : null);
+    }
+    rows.push(o);
+  });
+  assignIds(rows, d.prefix);
+  d.rows = rows;
+  d.idRange = idRange(rows);
+  d.stages = d.sm.found;
+  return d;
+}
+
+/** 수동으로 컬럼을 바꾼다. 되뽑고 결과를 무효화해 다시 '평가 진행'을 누르게 한다. */
+function remap(d, key, idx) {
+  const r = d.report.find(x => x.key === key);
+  if (!r) return;
+  if (idx < 0) delete d.map[key]; else d.map[key] = idx;
+  r.idx = idx;
+  r.manual = true;
+  extractRows(d);
+  hasRun = false;
+  resetResults();
+  renderMapping();
+}
+
+/* ══════════════════════ 렌더 ══════════════════════ */
+const won = x => Math.round(x).toLocaleString('ko-KR');
+const eok = x => (x / 1e8).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '억';
+const pct = (x, d = 2) => (x * 100).toFixed(d) + '%';
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+function renderMapping() {
+  const body = $('#mapBody'), st = $('#mapStage');
+  body.innerHTML = '';
+  if (!DATA.rehab && !DATA.ccrs) {
+    st.dataset.state = 'idle'; $('#mapNote').textContent = '대기 중';
+    body.appendChild(el('div', 'empty', 'DD를 올리면 인식 결과가 여기 표시됩니다.'));
+    return;
+  }
+  st.dataset.state = 'live';
+  let missing = 0;
+  const add = (d, title) => {
+    if (!d) return;
+    const h = el('div'); h.style.cssText = 'display:flex;gap:9px;align-items:baseline;margin:2px 0 9px;flex-wrap:wrap';
+    h.appendChild(el('strong', null, title));
+    const sn = el('span', null, `시트 "${d.sheet}" · 헤더 ${d.hdrRow}행 · ${d.rows.length.toLocaleString()}건`);
+    sn.style.cssText = 'color:var(--ink-faint);font-size:12px'; h.appendChild(sn);
+    h.appendChild(el('span', 'pill neutral', '채권식별번호 ' + d.idRange));
+    body.appendChild(h);
+    const grid = el('div', 'map-grid');
+    for (const r of d.report) {
+      const has = r.idx >= 0;
+      const row = el('div', 'map-row' + (has ? '' : (r.optional ? '' : ' miss')));
+      row.appendChild(el('span', 'role', r.role));
+
+      const sel = el('select', 'src-sel');
+      sel.setAttribute('aria-label', r.role + ' 컬럼 선택');
+      const none = el('option', null, r.optional ? '— 사용 안 함' : '— 컬럼을 골라 주세요');
+      none.value = '-1'; sel.appendChild(none);
+      d.header.forEach((h, i) => {
+        const nm = headName(d.header, i);
+        if (!nm) return;
+        const op = el('option', null, `${colLetter(i)} · ${nm}`);
+        op.value = String(i); sel.appendChild(op);
+      });
+      sel.value = String(has ? r.idx : -1);
+      if (!has && !r.optional) sel.classList.add('need');
+      sel.addEventListener('change', () => remap(d, r.key, parseInt(sel.value, 10)));
+      row.appendChild(sel);
+      row.appendChild(el('span', 'tag', r.manual ? '수동' : has ? '자동' : ''));
+
+      grid.appendChild(row);
+      if (!has && !r.optional) missing++;
+    }
+    body.appendChild(grid);
+
+    if (d.kind === '신용회복') {                       // 단계 컬럼은 패턴으로만 잡는다
+      const ok = d.sm.found === 10;
+      const box = el('div', 'stagebox' + (ok ? '' : ' bad'));
+      if (ok) box.textContent =
+        '단계 스케줄 컬럼 10/10 인식 — 시작회차 · 종료회차 · 채무조정2 월상환액';
+      else {
+        box.innerHTML = `단계 스케줄 컬럼이 <strong>${d.sm.found}/10</strong>만 온전합니다. ` +
+          `<span class="mono">시작회차 ${d.sm.nStart} · 종료회차 ${d.sm.nEnd} · 월상환액 ${d.sm.nAmt}</span><br>` +
+          '세 개가 모두 있어야 그 단계의 현금흐름이 잡힙니다. 하나라도 빠지면 그 단계는 0원이 됩니다.<br>' +
+          '컬럼명이 <code>1단계시작회차</code> · <code>1단계종료회차</code> · ' +
+          '<code>1단계 채무조정2 월상환액</code>(또는 <code>개인채무조정2</code>) 형태여야 합니다 (띄어쓰기 무시).';
+        missing++;
+      }
+      body.appendChild(box);
+    }
+    body.appendChild(Object.assign(el('div'), { style: 'height:18px' }));
+  };
+  const lead = el('p', 'hint');
+  lead.style.cssText = 'margin:0 0 14px';
+  lead.innerHTML = '자동으로 찾은 결과입니다. <strong>잘못 잡혔거나 못 찾은 항목은 드롭다운에서 직접 고르세요.</strong> ' +
+    '고치면 그 자리에서 다시 읽고, 평가는 초기화되므로 「평가 진행」을 다시 눌러야 합니다.';
+  body.appendChild(lead);
+  add(DATA.rehab, '개인회생');
+  add(DATA.ccrs, '신용회복');
+
+  $('#mapNote').innerHTML = '';
+  const p = el('span', 'pill ' + (missing ? 'bad' : 'ok'), missing ? `필수 ${missing}개 누락` : '필수 컬럼 전부 인식');
+  $('#mapNote').appendChild(p);
+
+  // 확인 후 실행 — 업로드만으로는 계산하지 않는다
+  const n = (DATA.rehab?.rows.length || 0) + (DATA.ccrs?.rows.length || 0);
+  const bar = el('div', 'runbar');
+  const btn = el('button', 'run', missing ? '누락된 채로 평가 진행' : '평가 진행');
+  btn.type = 'button';
+  if (missing) btn.classList.add('caution');
+  btn.addEventListener('click', () => { hasRun = true; recompute();
+    $('#resStage').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  bar.appendChild(btn);
+  const cap = el('span', 'runcap', missing
+    ? `인식 결과를 확인하세요. 누락된 컬럼은 0으로 계산되어 평가액이 낮게 나옵니다.`
+    : `${n.toLocaleString()}건 평가 · 위 인식 결과가 맞는지 확인한 뒤 실행하세요.`);
+  bar.appendChild(cap);
+  body.appendChild(bar);
+}
+
+let hasRun = false;   // '평가 진행'을 한 번이라도 눌렀는가
+
+function resetResults() {
+  for (const id of ['#resStage', '#listStage', '#cfStage', '#qStage']) $(id).dataset.state = 'idle';
+  $('#resBody').innerHTML = '<div class="empty">「평가 진행」을 누르면 계산합니다.</div>';
+  $('#listBody').innerHTML = '<div class="empty">평가를 진행하면 채권 한 건 한 건이 어떻게 계산됐는지 여기서 펼쳐 볼 수 있습니다.</div>';
+  $('#qBody').innerHTML = '<div class="empty">평가를 진행하면 점검 결과가 표시됩니다.</div>';
+  $('#resNote').textContent = '';
+  $('#listNote').textContent = '건별 계산 자취';
+  $('#cfBody').innerHTML = '<div class="empty">평가를 진행하면 회차별 현금흐름이 단계별로 펼쳐집니다.</div>';
+  $('#cfNote').textContent = 'POOL 합계 · 단계별 가로 전개';
+  LIST = []; CURVES = null; CFS = null;
+  renderChecks();          // POOL 검산도 함께 비운다 — 이전 DD 결과가 남아 있으면 안 된다
+}
+
+function recompute() {
+  if (!hasRun || (!DATA.rehab && !DATA.ccrs)) { renderChecks(); return; }
+  const C = makeCurves();
+  CURVES = C;
+  const list = [];
+  // POOL 회차별 누적기 — 채권마다 '가장 좁은 구획' 하나에만 쌓고, 상위 구획은 나중에 더해 만든다.
+  // 한 건을 여러 누적기에 동시에 쌓으면 전건 루프에서 그만큼 배로 비싸진다.
+  const accR = new Map(), accC = new Map();
+  const pick = (m, key, keys) => { let a = m.get(key); if (!a) { a = newAcc(keys); m.set(key, a); } return a; };
+  const forR = key => pick(accR, key, CF_KEYS_REHAB);
+  const forC = key => pick(accC, key, CF_KEYS_CCRS);
+  const t0 = performance.now();
+
+  const gR = new Map(), gC = new Map();
+  let qZeroBase = 0, qLabelMismatch = 0, qBalZero = 0, qNoData = 0, qOtherClose = 0, qBadMethod = 0, qSchemeMismatch = 0;
+  let qSettled = 0, qTermsZero = 0;
+  const D = {
+    rehab: DATA.rehab ? { read: DATA.rehab.rows.length, routed: 0, step1Sum: 0, step1Max: 0,
+                          probDev: 0, tiers: [0, 0, 0], denomZero: 0 } : null,
+    ccrs: DATA.ccrs ? { read: DATA.ccrs.rows.length, routed: 0, strSum: 0, strMax: 0, strBase: 0,
+                        probDev: 0, tiers: [0, 0, 0, 0], denomZero: 0, lostStage: 0, noData: 0 } : null,
+  };
+
+  if (DATA.rehab) for (const r of DATA.rehab.rows) {
+    const v = evalRehab(r, C, false, forR);
+    if (!v) { list.push({ id: r.id, kind: '개인회생', r, v: null }); continue; }
+    list.push({ id: r.id, kind: '개인회생', r, v });
+    const d = D.rehab;
+    d.routed++; d.tiers[v.tier - 1]++;
+    d.step1Sum += Math.abs(v.step1Diff);
+    if (Math.abs(v.step1Diff) > d.step1Max) d.step1Max = Math.abs(v.step1Diff);
+    if (v.probDev > d.probDev) d.probDev = v.probDev;
+    if (!(v.denom > 0)) d.denomZero++;
+    const k = v.stage + '|' + v.sched;
+    const a = gR.get(k) || [0, 0, 0, 0]; gR.set(k, a);
+    a[0]++; a[1] += v.denom; a[2] += v.nominal; a[3] += v.pv;
+    if (v.zeroBase) qZeroBase++;
+    if (v.settled) qSettled++;
+    if (v.termsZero) qTermsZero++;
+    const lab = S(r.label);
+    if (lab.includes('폐지') && !lab.includes('폐지항고')) qOtherClose++;   // 미처리 폐지 상태값
+    else if (lab && v.stage !== '폐지항고' &&
+        ((lab.includes('미인가') && v.stage === '인가') || (lab === '인가' && v.stage !== '인가'))) qLabelMismatch++;
+  }
+  if (DATA.ccrs) for (const r of DATA.ccrs.rows) {
+    const v = evalCcrs(r, C, false, forC);
+    list.push({ id: r.id, kind: '신용회복', r, v });
+    const d = D.ccrs;
+    d.routed++; d.tiers[v.tier - 1]++;
+    d.strSum += Math.abs(v.stretchDiff); d.strBase += Math.abs(v.stretchBase);
+    if (Math.abs(v.stretchDiff) > d.strMax) d.strMax = Math.abs(v.stretchDiff);
+    if (v.probDev > d.probDev) d.probDev = v.probDev;
+    if (!(v.denom > 0)) d.denomZero++;
+    if (v.lostStage) d.lostStage++;
+    const nd = v.status === '데이터없음';
+    const k = v.status + '|' + (nd ? '—' : `${v.scheme} (${v.curve})`) + '|' + (nd ? '—' : v.sched);
+    const a = gC.get(k) || [0, 0, 0, 0]; gC.set(k, a);
+    a[0]++; a[1] += v.denom; a[2] += v.nominal; a[3] += v.pv;
+    if (v.unknownMethod) qBadMethod++;
+    if (v.schemeMismatch) qSchemeMismatch++;
+    if (v.status === '데이터없음') { qNoData++; d.noData++; } else if (v.balZero) qBalZero++;
+  }
+  const ms = performance.now() - t0;
+
+  LIST = list;
+  CFS = { rehab: buildSegs(accR, 'rehab'), ccrs: buildSegs(accC, 'ccrs') };
+  renderResults(gR, gC, ms);
+  renderList();
+  renderCF();
+  renderChecks(C, D);
+  renderQuality({ qZeroBase, qLabelMismatch, qBalZero, qNoData, qOtherClose, qBadMethod, qSchemeMismatch,
+                  qSettled, qTermsZero });
+}
+
+function tableFor(groups, cols, order) {
+  const tw = el('div', 'tw'), t = el('table');
+  const thead = el('thead'), hr = el('tr');
+  for (const c of cols) { const th = el('th', c.n ? 'n' : '', c.t); hr.appendChild(th); }
+  thead.appendChild(hr); t.appendChild(thead);
+  const tb = el('tbody');
+  const tot = [0, 0, 0, 0];
+  // 지정 순서를 먼저, 예상 밖 조합은 뒤에 붙인다 — 어떤 그룹도 합계에서 빠지지 않도록.
+  const keys = order
+    ? [...order.filter(k => groups.has(k)), ...[...groups.keys()].filter(k => !order.includes(k)).sort()]
+    : [...groups.keys()].sort();
+  for (const k of keys) {
+    const a = groups.get(k), parts = k.split('|');
+    const tr = el('tr');
+    for (const p of parts) tr.appendChild(el('td', p === '—' ? 'dim' : '', p));
+    tr.appendChild(el('td', 'n mono', a[0].toLocaleString()));
+    tr.appendChild(el('td', 'n mono', won(a[1])));
+    tr.appendChild(el('td', 'n mono', won(a[2])));
+    tr.appendChild(el('td', 'n mono', won(a[3])));
+    tr.appendChild(el('td', 'n mono', a[1] > 0 ? pct(a[3] / a[1]) : '—'));
+    tb.appendChild(tr);
+    for (let i = 0; i < 4; i++) tot[i] += a[i];
+  }
+  const tr = el('tr', 'sum');
+  const span = cols.length - 5;
+  const td0 = el('td', null, '소계'); td0.colSpan = span; tr.appendChild(td0);
+  tr.appendChild(el('td', 'n mono', tot[0].toLocaleString()));
+  tr.appendChild(el('td', 'n mono', won(tot[1])));
+  tr.appendChild(el('td', 'n mono', won(tot[2])));
+  tr.appendChild(el('td', 'n mono', won(tot[3])));
+  tr.appendChild(el('td', 'n mono', tot[1] > 0 ? pct(tot[3] / tot[1]) : '—'));
+  tb.appendChild(tr);
+  t.appendChild(tb); tw.appendChild(t);
+  return { tw, tot };
+}
+
+function renderResults(gR, gC, ms) {
+  const body = $('#resBody'); body.innerHTML = '';
+  $('#resStage').dataset.state = 'live';
+
+  const totR = [0, 0, 0, 0], totC = [0, 0, 0, 0];
+  const stats = el('div', 'stats'); body.appendChild(stats);
+
+  if (gR.size) {
+    const cap = el('h3', null, '개인회생');
+    cap.style.cssText = 'font-size:13px;margin:4px 0 9px'; body.appendChild(cap);
+    const { tw, tot } = tableFor(gR,
+      [{ t: '진행단계' }, { t: '스케줄' }, { t: '건수', n: 1 }, { t: '분모 OPB', n: 1 },
+       { t: '명목 기대회수', n: 1 }, { t: 'PV', n: 1 }, { t: 'PV 회수율', n: 1 }],
+      ['인가|스케줄有', '인가|스케줄無', '미인가-개시|스케줄有', '미인가-개시|스케줄無',
+       '미인가-접수금지|스케줄無', '미인가-접수금지|스케줄有', '폐지항고|스케줄有', '폐지항고|스케줄無']);
+    body.appendChild(tw); for (let i = 0; i < 4; i++) totR[i] = tot[i];
+    body.appendChild(Object.assign(el('div'), { style: 'height:22px' }));
+  }
+  if (gC.size) {
+    const cap = el('h3', null, '신용회복');
+    cap.style.cssText = 'font-size:13px;margin:4px 0 9px'; body.appendChild(cap);
+    const { tw, tot } = tableFor(gC,
+      [{ t: '확정구분' }, { t: '제도 (곡선)' }, { t: '스케줄' }, { t: '건수', n: 1 },
+       { t: '분모 OPB', n: 1 }, { t: '명목 기대회수', n: 1 }, { t: 'PV', n: 1 }, { t: 'PV 회수율', n: 1 }]);
+    body.appendChild(tw); for (let i = 0; i < 4; i++) totC[i] = tot[i];
+    body.appendChild(Object.assign(el('div'), { style: 'height:22px' }));
+  }
+
+  const n = totR[0] + totC[0], dn = totR[1] + totC[1], nm = totR[2] + totC[2];
+  let pv = totR[3] + totC[3];
+  const notify = A.notifyCost * n;
+  pv -= notify;
+
+  const mk = (k, v, d, hero) => {
+    const s = el('div', 'stat' + (hero ? ' hero' : ''));
+    s.appendChild(el('div', 'k', k)); s.appendChild(el('div', 'v', v));
+    if (d) s.appendChild(el('div', 'd', d));
+    return s;
+  };
+  stats.appendChild(mk('분모 OPB', eok(dn), won(dn) + '원'));
+  stats.appendChild(mk('명목 기대회수', eok(nm), won(nm) + '원'));
+  stats.appendChild(mk('PV', eok(pv), won(pv) + '원', true));
+  stats.appendChild(mk('PV 회수율', dn > 0 ? pct(pv / dn) : '—', n.toLocaleString() + '건'));
+
+  if (notify > 0) {
+    const p = el('p', 'hint');
+    p.style.margin = '0 0 4px';
+    p.textContent = `양도통지비용 ${won(notify)}원 (${n.toLocaleString()}건 × ${won(A.notifyCost)}원)을 t=0에 차감했습니다.`;
+    body.appendChild(p);
+  }
+  $('#resNote').textContent = `${n.toLocaleString()}건 · ${ms.toFixed(0)}ms`;
+}
+
+function secTitle(txt, sub) {
+  const h = el('div'); h.style.cssText = 'display:flex;gap:9px;align-items:baseline;margin:0 0 10px;flex-wrap:wrap';
+  const t = el('strong', null, txt); t.style.fontSize = '13px'; h.appendChild(t);
+  if (sub) { const s = el('span', null, sub); s.style.cssText = 'color:var(--ink-faint);font-size:12px'; h.appendChild(s); }
+  return h;
+}
+const gap = px => Object.assign(el('div'), { style: 'height:' + px + 'px' });
+
+function renderChecks(C, D) {
+  const body = $('#chkBody'); body.innerHTML = '';
+  const cv = C || makeCurves();
+  $('#chkStage').dataset.state = 'live';
+  body.appendChild(secTitle('A. 엔진 자체점검', '평가판이 설계서대로 짜였는가 — 올린 DD와 무관'));
+
+  // 마지막 칸은 이 행이 어느 곡선을 쓰는가 — 사용자 곡선이면 설계서 기준치와 대조할 수 없다
+  const rows = [
+    ['곡선 개인회생 전구간', 0, 122, surv(cv.rehab, 0, 122), .671, 'rehab'],
+    ['곡선 개인워크 A 전구간', 0, 140, surv(cv[1], 0, 140), .718, 'A'],
+    ['곡선 프리·신속 B 전구간', 0, 140, surv(cv[2], 0, 140), .626, 'B'],
+    ['개인회생 인가 납입 7 · 잔여 62', 7, 62, surv(cv.rehab, 7, 62), .821, 'rehab'],
+    ['개인회생 인가 납입 30 · 잔여 36', 30, 36, surv(cv.rehab, 30, 36), .897, 'rehab'],
+    ['신복 개인워크 A 확정 납입 12 · 72', 12, 72, surv(cv[1], 12, 72), .870, 'A'],
+    ['신복 프리·신속 B 확정 납입 12 · 72', 12, 72, surv(cv[2], 12, 72), .812, 'B'],
+    ['신복 미확정 84개월 (부록 J 시나리오)', 0, 84, surv(cv[1], 0, 84), .763, 'A'],
+    ['신복 개인워크 A × 1.5 (배수 고정 시나리오)', 12, 72, surv(buildLS(H.A, 1.5), 12, 72), .812, 'A'],
+  ];
+  const tw = el('div', 'tw'), t = el('table');
+  t.appendChild(Object.assign(el('caption'), { textContent: '곡선·생존계산 자체점검 — 설계서 기준치 대조 (DD 무관)' }));
+  const thead = el('thead'), hr = el('tr');
+  for (const [tx, n] of [['항목', 0], ['납입회차', 1], ['회차수', 1], ['산출', 1], ['기준치', 1], ['차이', 1], ['판정', 0]])
+    hr.appendChild(el('th', n ? 'n' : '', tx));
+  thead.appendChild(hr); t.appendChild(thead);
+  const tb = el('tbody');
+  let bad = 0;
+  for (const [name, o, n, got, ref, ck] of rows) {
+    const cust = ck && CURVE[ck].custom;
+    const d = got - ref, ok = Math.abs(d) < 6e-4;
+    if (!ok && !cust) bad++;                 // 사용자 곡선은 불일치로 세지 않는다
+    const tr = el('tr');
+    tr.appendChild(el('td', null, name));
+    tr.appendChild(el('td', 'n mono', o));
+    tr.appendChild(el('td', 'n mono', n));
+    tr.appendChild(el('td', 'n mono', got.toFixed(6)));
+    tr.appendChild(el('td', 'n mono dim', cust ? '—' : ref.toFixed(3)));
+    tr.appendChild(el('td', 'n mono' + (cust ? ' dim' : ''), cust ? '—' : (d >= 0 ? '+' : '') + d.toFixed(6)));
+    const td = el('td');
+    td.appendChild(cust
+      ? el('span', 'pill neutral', '사용자 곡선 — 대조 불가')
+      : el('span', 'pill ' + (ok ? 'ok' : 'bad'), ok ? '일치' : '불일치'));
+    tr.appendChild(td); tb.appendChild(tr);
+  }
+  t.appendChild(tb); tw.appendChild(t); body.appendChild(tw);
+
+  // 확률가중 = 1.0
+  const g = 1 - A.preFailCr, Sv = .6;
+  const wRehab = (1 - A.preFail) * Sv + A.preFail + (1 - A.preFail) * (1 - Sv);
+  const wCcrs = g * Sv + A.preFailCr + g * (1 - Sv);
+  const d2 = el('div'); d2.style.cssText = 'display:flex;gap:9px;flex-wrap:wrap;margin-top:14px';
+  for (const [lbl, v] of [['개인회생 확률가중 합', wRehab], ['신용회복 확률가중 합', wCcrs]]) {
+    const ok = Math.abs(v - 1) < 1e-9;
+    const s = el('span', 'pill ' + (ok ? 'ok' : 'bad'), `${lbl} = ${v.toFixed(6)}`);
+    d2.appendChild(s);
+  }
+  body.appendChild(d2);
+
+  const note = el('p', 'hint'); note.style.cssText = 'margin:14px 0 0;font-size:11.5px';
+  note.innerHTML =
+    '이 표는 <strong>업로드한 DD와 무관합니다.</strong> 엔진에 심어 둔 곡선 데이터와 누적생존 계산이 ' +
+    '설계서 부록 A·J의 기준치를 재현하는지만 봅니다 — 평가판 자신의 자체점검입니다. ' +
+    'DD가 제대로 읽혔는지, PV가 맞는지는 이 표로 알 수 없습니다.<br>' +
+    '마지막 행은 배수를 <strong>1.5로 고정</strong>해 넣은 시나리오라 사이드 패널의 <code>cr_remult</code> 설정을 따르지 않습니다. ' +
+    '설정값은 <strong>실제 평가에는 정상 반영</strong>됩니다 (재조정 대상 건의 곡선이 바뀝니다). ' +
+    '워크북은 이 행이 <code>가정!B23</code>에 묶여 있어 배수를 1.0으로 두면 불일치로 뜹니다.<br>' +
+    '<strong>사용자 곡선을 올린 행은 대조하지 않습니다</strong> — 설계서 부록 A 기준치는 내장 곡선에만 성립하기 때문입니다. ' +
+    '그 곡선이 맞는지는 ② 실효폐지 곡선 구획에서 누적생존으로 확인하세요.';
+  body.appendChild(note);
+
+  const poolBad = renderPoolChecks(body, D);
+
+  $('#chkNote').innerHTML = '';
+  const tot = bad + poolBad;
+  const nCust = CURVE_KEYS.filter(k => CURVE[k].custom).length;
+  $('#chkNote').appendChild(el('span', 'pill ' + (tot ? 'bad' : nCust ? 'warn' : 'ok'),
+    tot ? `${tot}건 불일치`
+        : nCust ? `사용자 곡선 ${nCust}종 — 일부 대조 생략`
+        : (D ? '엔진·POOL 전부 통과' : '엔진 9건 일치')));
+}
+
+/* ── 구획 B. 이 POOL 검산 — 올린 DD에 대해서만 성립하는 검사 ── */
+function renderPoolChecks(body, D) {
+  body.appendChild(gap(26));
+  body.appendChild(secTitle('B. 이 POOL 검산', '올린 DD의 결과를 믿어도 되는가'));
+  if (!D) {
+    body.appendChild(el('div', 'empty', '평가를 진행하면 이 POOL에 대한 검산이 표시됩니다.'));
+    return 0;
+  }
+  const R = D.rehab, Cc = D.ccrs;
+  const rows = [];
+  const won0 = x => Math.round(x).toLocaleString('ko-KR') + '원';
+
+  // ① 라우팅 전수 정합 — 일자가 없어 탈락한 건이 조용히 사라지지 않게
+  if (R) rows.push(['라우팅 전수 정합', '개인회생',
+    `읽은 ${R.read.toLocaleString()}건 → 분류 ${R.routed.toLocaleString()}건` +
+    (R.read - R.routed ? ` · 미분류 ${(R.read - R.routed).toLocaleString()}건` : ''),
+    R.read === R.routed, R.read === R.routed ? null : '접수·개시·인가일자가 모두 없어 단계를 정할 수 없는 건입니다. 평가에서 빠졌습니다.']);
+  if (Cc) rows.push(['라우팅 전수 정합', '신용회복',
+    `읽은 ${Cc.read.toLocaleString()}건 → 분류 ${Cc.routed.toLocaleString()}건`,
+    Cc.read === Cc.routed, null]);
+
+  // ② STEP1 검산 — 회차별회수금 × 조정회차 = 잔여OPB
+  if (R) { const ok = R.step1Max < 0.01;
+    rows.push(['STEP1 배분 검산', '개인회생',
+      `최대 오차 ${R.step1Max.toExponential(2)}원 · 전건 절대합 ${R.step1Sum.toExponential(2)}원`,
+      ok, ok ? null : '회차별로 쪼갠 금액을 다시 합치면 잔여OPB가 나와야 합니다.']); }
+
+  // ③ 스트레칭 총액 보존 — STEP0은 개월수만 늘리고 총액은 그대로여야 한다
+  if (Cc) { const rel = Cc.strBase > 0 ? Cc.strSum / Cc.strBase : 0;
+    const ok = rel < 1e-9 && !Cc.lostStage;
+    rows.push(['스트레칭 총액 보존', '신용회복',
+      `상대오차 ${rel.toExponential(2)} · 최대 ${won0(Cc.strMax)}` +
+      (Cc.lostStage ? ` · 단계 소실 ${Cc.lostStage.toLocaleString()}건` : ''),
+      ok, Cc.lostStage ? '조정계수가 1을 넘어 일부 단계의 조정회차가 0으로 반올림됐습니다. 그 단계 현금흐름이 사라집니다.'
+                       : (ok ? null : '조정 전후 명목 총액이 어긋납니다.')]); }
+
+  // ④ 확률가중 실측 — 계산 루프에서 실제로 나온 값
+  if (R) { const ok = R.probDev < 1e-9;
+    rows.push(['확률가중 합 = 1.0', '개인회생', `실측 최대편차 ${R.probDev.toExponential(2)}`, ok, null]); }
+  if (Cc) { const ok = Cc.probDev < 1e-9;
+    rows.push(['확률가중 합 = 1.0', '신용회복', `실측 최대편차 ${Cc.probDev.toExponential(2)}`, ok, null]); }
+
+  // 분모 0 — 구조 오류가 아니라 DD 사안이므로 경고 등급 (5단계에서 별도로 다룬다)
+  if (R && R.denomZero) rows.push(['분모 OPB > 0', '개인회생',
+    `${R.denomZero.toLocaleString()}건이 분모 0`, 'warn',
+    '이 건은 회수율을 낼 수 없어 PV 0으로 빠집니다. 원금잔액·OPB 확인이 필요합니다.']);
+  if (Cc && Cc.denomZero) {
+    const expected = Cc.denomZero === Cc.noData;
+    rows.push(['분모 OPB > 0', '신용회복',
+      `${Cc.denomZero.toLocaleString()}건이 분모 0` + (expected ? ' (전부 데이터없음 건)' : ''),
+      expected ? 'ok' : 'warn',
+      expected ? null : '데이터없음 건 수와 맞지 않습니다. 금액 컬럼 인식을 확인하세요.']);
+  }
+
+  let bad = 0;
+  const tw = el('div', 'tw'), t = el('table');
+  const thead = el('thead'), hr = el('tr');
+  for (const x of ['항목', '대상', '결과', '판정']) hr.appendChild(el('th', '', x));
+  thead.appendChild(hr); t.appendChild(thead);
+  const tb = el('tbody');
+  const LV = { ok: ['ok', '통과'], warn: ['warn', '주의'], bad: ['bad', '확인 필요'] };
+  for (const [name, target, detail, lvIn, why] of rows) {
+    const lv = lvIn === true ? 'ok' : lvIn === false ? 'bad' : lvIn;
+    if (lv === 'bad') bad++;
+    const tr = el('tr');
+    tr.appendChild(el('td', null, name));
+    tr.appendChild(el('td', 'dim', target));
+    const td = el('td', 'mono'); td.style.whiteSpace = 'normal'; td.textContent = detail; tr.appendChild(td);
+    const tj = el('td'); tj.appendChild(el('span', 'pill ' + LV[lv][0], LV[lv][1]));
+    tr.appendChild(tj); tb.appendChild(tr);
+    if (lv !== 'ok' && why) {
+      const wr = el('tr', 'sub'), wd = el('td', 'dim', why);
+      wd.colSpan = 4; wd.style.whiteSpace = 'normal'; wr.appendChild(wd); tb.appendChild(wr);
+    }
+  }
+  t.appendChild(tb); tw.appendChild(t); body.appendChild(tw);
+
+  // ⑤ 분모 폴다운 분포
+  body.appendChild(gap(20));
+  const tw2 = el('div', 'tw'), t2 = el('table');
+  t2.appendChild(Object.assign(el('caption'), { textContent: '분모 OPB 폴다운 — 어느 순위에서 잡혔나' }));
+  const th2 = el('thead'), hr2 = el('tr');
+  hr2.appendChild(el('th', '', '제도'));
+  for (const x of ['1순위', '2순위', '3순위', '4순위']) hr2.appendChild(el('th', 'n', x));
+  th2.appendChild(hr2); t2.appendChild(th2);
+  const tb2 = el('tbody');
+  const line = (label, names, tiers) => {
+    const tr = el('tr');
+    tr.appendChild(el('td', null, label));
+    for (let i = 0; i < 4; i++) {
+      const td = el('td', 'n mono');
+      if (i < tiers.length) {
+        td.textContent = tiers[i].toLocaleString();
+        td.title = names[i];
+        if (!tiers[i]) td.classList.add('dim');
+      } else { td.textContent = '—'; td.classList.add('dim'); }
+      tr.appendChild(td);
+    }
+    tb2.appendChild(tr);
+    const nr = el('tr', 'sub'), nd = el('td', 'dim', '순위: ' + names.join(' → '));
+    nd.colSpan = 5; nd.style.whiteSpace = 'normal'; nr.appendChild(nd); tb2.appendChild(nr);
+  };
+  if (R) line('개인회생', ['미상환채권잔액(OPB)', '총변제예정−기상환', '원금잔액'], R.tiers);
+  if (Cc) line('신용회복', ['상환후잔액', '원금균등채무액', '조정후원금', '조정전원금'], Cc.tiers);
+  t2.appendChild(tb2); tw2.appendChild(t2); body.appendChild(tw2);
+
+  const n2 = el('p', 'hint'); n2.style.cssText = 'margin:12px 0 0;font-size:11.5px';
+  n2.innerHTML = '폴다운이 뒤 순위로 많이 내려갈수록 분모가 원본 OPB가 아닌 대체값으로 잡힌 것입니다. ' +
+    '신용회복 4순위(조정전원금)는 <strong>분자에만 변제율이 곱해지고 분모에는 안 곱해지므로</strong> ' +
+    '회수율이 낮게 표기됩니다 — 설계서 V8.1이 확정한 표기 방식이며 왜곡이 아닙니다.';
+  body.appendChild(n2);
+  return bad;
+}
+
+function renderQuality(q) {
+  const body = $('#qBody'); body.innerHTML = '';
+  $('#qStage').dataset.state = 'live';
+  const rows = [
+    ['신용회복 — 신복위 데이터 미매칭 (전 필드 공란)', q.qNoData, '평가제외(PV 0). 다음 DD 업로드 시 해당 행 제외 권장', 'warn'],
+    ['개인회생 — 채권구분 라벨과 일자 라우팅 불일치', q.qLabelMismatch, '일자 기준으로 평가됨(정상). DD 라벨 갱신 권장', 'warn'],
+    ['개인회생 — 스케줄無 & 원금잔액 0 (PV 0 탈락)', q.qZeroBase, '잔여OPB base가 없어 평가 불가. 원금잔액 확인 필요', 'bad'],
+    ['개인회생 — 잔여회차>0 인데 변제잔액 0 (실질 완제 의심)', q.qSettled,
+     '기상환금액이 총변제예정금액과 같아 CF가 0인데, 분모는 원금잔액으로 폴다운되어 분모만 커집니다(회수율 0%). ' +
+     '완제 여부를 확정해 매각대상에서 제외하거나, 기상환금액·총변제예정금액을 정정해 다시 올려주세요', 'bad'],
+    ['개인회생 — 총변제예정>0 인데 잔여회차 0', q.qTermsZero,
+     '스케줄이 있는데 잔여회차가 0이라 무스케줄로 분류되어, 원금잔액×변제율이 표준회차에 뿌려집니다. ' +
+     '완제 건이면 기대회수가 잘못 생깁니다. 잔여회차 확인 필요 (총변제예정금액이 0인 정상 무스케줄 건은 여기 잡히지 않습니다)', 'bad'],
+    ['신용회복 — 상환후잔액 0 (분모 폴다운 발생)', q.qBalZero, '원금균등채무액 → 조정후원금 → 조정전원금 순 폴다운', 'neutral'],
+    ['신용회복 — 상환방식 값을 해석하지 못함', q.qBadMethod,
+     '원금균등/원리금균등 또는 코드 815001·815002가 아닙니다. 곡선 A로 폴백되어 원리금균등 건이 과대평가될 수 있습니다', 'bad'],
+    ['신용회복 — 신청구분과 상환방식 불일치', q.qSchemeMismatch,
+     '제도는 상환방식으로 배정합니다(설계서 2-1). 신청구분은 참고용이며 평가에 영향 없습니다', 'neutral'],
+    ['개인회생 — 폐지항고 외 폐지 관련 채권구분 값', q.qOtherClose,
+     '이 값은 별도 처리 규칙이 없어 일자 기준으로 평가됩니다. 값을 알려주시면 규칙을 정하겠습니다', 'bad'],
+  ];
+  const tw = el('div', 'tw'), t = el('table');
+  const thead = el('thead'), hr = el('tr');
+  for (const [tx, n] of [['항목', 0], ['건수', 1], ['조치', 0]]) hr.appendChild(el('th', n ? 'n' : '', tx));
+  thead.appendChild(hr); t.appendChild(thead);
+  const tb = el('tbody');
+  for (const [name, cnt, act, tone] of rows) {
+    const tr = el('tr', cnt ? '' : 'sub');
+    tr.appendChild(el('td', null, name));
+    const td = el('td', 'n');
+    td.appendChild(el('span', 'pill ' + (cnt ? tone : 'ok'), cnt ? cnt.toLocaleString() : '0'));
+    tr.appendChild(td);
+    const ta = el('td', 'dim', act); ta.style.whiteSpace = 'normal'; tr.appendChild(ta);
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb); tw.appendChild(t); body.appendChild(tw);
+  const p = el('p', 'hint'); p.style.cssText = 'margin:14px 0 0;font-size:11.5px';
+  p.textContent = '이 표는 “평가가 틀렸다”는 경고가 아니라 “DD를 이렇게 고쳐 올리면 더 정확해진다”는 안내입니다. 로직은 결측을 방어적으로 처리하므로 평가 자체는 진행됩니다.';
+  body.appendChild(p);
+}
+
+/* ══════════════════════ 채권별 평가 ══════════════════════ */
+/* 목록은 요약만 들고 있다. 한 건을 펼칠 때 그 건만 trace를 켜고 다시 계산한다 —
+   전건의 회차별 자취를 미리 담아 두면 수만 건에서 메모리가 감당되지 않는다. */
+let LIST = [], CURVES = null;
+const LF = { q: '', kind: '', grp: '', sort: 'id', size: 100, page: 0, open: new Set() };
+
+const TIER_NAMES = {
+  '개인회생': ['미상환채권잔액(OPB)', '총변제예정−기상환', '원금잔액+가지급금'],
+  '신용회복': ['상환후잔액', '원금균등채무액', '조정후원금', '조정전원금 (분자만 변제율)'],
+};
+const grpOf = e => !e.v ? '미분류' : (e.kind === '개인회생' ? e.v.stage : e.v.status);
+const detOf = e => !e.v ? '—'
+  : e.kind === '개인회생' ? '개인회생 곡선'
+  : e.v.status === '데이터없음' ? '—' : `${e.v.scheme} (곡선 ${e.v.curve}${e.v.remult > 1 ? '×' + e.v.remult : ''})`;
+const rateOf = e => e.v && e.v.denom > 0 ? e.v.pv / e.v.denom : null;
+
+/* 엑셀 날짜 일련번호(1900 체계)를 사람이 읽는 형태로. 문자열로 온 날짜는 그대로 둔다. */
+const p2 = n => String(n).padStart(2, '0');
+function fmtDate(v) {
+  if (v == null || v === '') return '—';
+  if (typeof v === 'number' && v > 20000 && v < 80000) {
+    const d = new Date(Date.UTC(1899, 11, 30) + Math.round(v) * 86400000);
+    return `${d.getUTCFullYear()}-${p2(d.getUTCMonth() + 1)}-${p2(d.getUTCDate())}`;
+  }
+  return String(v);
+}
+const fmtNum = v => (v == null || v === '') ? '—'
+  : typeof v === 'number' ? v.toLocaleString('ko-KR', { maximumFractionDigits: 2 }) : String(v);
+const fmtWon = v => (v == null || v === '') ? '—' : won(N(v)) + '원';
+
+function kvBox(pairs) {
+  const g = el('div', 'kv');
+  for (const [k, v, cls] of pairs) {
+    if (k == null) continue;
+    const d = el('div');
+    d.appendChild(el('span', 'k2', k));
+    d.appendChild(el('span', 'v2' + (cls ? ' ' + cls : (v === '—' ? ' z' : '')), v));
+    g.appendChild(d);
+  }
+  return g;
+}
+function block(title, node) {
+  const b = el('div');
+  b.appendChild(el('h4', null, title));
+  b.appendChild(node);
+  return b;
+}
+const formula = txt => el('div', 'formula', txt);
+
+/* ── 회차별 현금흐름 — 펼칠 때 한 번만 그린다 ── */
+function cfDetails(v, kind) {
+  const d = el('details', 'detail');
+  d.style.cssText = 'margin:0;border-top:none;padding-top:0';
+  d.appendChild(el('summary', null, `회차별 현금흐름 ${v.trace.length}행 — 생존율 · 확률가중 · 할인 자취 보기` +
+    (v.delay ? ` (지연 ${v.delay}개월 — 1회차가 ${1 + v.delay}개월째)` : '')));
+  let built = false;
+  d.addEventListener('toggle', () => {
+    if (!d.open || built) return;
+    built = true;
+    const isCcrs = kind === '신용회복';
+    const tw = el('div', 'tw'), t = el('table');
+    const thead = el('thead'), hr = el('tr');
+    const cols = isCcrs
+      ? ['회차', '경과 개월', '단계', '월 상환액', 'S_t 누적생존', '확률가중 w', '할인계수', '명목', 'PV']
+      : ['회차', '경과 개월', '회차별 회수금', 'S_t 누적생존', '확률가중 w', '할인계수', '명목', 'PV'];
+    for (const tx of cols) hr.appendChild(el('th', 'n', tx));
+    thead.appendChild(hr); t.appendChild(thead);
+    const tb = el('tbody');
+    let sn = 0, sp = 0;
+    for (const x of v.trace) {
+      const tr = el('tr');
+      tr.appendChild(el('td', 'n mono', x.t));
+      tr.appendChild(el('td', 'n mono' + (x.m === x.t ? ' dim' : ''), x.m));
+      if (isCcrs) tr.appendChild(el('td', 'n mono' + (x.stage ? '' : ' dim'), x.stage || '—'));
+      tr.appendChild(el('td', 'n mono', won(x.cf)));
+      tr.appendChild(el('td', 'n mono', x.S.toFixed(6)));
+      tr.appendChild(el('td', 'n mono', x.w.toFixed(6)));
+      tr.appendChild(el('td', 'n mono', x.df.toFixed(6)));
+      tr.appendChild(el('td', 'n mono', won(x.nom)));
+      tr.appendChild(el('td', 'n mono', won(x.pv)));
+      tb.appendChild(tr);
+      sn += x.nom; sp += x.pv;
+    }
+    const tr = el('tr', 'sum');
+    const td0 = el('td', null, '합계'); td0.colSpan = isCcrs ? 7 : 6;
+    tr.appendChild(td0);
+    tr.appendChild(el('td', 'n mono', won(sn)));
+    tr.appendChild(el('td', 'n mono', won(sp)));
+    tb.appendChild(tr);
+    t.appendChild(tb); tw.appendChild(t); d.appendChild(tw);
+  });
+  return d;
+}
+
+/* ── 개인회생 한 건 상세 ── */
+function detailRehab(e) {
+  const r = e.r, v = evalRehab(r, CURVES, true);
+  const box = el('div', 'dpanel');
+
+  box.appendChild(block('DD 원본값', kvBox([
+    ['채권구분', S(r.label) || '—'],
+    ['접수일자', fmtDate(r.dtFiling)],
+    ['개시일자', fmtDate(r.dtOpen)],
+    ['인가일자', fmtDate(r.dtApprove)],
+    ['납입회차', fmtNum(r.paid)],
+    ['잔여회차', fmtNum(r.remainTerms)],
+    ['총변제예정금액', fmtWon(r.totalPlan)],
+    ['기상환금액', fmtWon(r.repaid)],
+    ['원금잔액', fmtWon(r.principal)],
+    ['가지급금잔액', fmtWon(r.advance)],
+    ['미상환채권잔액(OPB)', fmtWon(r.opb)],
+  ])));
+
+  const why = v.appealed ? '채권구분에 「폐지항고」 — 일자보다 우선'
+    : v.stage === '인가' ? '인가일자 있음'
+    : v.stage === '미인가-개시' ? '인가일자 없음 · 개시일자 있음'
+    : '인가일자 · 개시일자 없음 · 접수일자 있음';
+  box.appendChild(block('라우팅 · 적용 가정', kvBox([
+    ['진행단계', v.stage, 'hi'],
+    ['판정 근거', why],
+    ['스케줄', v.sched],
+    ['개시지연', v.delay + '개월'],
+    ['인가전 폐지율', pct(v.pre)],
+    ['조정계수 k_p', A.kpRehab + '배'],
+    ['재회수율', pct(A.recovery)],
+    ['할인율 r (연/월)', pct(A.r) + ' / ' + pct(rMonth(), 4)],
+    ['관리비용', pct(A.mgmtCost)],
+  ])));
+
+  const step = el('div');
+  step.appendChild(kvBox([
+    ['STEP0 회차', `${v.terms} → ${v.adjTerms}`, 'hi'],
+    ['STEP1 잔여 OPB', won(v.opb) + '원'],
+    ['STEP1 회차별 회수금', won(v.perTerm) + '원'],
+    ['분모 OPB', won(v.denom) + '원'],
+    ['분모 순위', `${v.tier}순위 · ${TIER_NAMES['개인회생'][v.tier - 1]}`],
+    ['곡선 시작점', `${v.paid + 1}회차 (납입 ${v.paid} 다음)`],
+  ]));
+  step.appendChild(gap(7));
+  step.appendChild(formula(
+    `조정회차 = ROUND(${v.terms} ÷ ${A.kpRehab}) = ${v.adjTerms}회 · ` +
+    `회차별 회수금 = ${won(v.opb)} ÷ ${v.adjTerms} = ${won(v.perTerm)}원\n` +
+    `w(t) = (1−${pct(v.pre)})·S_t + ${pct(v.pre)}·${pct(A.recovery)} + (1−${pct(v.pre)})·(1−S_t)·${pct(A.recovery)} · ` +
+    `할인 = (1+r_m)^−(t+${v.delay})`));
+  box.appendChild(block('STEP 계산', step));
+
+  const rate = v.denom > 0 ? v.pv / v.denom : null;
+  box.appendChild(block('결과', kvBox([
+    ['명목 기대회수', won(v.nominal) + '원'],
+    ['PV', won(v.pv) + '원', 'hi'],
+    ['PV 회수율', rate == null ? '—' : pct(rate), rate == null ? 'z' : 'hi'],
+    ['명목 대비 PV', v.nominal > 0 ? pct(v.pv / v.nominal) : '—'],
+  ])));
+  if (v.zeroBase) box.appendChild(formula('⚠ 스케줄이 없고 원금잔액도 0이라 잔여 OPB base가 잡히지 않았습니다 — PV 0으로 빠집니다.'));
+  if (v.trace.length) box.appendChild(cfDetails(v, '개인회생'));
+  return box;
+}
+
+/* ── 신용회복 한 건 상세 ── */
+function detailCcrs(e) {
+  const r = e.r, v = evalCcrs(r, CURVES, true);
+  const box = el('div', 'dpanel');
+
+  box.appendChild(block('DD 원본값', kvBox([
+    ['신청인진행상태', S(r.status) || '—'],
+    ['상환방식', S(r.method) ? (v.method && S(r.method) !== v.method ? `${S(r.method)} → ${v.method}` : S(r.method)) : '—'],
+    ['신청구분', S(r.applyType) || '—'],
+    ['납입회차', fmtNum(r.paid)],
+    ['재조정횟수', fmtNum(r.remultCount)],
+    ['조정전원금', fmtWon(r.preAdjPrincipal)],
+    ['조정후원금', fmtWon(r.postAdjPrincipal)],
+    ['원금균등채무액', fmtWon(r.equalPrincipalDebt)],
+    ['상환후잔액', fmtWon(r.balanceAfter)],
+  ])));
+
+  box.appendChild(block('판정 · 적용 가정', kvBox([
+    ['확정구분', v.status, 'hi'],
+    ['제도 (곡선)', v.status === '데이터없음' ? '—' : `${v.scheme} · 곡선 ${v.curve}`],
+    ['곡선 배수', v.remult > 1 ? `×${v.remult} (재조정 반영)` : '×1'],
+    ['스케줄', v.sched],
+    ['조정계수 k_p', v.kp + '배'],
+    ['확정지연', v.delay + '개월'],
+    ['확정전 폐지율', pct(v.status === '확정' ? 0 : A.preFailCr)],
+    ['신복위 수수료', pct(A.fee, 4)],
+    ['재회수율', pct(A.recovery)],
+    ['할인율 r (연/월)', pct(A.r) + ' / ' + pct(rMonth(), 4)],
+    ['곡선 시작점', v.sch ? `${v.paid + 1}회차 (납입 ${v.paid} 다음)` : '1회차 (스케줄無)'],
+    ['신청구분 대조', v.byApply ? (v.schemeMismatch ? `${v.byApply} — 상환방식과 불일치` : `${v.byApply} — 일치`) : '—'],
+  ])));
+
+  const live = i => v.eff[i] > 0 || nb(r.stageStart[i]) || nb(r.stageEnd[i]) || nb(r.stageAmt[i]);
+  if (v.eff.some((x, i) => live(i))) {
+    const tw = el('div', 'tw'), t = el('table');
+    const thead = el('thead'), hr = el('tr');
+    hr.appendChild(el('th', '', '단계'));
+    for (const tx of ['시작회차', '종료회차', '월 상환액', '유효회차', '조정회차', '조정 월상환액', '단계 총액'])
+      hr.appendChild(el('th', 'n', tx));
+    thead.appendChild(hr); t.appendChild(thead);
+    const tb = el('tbody');
+    let tot = 0;
+    for (let i = 0; i < 10; i++) {
+      if (!live(i)) continue;
+      const tr = el('tr', v.eff[i] > 0 ? '' : 'sub');
+      tr.appendChild(el('td', null, (i + 1) + '단계'));
+      tr.appendChild(el('td', 'n mono', fmtNum(r.stageStart[i])));
+      tr.appendChild(el('td', 'n mono', fmtNum(r.stageEnd[i])));
+      tr.appendChild(el('td', 'n mono', fmtWon(r.stageAmt[i])));
+      tr.appendChild(el('td', 'n mono' + (v.eff[i] ? '' : ' dim'), v.eff[i]));
+      tr.appendChild(el('td', 'n mono' + (v.adjN[i] ? '' : ' dim'), v.adjN[i]));
+      tr.appendChild(el('td', 'n mono', v.adjN[i] ? won(v.adjAmt[i]) : '—'));
+      const amt = v.adjN[i] * v.adjAmt[i];
+      tr.appendChild(el('td', 'n mono', v.adjN[i] ? won(amt) : '—'));
+      tot += v.adjN[i] ? amt : 0;
+      tb.appendChild(tr);
+    }
+    const sr = el('tr', 'sum');
+    const sd = el('td', null, '조정 후 명목 총액'); sd.colSpan = 7; sr.appendChild(sd);
+    sr.appendChild(el('td', 'n mono', won(tot)));
+    tb.appendChild(sr);
+    t.appendChild(tb); tw.appendChild(t);
+    const wrap = el('div');
+    wrap.appendChild(tw);
+    wrap.appendChild(gap(7));
+    wrap.appendChild(formula(
+      '유효회차 = 종료회차 − MAX(시작회차−1, 납입회차) — 이미 지나간 회차는 빼고 남은 것만 센다\n' +
+      `조정회차 = ROUND(유효회차 ÷ ${v.kp}) · 조정 월상환액 = 월상환액 × 유효회차 ÷ 조정회차 (단계 총액 보존)`));
+    box.appendChild(block('단계 스케줄', wrap));
+  }
+
+  const wf = el('div');
+  wf.appendChild(kvBox([
+    ['CF base', won(v.cfBase) + '원'],
+    ['분모 OPB', won(v.denom) + '원'],
+    ['분모 순위', `${v.tier}순위 · ${TIER_NAMES['신용회복'][v.tier - 1]}`],
+    ['평가 회차수', v.nn + '회'],
+  ]));
+  if (v.tier === 4) {
+    wf.appendChild(gap(7));
+    wf.appendChild(formula(
+      `4순위 — 분자에만 변제율 ${pct(A.payRateCr)}를 곱합니다. ` +
+      `CF base = ${won(N(r.preAdjPrincipal))} × ${pct(A.payRateCr)} = ${won(v.cfBase)}원, ` +
+      `분모는 변제율을 곱하지 않은 ${won(v.denom)}원이라 회수율이 낮게 표기됩니다 (설계서 V8.1 확정 표기).`));
+  }
+  box.appendChild(block('OPB 폭포', wf));
+
+  const rate = v.denom > 0 ? v.pv / v.denom : null;
+  box.appendChild(block('결과', kvBox([
+    ['명목 기대회수', won(v.nominal) + '원'],
+    ['PV', won(v.pv) + '원', 'hi'],
+    ['PV 회수율', rate == null ? '—' : pct(rate), rate == null ? 'z' : 'hi'],
+    ['명목 대비 PV', v.nominal > 0 ? pct(v.pv / v.nominal) : '—'],
+  ])));
+  if (v.status === '데이터없음') box.appendChild(formula('⚠ 신복위 데이터가 전 필드 공란입니다 — 평가에서 제외(PV 0)됩니다.'));
+  if (v.unknownMethod) box.appendChild(formula('⚠ 상환방식 값을 해석하지 못해 곡선 ' + A.blankCurve + '로 폴백했습니다. 원리금균등 건이면 과대평가됩니다.'));
+  if (v.lostStage) box.appendChild(formula('⚠ 조정계수가 1을 넘어 일부 단계의 조정회차가 0으로 반올림됐습니다 — 그 단계 현금흐름이 사라집니다.'));
+  if (v.trace.length) box.appendChild(cfDetails(v, '신용회복'));
+  return box;
+}
+
+function detailUnrouted(e) {
+  const r = e.r, box = el('div', 'dpanel');
+  box.appendChild(formula('접수일자 · 개시일자 · 인가일자가 모두 비어 있어 진행단계를 정할 수 없습니다. 이 건은 평가에서 빠졌습니다 — 집계와 PV에 들어가지 않습니다.'));
+  box.appendChild(block('DD 원본값', kvBox([
+    ['채권구분', S(r.label) || '—'],
+    ['접수일자', fmtDate(r.dtFiling)],
+    ['개시일자', fmtDate(r.dtOpen)],
+    ['인가일자', fmtDate(r.dtApprove)],
+    ['납입회차', fmtNum(r.paid)],
+    ['잔여회차', fmtNum(r.remainTerms)],
+    ['총변제예정금액', fmtWon(r.totalPlan)],
+    ['원금잔액', fmtWon(r.principal)],
+    ['미상환채권잔액(OPB)', fmtWon(r.opb)],
+  ])));
+  return box;
+}
+
+/* ── 목록 ── */
+function listView() {
+  let a = LIST;
+  if (LF.kind) a = a.filter(e => e.kind === LF.kind);
+  if (LF.grp) a = a.filter(e => grpOf(e) === LF.grp);
+  const q = LF.q.trim().toUpperCase();
+  if (q) a = a.filter(e => e.id.toUpperCase().includes(q));
+  const rt = e => { const x = rateOf(e); return x == null ? -Infinity : x; };
+  const cmp = {
+    id: (x, y) => x.id < y.id ? -1 : x.id > y.id ? 1 : 0,
+    pvDesc: (x, y) => (y.v ? y.v.pv : 0) - (x.v ? x.v.pv : 0),
+    pvAsc: (x, y) => (x.v ? x.v.pv : 0) - (y.v ? y.v.pv : 0),
+    denomDesc: (x, y) => (y.v ? y.v.denom : 0) - (x.v ? x.v.denom : 0),
+    rateDesc: (x, y) => rt(y) - rt(x),
+    rateAsc: (x, y) => rt(x) - rt(y),
+  }[LF.sort];
+  return a.slice().sort(cmp);
+}
+
+const LIST_COLS = 9;
+
+function toggleRow(tr, e) {
+  const nxt = tr.nextElementSibling;
+  if (tr.classList.contains('open')) {
+    tr.classList.remove('open');
+    if (nxt && nxt.classList.contains('drow')) nxt.remove();
+    LF.open.delete(e.id);
+    return;
+  }
+  tr.classList.add('open');
+  LF.open.add(e.id);
+  const dr = el('tr', 'drow'), td = el('td');
+  td.colSpan = LIST_COLS;
+  td.appendChild(!e.v ? detailUnrouted(e) : e.kind === '개인회생' ? detailRehab(e) : detailCcrs(e));
+  dr.appendChild(td);
+  tr.parentElement.insertBefore(dr, tr.nextSibling);
+}
+
+function renderList() {
+  const body = $('#listBody');
+  body.innerHTML = '';
+  if (!LIST.length) {
+    $('#listStage').dataset.state = 'idle';
+    $('#listNote').textContent = '건별 계산 자취';
+    body.appendChild(el('div', 'empty', '평가를 진행하면 채권 한 건 한 건이 어떻게 계산됐는지 여기서 펼쳐 볼 수 있습니다.'));
+    return;
+  }
+  $('#listStage').dataset.state = 'live';
+
+  const lead = el('p', 'hint');
+  lead.style.cssText = 'margin:0 0 12px';
+  lead.innerHTML = '한 줄을 <strong>클릭하면</strong> 그 채권의 원본값 · 라우팅 근거 · STEP 계산 · 회차별 현금흐름이 펼쳐집니다. ' +
+    '다시 클릭하면 접힙니다. 위 제목줄을 클릭하면 구획 전체가 접힙니다.';
+  body.appendChild(lead);
+
+  /* ── 도구 막대 ── */
+  const tools = el('div', 'tools');
+  const mkSel = (opts, val, on) => {
+    const s = el('select');
+    for (const [v, t] of opts) { const o = el('option', null, t); o.value = v; s.appendChild(o); }
+    s.value = val;
+    s.addEventListener('change', () => { on(s.value); LF.page = 0; renderList(); });
+    return s;
+  };
+  const q = el('input');
+  q.type = 'search'; q.placeholder = '채권식별번호 검색'; q.value = LF.q;
+  q.setAttribute('aria-label', '채권식별번호 검색');
+  q.addEventListener('input', () => {
+    clearTimeout(q._t);
+    q._t = setTimeout(() => {
+      LF.q = q.value; LF.page = 0; renderList();
+      const n = body.querySelector('input[type=search]');
+      if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+    }, 220);
+  });
+  tools.appendChild(q);
+
+  const kinds = [...new Set(LIST.map(e => e.kind))];
+  tools.appendChild(mkSel([['', '제도 — 전체'], ...kinds.map(k => [k, k])], LF.kind, v => LF.kind = v));
+
+  const grps = [...new Set(LIST.filter(e => !LF.kind || e.kind === LF.kind).map(grpOf))].sort();
+  if (LF.grp && !grps.includes(LF.grp)) LF.grp = '';
+  tools.appendChild(mkSel([['', '구분 — 전체'], ...grps.map(g => [g, g])], LF.grp, v => LF.grp = v));
+
+  tools.appendChild(mkSel([
+    ['id', '정렬 — 식별번호'], ['pvDesc', '정렬 — PV 큰 순'], ['pvAsc', '정렬 — PV 작은 순'],
+    ['denomDesc', '정렬 — 분모 큰 순'], ['rateDesc', '정렬 — 회수율 높은 순'], ['rateAsc', '정렬 — 회수율 낮은 순'],
+  ], LF.sort, v => LF.sort = v));
+
+  tools.appendChild(mkSel([['50', '50건씩'], ['100', '100건씩'], ['300', '300건씩'], ['1000', '1000건씩']],
+    String(LF.size), v => LF.size = +v));
+
+  tools.appendChild(el('span', 'sp'));
+
+  const foldAll = el('button', 'tgl', '펼친 것 모두 접기');
+  foldAll.type = 'button';
+  foldAll.disabled = !LF.open.size;
+  foldAll.addEventListener('click', () => { LF.open.clear(); renderList(); });
+  tools.appendChild(foldAll);
+
+  const csv = el('button', 'tgl', 'CSV 저장');
+  csv.type = 'button';
+  csv.addEventListener('click', () => exportCsv(listView()));
+  tools.appendChild(csv);
+  body.appendChild(tools);
+
+  /* ── 표 ── */
+  const view = listView();
+  const pages = Math.max(1, Math.ceil(view.length / LF.size));
+  if (LF.page >= pages) LF.page = pages - 1;
+  const from = LF.page * LF.size, slice = view.slice(from, from + LF.size);
+
+  const cnt = el('div', 'cnt');
+  cnt.style.margin = '0 0 8px';
+  cnt.textContent = view.length
+    ? `전체 ${LIST.length.toLocaleString()}건 중 ${view.length.toLocaleString()}건 · ` +
+      `${(from + 1).toLocaleString()}–${(from + slice.length).toLocaleString()} 표시`
+    : `조건에 맞는 채권이 없습니다 (전체 ${LIST.length.toLocaleString()}건)`;
+  body.appendChild(cnt);
+
+  const tw = el('div', 'tw'), t = el('table', 'list');
+  const thead = el('thead'), hr = el('tr');
+  for (const [tx, n] of [['채권식별번호', 0], ['제도', 0], ['구분', 0], ['세부', 0], ['스케줄', 0],
+                         ['분모 OPB', 1], ['명목 기대회수', 1], ['PV', 1], ['PV 회수율', 1]])
+    hr.appendChild(el('th', n ? 'n' : '', tx));
+  thead.appendChild(hr); t.appendChild(thead);
+  const tb = el('tbody');
+  for (const e of slice) {
+    const tr = el('tr', 'brow');
+    tr.appendChild(el('td', 'mono', e.id));
+    tr.appendChild(el('td', null, e.kind));
+    const g = grpOf(e);
+    const tdg = el('td');
+    tdg.appendChild(el('span', 'pill ' + (g === '미분류' || g === '데이터없음' ? 'bad'
+      : (g === '인가' || g === '확정') ? 'ok' : 'warn'), g));
+    tr.appendChild(tdg);
+    tr.appendChild(el('td', 'dim', detOf(e)));
+    tr.appendChild(el('td', 'dim', e.v ? e.v.sched : '—'));
+    tr.appendChild(el('td', 'n mono', e.v ? won(e.v.denom) : '—'));
+    tr.appendChild(el('td', 'n mono', e.v ? won(e.v.nominal) : '—'));
+    tr.appendChild(el('td', 'n mono', e.v ? won(e.v.pv) : '—'));
+    const rt = rateOf(e);
+    tr.appendChild(el('td', 'n mono' + (rt == null ? ' dim' : ''), rt == null ? '—' : pct(rt)));
+    tr.addEventListener('click', () => { toggleRow(tr, e); foldAll.disabled = !LF.open.size; });
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb); tw.appendChild(t); body.appendChild(tw);
+
+  // 펼쳐 둔 건은 다시 펼친다 — 가정값을 바꿔도 열어 둔 상세가 새 값으로 살아 있게
+  if (LF.open.size) {
+    const trs = [...tb.querySelectorAll('tr.brow')];
+    slice.forEach((e, i) => { if (LF.open.has(e.id)) toggleRow(trs[i], e); });
+  }
+
+  /* ── 페이지 ── */
+  if (pages > 1) {
+    const pg = el('div', 'pager');
+    const mkBtn = (txt, to, dis) => {
+      const b = el('button', null, txt); b.type = 'button'; b.disabled = dis;
+      b.addEventListener('click', () => {
+        LF.page = to; renderList();
+        $('#listStage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      return b;
+    };
+    pg.appendChild(mkBtn('« 처음', 0, LF.page === 0));
+    pg.appendChild(mkBtn('‹ 이전', Math.max(0, LF.page - 1), LF.page === 0));
+    pg.appendChild(el('span', 'pg', `${LF.page + 1} / ${pages}`));
+    pg.appendChild(mkBtn('다음 ›', Math.min(pages - 1, LF.page + 1), LF.page === pages - 1));
+    pg.appendChild(mkBtn('끝 »', pages - 1, LF.page === pages - 1));
+    body.appendChild(pg);
+  }
+
+  $('#listNote').innerHTML = '';
+  $('#listNote').appendChild(el('span', 'pill neutral', LIST.length.toLocaleString() + '건'));
+}
+
+/* 필터가 걸린 목록 그대로 CSV로 떨군다. 엑셀이 한글을 깨지 않게 BOM을 붙인다. */
+function csvText(view) {
+  const head = ['채권식별번호', '제도', '구분', '세부', '스케줄', '분모OPB', '명목기대회수', 'PV',
+                'PV회수율(%)', '분모순위', '납입회차', '평가회차', '지연개월'];
+  const esc = s => { const x = String(s ?? ''); return /[",\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+  const lines = [head.join(',')];
+  for (const e of view) {
+    const v = e.v, rt = rateOf(e);
+    lines.push([e.id, e.kind, grpOf(e), detOf(e), v ? v.sched : '',
+      v ? Math.round(v.denom) : '', v ? Math.round(v.nominal) : '', v ? Math.round(v.pv) : '',
+      rt == null ? '' : (rt * 100).toFixed(4),
+      v ? v.tier : '', v ? v.paid : '',
+      v ? (e.kind === '개인회생' ? v.adjTerms : v.nn) : '', v ? v.delay : '',
+    ].map(esc).join(','));
+  }
+  return lines.join('\r\n');
+}
+
+/* 필터가 걸린 목록 그대로 CSV 파일로 떨군다. 엑셀이 한글을 깨지 않게 BOM을 붙인다. */
+function exportCsv(view) {
+  const blob = new Blob(['﻿' + csvText(view)], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '채권별평가_' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ── 구획 접기 — 제목줄 클릭 ── */
+function wireFold() {
+  for (const hd of document.querySelectorAll('.stage-hd')) {
+    hd.appendChild(el('span', 'chev', '▶'));
+    hd.setAttribute('title', '클릭하면 이 구획을 접거나 폅니다');
+    hd.addEventListener('click', ev => {
+      if (ev.target.closest('button,select,input,a,summary,label')) return;
+      const s = hd.parentElement;
+      s.dataset.fold = s.dataset.fold === '1' ? '' : '1';
+    });
+  }
+}
+
+/* ══════════════════════ POOL 회차별 현금흐름 ══════════════════════ */
+/* 채권별 상세(④)가 한 건을 세로로 훑는 표라면, 이 구획은 POOL 전체를 가로로 펼친 표다.
+   행 = 계산 단계, 열 = 회차. 회차가 길어져도 왼쪽 두 열(항목·합계)은 붙박이로 남는다. */
+const CFMAX = 600;                       // 이보다 긴 회차는 마지막 열에 접어 넣는다 (합계 보존)
+const CF_KEYS_REHAB = ['rawCf', 'cf', 'alive', 'lostPre', 'lostPost', 'recov', 'mgmt', 'exp', 'pv'];
+const CF_KEYS_CCRS = ['rawCf', 'cf', 'alive', 'fee', 'lostPre', 'lostPost', 'recov', 'mgmt', 'exp', 'pv'];
+
+let CFS = null;
+const CFV = { rehabSeg: '전체', ccrsSeg: '전체', unit: 'm', span: 60 };
+
+function newAcc(keys) {
+  const o = { n: 0, maxT: 0, keys };
+  for (const k of keys) o[k] = new Float64Array(CFMAX + 2);
+  return o;
+}
+function addAcc(dst, src) {
+  dst.n += src.n;
+  if (src.maxT > dst.maxT) dst.maxT = src.maxT;
+  for (const k of dst.keys) {
+    const a = dst[k], b = src[k];
+    for (let i = 0; i < a.length; i++) a[i] += b[i];
+  }
+}
+
+/* 잎 구획(실제로 쌓인 것)에서 상위 구획을 만들어 순서대로 늘어놓는다. */
+function buildSegs(leaves, kind) {
+  if (!leaves.size) return null;
+  const keys = kind === 'rehab' ? CF_KEYS_REHAB : CF_KEYS_CCRS;
+  const out = [], byKey = new Map();
+  const roll = (label, picks) => {
+    const src = picks.filter(k => leaves.has(k));
+    if (!src.length) return;
+    if (src.length === 1) { out.push([label, leaves.get(src[0])]); byKey.set(label, leaves.get(src[0])); return; }
+    const a = newAcc(keys);
+    for (const k of src) addAcc(a, leaves.get(k));
+    out.push([label, a]); byKey.set(label, a);
+  };
+  const all = [...leaves.keys()];
+  roll('전체', all);
+  if (kind === 'rehab') {
+    const un = all.filter(k => k !== '인가');
+    roll('인가', ['인가']);
+    if (un.length) {
+      roll('미인가', un);
+      if (un.length > 1) for (const k of ['미인가-개시', '미인가-접수금지', '폐지항고']) roll(k, [k]);
+    }
+  } else {
+    for (const k of ['개인워크아웃 (확정)', '프리·신속 (확정)', '미확정', '데이터없음']) roll(k, [k]);
+  }
+  // 예상 밖 구획도 빠뜨리지 않는다
+  for (const k of all) if (!byKey.has(k)) roll(k, [k]);
+  return out;
+}
+
+/* 행 정의 — [키, 라벨, 종류]. 종류 sub = 잃는 돈·비용, key = 결론 행. */
+const CF_DEF_REHAB = [
+  ['rawCf', '① 명목 회차별 현금 (조정 전)', ''],
+  ['cf', '② 조정계수 반영 후 현금', ''],
+  ['alive', '③ 생존 변제금 (실효폐지 반영)', ''],
+  ['lostPre', '④ 인가전 폐지 상실금', 'sub'],
+  ['lostPost', '⑤ 인가후 폐지 상실금', 'sub'],
+  ['recov', '⑥ 폐지분 재회수액', ''],
+  ['mgmt', '⑦ 관리비용 차감', 'sub'],
+  ['exp', '⑧ 기대회수액 합계', 'key'],
+  ['pv', '⑨ PV (할인 후)', 'key'],
+];
+const CF_DEF_CCRS = [
+  ['rawCf', '① 명목 회차별 현금 (조정 전)', ''],
+  ['cf', '② 조정계수 반영 후 현금', ''],
+  ['alive', '③ 생존 변제금 (효력상실 반영)', ''],
+  ['fee', '④ 신복위 수수료 차감', 'sub'],
+  ['lostPre', '⑤ 확정전 폐지 상실금', 'sub'],
+  ['lostPost', '⑥ 확정후 효력상실 상실금', 'sub'],
+  ['recov', '⑦ 폐지·상실분 재회수액', ''],
+  ['mgmt', '⑧ 관리비용 차감', 'sub'],
+  ['exp', '⑨ 기대회수액 합계', 'key'],
+  ['pv', '⑩ PV (할인 후)', 'key'],
+];
+
+const arrSum = a => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i]; return s; };
+
+/* 표시용 열 묶기 — 월 그대로 두거나 12개월씩 합친다. */
+function cfCols(acc) {
+  const maxT = Math.max(1, acc.maxT);
+  if (CFV.unit === 'y') {
+    const ny = Math.ceil(maxT / 12), cols = [];
+    for (let y = 0; y < ny; y++) cols.push({ label: (y + 1) + '년차', from: y * 12 + 1, to: Math.min((y + 1) * 12, maxT) });
+    return cols;
+  }
+  const cols = [];
+  for (let t = 1; t <= maxT; t++) cols.push({ label: String(t), from: t, to: t });
+  return cols;
+}
+const colSum = (a, c) => { let s = 0; for (let i = c.from; i <= c.to; i++) s += a[i]; return s; };
+
+function cfTable(acc, defs) {
+  const cols = cfCols(acc);
+  const shown = CFV.span > 0 ? cols.slice(0, CFV.span) : cols;
+  const rows = defs.filter(([k]) => !(k === 'mgmt' && A.mgmtCost <= 0));
+
+  const tw = el('div', 'tw flush'), t = el('table', 'cf');
+  const thead = el('thead'), hr = el('tr');
+  hr.appendChild(el('th', 'lab', '항목'));
+  hr.appendChild(el('th', 'tot', '합계 (전 기간)'));
+  for (const c of shown) hr.appendChild(el('th', 'n', c.label));
+  thead.appendChild(hr); t.appendChild(thead);
+
+  const tb = el('tbody');
+  for (const [k, label, tone] of rows) {
+    const a = acc[k];
+    const tr = el('tr', tone === 'key' ? 'hl' : tone === 'sub' ? 'loss' : '');
+    tr.appendChild(el('td', 'lab', label));
+    tr.appendChild(el('td', 'tot mono', won(arrSum(a))));
+    for (const c of shown) {
+      const v = colSum(a, c);
+      tr.appendChild(el('td', 'n mono' + (v ? '' : ' zero'), v ? won(v) : ''));
+    }
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb); tw.appendChild(t);
+  return { tw, cols: cols.length, shown: shown.length };
+}
+
+/* 열마다 성립해야 하는 항등식을 실측한다 — 표를 믿어도 되는지 여기서 갈린다. */
+function cfAudit(acc, kind) {
+  let splitDev = 0, buildDev = 0, keepDev = 0;
+  const hasFee = kind === 'ccrs';
+  for (let i = 0; i <= CFMAX + 1; i++) {
+    const cf = acc.cf[i];
+    if (cf) {
+      splitDev = Math.max(splitDev, Math.abs(acc.alive[i] + acc.lostPre[i] + acc.lostPost[i] - cf) / cf);
+      const built = acc.alive[i] - (hasFee ? acc.fee[i] : 0) + acc.recov[i];
+      if (built) buildDev = Math.max(buildDev, Math.abs(acc.exp[i] + acc.mgmt[i] - built) / Math.abs(built));
+    }
+  }
+  const rawT = arrSum(acc.rawCf), cfT = arrSum(acc.cf);
+  if (rawT) keepDev = Math.abs(cfT - rawT) / rawT;
+  return { splitDev, buildDev, keepDev, nominal: arrSum(acc.exp), pv: arrSum(acc.pv) };
+}
+
+function cfBlock(title, segs, defs, kind, cur, setCur) {
+  const wrap = el('div');
+  const seg = segs.find(([k]) => k === cur) || segs[0];
+  const acc = seg[1];
+
+  const head = el('div');
+  head.style.cssText = 'display:flex;gap:9px;align-items:baseline;margin:0 0 9px;flex-wrap:wrap';
+  const h = el('strong', null, title); h.style.fontSize = '13px'; head.appendChild(h);
+  const sub = el('span', null, `${acc.n.toLocaleString()}건 · 최장 ${acc.maxT}개월`);
+  sub.style.cssText = 'color:var(--ink-faint);font-size:12px'; head.appendChild(sub);
+  wrap.appendChild(head);
+
+  const tabs = el('div', 'segs');
+  for (const [k, a] of segs) {
+    const b = el('button', 'seg' + (k === seg[0] ? ' on' : ''));
+    b.type = 'button';
+    b.appendChild(el('span', null, k));
+    b.appendChild(el('span', 'c', a.n.toLocaleString()));
+    b.addEventListener('click', () => { setCur(k); renderCF(); });
+    tabs.appendChild(b);
+  }
+  wrap.appendChild(tabs);
+
+  const { tw, cols, shown } = cfTable(acc, defs);
+  wrap.appendChild(tw);
+
+  const au = cfAudit(acc, kind);
+  const foot = el('div');
+  foot.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px';
+  const okSplit = au.splitDev < 1e-9, okBuild = au.buildDev < 1e-9, okKeep = au.keepDev < 1e-9;
+  const three = kind === 'rehab' ? '③+④+⑤ = ②' : '③+⑤+⑥ = ②';
+  const build = kind === 'rehab' ? '③+⑥ = ⑦+⑧' : '③−④+⑦ = ⑧+⑨';
+  foot.appendChild(el('span', 'pill ' + (okSplit ? 'ok' : 'bad'), three + (okSplit ? ' 일치' : ' 편차 ' + au.splitDev.toExponential(1))));
+  foot.appendChild(el('span', 'pill ' + (okBuild ? 'ok' : 'bad'), build + (okBuild ? ' 일치' : ' 편차 ' + au.buildDev.toExponential(1))));
+  foot.appendChild(el('span', 'pill ' + (okKeep ? 'ok' : 'warn'), '①합계 = ②합계' + (okKeep ? ' 일치' : ' 편차 ' + au.keepDev.toExponential(1))));
+  if (cols > shown) foot.appendChild(el('span', 'pill neutral', `${cols.toLocaleString()}열 중 ${shown.toLocaleString()}열 표시 — 합계는 전 회차`));
+  wrap.appendChild(foot);
+  return wrap;
+}
+
+function renderCF() {
+  const body = $('#cfBody');
+  body.innerHTML = '';
+  if (!CFS || (!CFS.rehab && !CFS.ccrs)) {
+    $('#cfStage').dataset.state = 'idle';
+    $('#cfNote').textContent = 'POOL 합계 · 단계별 가로 전개';
+    body.appendChild(el('div', 'empty', '평가를 진행하면 회차별 현금흐름이 단계별로 펼쳐집니다.'));
+    return;
+  }
+  $('#cfStage').dataset.state = 'live';
+
+  const lead = el('p', 'hint');
+  lead.style.cssText = 'margin:0 0 12px';
+  lead.innerHTML = '행은 계산 단계, <strong>열은 평가시점부터의 경과 개월</strong>입니다 — 변제회차가 아니라 달력입니다. ' +
+    '개시지연·확정지연이 걸린 건은 그만큼 앞쪽 열이 비고 뒤에서 현금이 시작됩니다. ' +
+    '<strong>가로로 밀어서</strong> 보시고, 왼쪽 두 열(항목 · 합계)은 따라옵니다.';
+  body.appendChild(lead);
+
+  const tools = el('div', 'tools');
+  const mkSel = (opts, val, on) => {
+    const s = el('select');
+    for (const [v, tx] of opts) { const o = el('option', null, tx); o.value = v; s.appendChild(o); }
+    s.value = val;
+    s.addEventListener('change', () => { on(s.value); renderCF(); });
+    return s;
+  };
+  tools.appendChild(mkSel([['m', '열 단위 — 개월'], ['y', '열 단위 — 연차(12개월 합)']], CFV.unit, v => CFV.unit = v));
+  tools.appendChild(mkSel([['36', '처음 36열'], ['60', '처음 60열'], ['120', '처음 120열'], ['0', '전체 열']],
+    String(CFV.span), v => CFV.span = +v));
+  tools.appendChild(el('span', 'sp'));
+  const csv = el('button', 'tgl', 'CSV 저장');
+  csv.type = 'button';
+  csv.addEventListener('click', exportCfCsv);
+  tools.appendChild(csv);
+  body.appendChild(tools);
+
+  if (CFS.rehab) {
+    body.appendChild(cfBlock('개인회생', CFS.rehab, CF_DEF_REHAB, 'rehab', CFV.rehabSeg, k => CFV.rehabSeg = k));
+    body.appendChild(gap(24));
+  }
+  if (CFS.ccrs) body.appendChild(cfBlock('신용회복', CFS.ccrs, CF_DEF_CCRS, 'ccrs', CFV.ccrsSeg, k => CFV.ccrsSeg = k));
+
+  const note = el('p', 'hint');
+  note.style.cssText = 'margin:16px 0 0;font-size:11.5px';
+  note.innerHTML =
+    '① 은 조정계수를 넣기 전 원래 스케줄, ② 는 조정계수로 회차를 늘려 다시 쪼갠 현금입니다 — ' +
+    '회차 수만 늘 뿐 <strong>합계는 같아야</strong> 합니다.<br>' +
+    '③④⑤ 는 ② 를 생존·폐지로 가른 것이라 셋을 더하면 ② 가 됩니다. 잃은 돈 가운데 일부가 ' +
+    (CFS.ccrs ? '⑥·⑦' : '⑥') + ' 재회수로 돌아옵니다.<br>' +
+    '<strong>열 번호가 곧 할인 개월수</strong>입니다 — m 열의 PV는 m 개월 할인한 값이라, 어느 구획을 보든 ' +
+    'PV ÷ 기대회수 = (1+r_m)^−m 이 성립합니다. 지연은 열 위치로 드러나므로 미인가·미확정 구획은 앞쪽 열이 비어 있습니다.<br>' +
+    '지연구간에는 <strong>폐지 곡선이 소비되지 않습니다</strong> — 기다리는 동안 위험이 쌓이는 것이 아니라 시작만 미뤄집니다. ' +
+    '그 구간의 위험은 인가전·확정전 폐지율이 따로 잡습니다.<br>' +
+    '양도통지비용은 t=0 에 한 번 빠지므로 이 표에는 없습니다 (④ 평가 결과의 PV와 그만큼 차이 납니다).';
+  body.appendChild(note);
+
+  const n = (CFS.rehab ? CFS.rehab[0][1].n : 0) + (CFS.ccrs ? CFS.ccrs[0][1].n : 0);
+  $('#cfNote').innerHTML = '';
+  $('#cfNote').appendChild(el('span', 'pill neutral', n.toLocaleString() + '건 누적'));
+}
+
+/* 화면에 보이는 구획을 회차 전체 길이로 떨군다 (열 잘라내기는 화면에만 적용). */
+function exportCfCsv() {
+  const lines = [];
+  const push = (title, segs, defs, cur) => {
+    if (!segs) return;
+    const seg = segs.find(([k]) => k === cur) || segs[0];
+    const acc = seg[1], maxT = Math.max(1, acc.maxT);
+    lines.push(title + ' — ' + seg[0] + ' (' + acc.n + '건)');
+    const head = ['항목', '합계'];
+    for (let t = 1; t <= maxT; t++) head.push(t + '개월');
+    lines.push(head.join(','));
+    for (const [k, label] of defs) {
+      if (k === 'mgmt' && A.mgmtCost <= 0) continue;
+      const a = acc[k], row = ['"' + label + '"', Math.round(arrSum(a))];
+      for (let t = 1; t <= maxT; t++) row.push(Math.round(a[t]));
+      lines.push(row.join(','));
+    }
+    lines.push('');
+  };
+  push('개인회생', CFS && CFS.rehab, CF_DEF_REHAB, CFV.rehabSeg);
+  push('신용회복', CFS && CFS.ccrs, CF_DEF_CCRS, CFV.ccrsSeg);
+  const blob = new Blob(['﻿' + lines.join(String.fromCharCode(13, 10))], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '회차별현금흐름_' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ══════════════════════ 실효폐지 곡선 ══════════════════════ */
+/* 엔진이 먹는 값은 '월별 조건부 폐지율(해저드) h' 하나뿐이다. 누적 폐지율·누적 생존율로
+   들어오면 여기서 h 로 환산해 넣는다 — 형식을 잘못 고르면 조용히 틀리는 게 아니라
+   생존율이 붕괴해 눈에 띄도록, 올린 즉시 누적생존 환산값을 보여 준다. */
+const CFORM = {
+  h: '월별 조건부 폐지율 (해저드)',
+  F: '누적 폐지율 (1−S)',
+  S: '누적 생존율 (S)',
+};
+let curveForm = 'h';                 // 업로드 해석 형식
+let curveTab = 'rehab';              // 모달에서 보고 있는 곡선
+const CSTEP = 0.0005;                // ± 버튼 한 번의 증감폭
+
+/* 설계서 부록 A 기준점 — 사용자 곡선이 얼마나 센지 가늠하는 잣대 */
+const CBENCH = { rehab: [122, .671], A: [140, .718], B: [140, .626] };
+
+const survOf = (head, tail, n) => {   // 곡선 자체의 누적생존 (엔진과 같은 식)
+  let s = 1;
+  for (let i = 0; i < n; i++) s *= 1 - Math.min(i < head.length ? head[i] : tail, 1);
+  return s;
+};
+const cumS = (head, i) => {           // 1..i 회차까지 누적생존
+  let s = 1;
+  for (let k = 0; k <= i; k++) s *= 1 - Math.min(head[k], 1);
+  return s;
+};
+
+/* ── 입력 파싱 ── */
+/* 붙여넣기·CSV 모두 같은 길로 보낸다. 한 줄에 숫자가 둘이면 [회차, 값], 하나면 값만. */
+function parseCurveText(txt) {
+  const rows = [];
+  for (const raw of String(txt).split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    const nums = line.split(/[\t,;|\s]+/).map(x => x.replace(/[%"']/g, '')).filter(x => x !== '');
+    const v = nums.map(parseFloat).filter(x => isFinite(x));
+    if (!v.length) continue;                       // 머리글 줄
+    rows.push(v.length >= 2 ? { t: v[0], v: v[1] } : { t: rows.length + 1, v: v[0] });
+  }
+  return rows;
+}
+
+/* 시트에서 뽑기 — 숫자가 든 첫 두 열을 [회차, 값]으로 본다 */
+async function parseCurveSheet(zip) {
+  SST = parseSST(await extract(zip, 'xl/sharedStrings.xml'));
+  const wbx = await extract(zip, 'xl/workbook.xml');
+  const rel = await extract(zip, 'xl/_rels/workbook.xml.rels');
+  if (!wbx) throw new Error('xl/workbook.xml 을 찾지 못했습니다.');
+  const tg = new Map();
+  for (const m of (rel || '').matchAll(/<Relationship\b[^>]*>/g)) {
+    const id = /Id="([^"]+)"/.exec(m[0]), t = /Target="([^"]+)"/.exec(m[0]);
+    if (id && t) tg.set(id[1], t[1].replace(/^\/?xl\//, '').replace(/^\//, ''));
+  }
+  const first = /<sheet\b[^>]*r:id="([^"]+)"/.exec(wbx);
+  if (!first || !tg.has(first[1])) throw new Error('시트를 찾지 못했습니다.');
+  const xml = await extract(zip, 'xl/' + tg.get(first[1]));
+  if (!xml) throw new Error('시트를 읽지 못했습니다.');
+  const rows = [];
+  scanRows(xml, 1, null, (rn, cells) => {
+    const v = Object.keys(cells).map(Number).sort((a, b) => a - b)
+      .map(c => cells[c]).filter(x => typeof x === 'number' && isFinite(x));
+    if (v.length) rows.push(v.length >= 2 ? { t: v[0], v: v[1] } : { t: rows.length + 1, v: v[0] });
+  });
+  return rows;
+}
+
+/* ── 형식 → 해저드 환산 ── */
+function toHazard(rows, form) {
+  if (!rows.length) throw new Error('숫자를 한 줄도 읽지 못했습니다.');
+  rows = rows.slice().sort((a, b) => a.t - b.t);
+  let vals = rows.map(r => r.v);
+
+  // 단위 자동감지 — 퍼센트로 적힌 값(5 = 5%)을 소수로 내린다
+  const mx = Math.max(...vals.map(Math.abs));
+  let pct = false;
+  if (form === 'S' ? mx > 1.5 : mx > 1) { vals = vals.map(v => v / 100); pct = true; }
+
+  let head;
+  if (form === 'h') {
+    head = vals;
+  } else {
+    // 누적 → 월별. S_t 를 만든 뒤 h_t = 1 − S_t/S_(t−1)
+    const S = form === 'S' ? vals : vals.map(v => 1 - v);
+    head = [];
+    let prev = 1;
+    for (const s of S) {
+      if (!(s > 0)) throw new Error('누적생존이 0 이하로 떨어지는 지점이 있습니다. 형식(누적/월별)을 확인하세요.');
+      if (s > prev + 1e-9) throw new Error('누적생존이 도중에 늘어납니다 — 누적이 아니라 월별 값일 수 있습니다.');
+      head.push(1 - s / prev);
+      prev = s;
+    }
+  }
+  head = head.map(x => (Math.abs(x) < 1e-12 ? 0 : x));
+  for (const [i, x] of head.entries()) {
+    if (!isFinite(x)) throw new Error((i + 1) + '회차 값을 숫자로 읽지 못했습니다.');
+    if (x < 0) throw new Error((i + 1) + '회차가 음수입니다 (' + x + ').');
+    if (x >= 1) throw new Error((i + 1) + '회차가 1 이상입니다 (' + x + '). 그 회차에서 전부 폐지된다는 뜻이 됩니다.');
+  }
+  if (head.length > MAXT) head = head.slice(0, MAXT);
+  return { head, tail: head[head.length - 1], pct, n: head.length };
+}
+
+function applyCurve(key, head, tail, src) {
+  CURVE[key] = { head, tail, custom: true, src };
+  rebuildH(key);
+  afterCurveChange();
+}
+function afterCurveChange() {
+  saveCurves();
+  renderCurves();
+  if (typeof renderCurveEditor === 'function' && !$('#curveModal').hidden) renderCurveEditor();
+  if (hasRun) recompute(); else renderChecks();
+}
+
+/* ── 저장 : 새로고침해도 남게 (DD 와 달리 곡선은 사내 표준으로 재사용한다) ── */
+function saveCurves() {
+  try {
+    const o = {};
+    for (const k of CURVE_KEYS) if (CURVE[k].custom)
+      o[k] = { head: CURVE[k].head, tail: CURVE[k].tail, src: CURVE[k].src };
+    if (Object.keys(o).length) localStorage.setItem('curves', JSON.stringify(o));
+    else localStorage.removeItem('curves');
+  } catch (e) {}
+}
+function loadCurves() {
+  try {
+    const o = JSON.parse(localStorage.getItem('curves') || '{}');
+    for (const k of CURVE_KEYS) {
+      const c = o[k];
+      if (!c || !Array.isArray(c.head) || !c.head.length) continue;
+      if (!c.head.every(x => typeof x === 'number' && isFinite(x) && x >= 0 && x < 1)) continue;
+      CURVE[k] = { head: c.head.slice(0, MAXT), tail: +c.tail || 0, custom: true, src: c.src || '저장된 곡선' };
+      rebuildH(k);
+    }
+  } catch (e) {}
+}
+
+/* ── 구획 ② ── */
+let curveTarget = null;               // 업로드 버튼이 누른 슬롯
+
+function renderCurves() {
+  const lead = $('#curveLead');
+  lead.innerHTML = anyCustom()
+    ? '사용자 곡선이 적용돼 있습니다. <strong>올리지 않은 곡선은 내장 곡선(설계서 부록 A)을 그대로 씁니다.</strong> ' +
+      '값은 <strong>월별 조건부 폐지율</strong>이며, 누적생존은 <code>S_t = Π(1−h)</code> 로 엔진이 직접 만듭니다.'
+    : '<strong>올리지 않으면 내장 곡선(설계서 부록 A)을 그대로 사용합니다</strong> — 지금은 3종 모두 내장 곡선입니다. ' +
+      '채무자 특성(은행·카드·저축은행, 지역, 연령 등)에 따라 곡선이 다르면 여기서 갈아 끼우세요. ' +
+      '값은 <strong>월별 조건부 폐지율</strong>이며, 누적생존은 <code>S_t = Π(1−h)</code> 로 엔진이 직접 만듭니다.';
+
+  const box = $('#curveSlots');
+  box.innerHTML = '';
+  for (const k of CURVE_KEYS) {
+    const c = CURVE[k], [bn, bref] = CBENCH[k];
+    const sv = survOf(c.head, c.tail, bn);
+    const d = el('div', 'slot' + (c.custom ? ' custom' : ''));
+    const hd = el('div', 'slot-hd');
+    hd.appendChild(el('span', 'nm', CURVE_LABEL[k]));
+    hd.appendChild(el('span', 'pill ' + (c.custom ? 'warn' : 'neutral'), c.custom ? '사용자 곡선' : '내장'));
+    d.appendChild(hd);
+
+    const dl = el('dl');
+    const kv = (a, b, cls) => { dl.appendChild(el('dt', null, a)); dl.appendChild(el('dd', cls, b)); };
+    kv('정의 회차', c.head.length + '회 (이후 꼬리값 유지)');
+    kv('꼬리값 h', c.tail.toFixed(6));
+    kv(bn + '개월 누적생존', pct(sv, 1));
+    kv('내장 기준치', pct(bref, 1));
+    d.appendChild(dl);
+
+    const ax = el('div', 'slot-ax');
+    const up = el('button', 'pri', '파일 올리기');
+    up.type = 'button';
+    up.addEventListener('click', () => { curveTarget = k; $('#curveFile').value = ''; $('#curveFile').click(); });
+    ax.appendChild(up);
+    const ed = el('button', null, '보기 · 편집');
+    ed.type = 'button';
+    ed.addEventListener('click', () => openCurveModal(k));
+    ax.appendChild(ed);
+    const rs = el('button', null, '초기화');
+    rs.type = 'button'; rs.disabled = !c.custom;
+    rs.addEventListener('click', () => { resetCurve(k); rebuildH(k); afterCurveChange(); });
+    ax.appendChild(rs);
+    d.appendChild(ax);
+    if (c.custom && c.src) {
+      const s2 = el('div', null, c.src);
+      s2.style.cssText = 'margin-top:8px;font-size:11px;color:var(--ink-faint);overflow-wrap:anywhere';
+      d.appendChild(s2);
+    }
+    box.appendChild(d);
+  }
+
+  const n = CURVE_KEYS.filter(k => CURVE[k].custom).length;
+  $('#curveNote').innerHTML = '';
+  $('#curveNote').appendChild(el('span', 'pill ' + (n ? 'warn' : 'ok'),
+    n ? `사용자 곡선 ${n}/3` : '내장 곡선 3종'));
+  $('#curveBtnSub').textContent = n ? `사용자 곡선 ${n}/3 적용` : '내장 곡선 3종';
+  $('#curveBtn').classList.toggle('on', !!n);
+}
+
+function curveErr(msg) {
+  const box = $('#curveErr');
+  box.innerHTML = '';
+  if (!msg) return;
+  box.appendChild(el('div', 'err', msg));
+}
+
+async function handleCurveFile(file) {
+  curveErr('');
+  const k = curveTarget;
+  if (!k) return;
+  try {
+    let rows;
+    if (/\.xlsx$/i.test(file.name)) rows = await parseCurveSheet(await readZip(await file.arrayBuffer()));
+    else rows = parseCurveText(await file.text());
+    const r = toHazard(rows, curveForm);
+    applyCurve(k, r.head, r.tail,
+      `${file.name} · ${CFORM[curveForm]}${r.pct ? ' · 백분율로 읽어 100으로 나눔' : ''} · ${r.n}회차`);
+  } catch (e) {
+    curveErr(`${CURVE_LABEL[k]} — ${file.name}: ${e.message}`);
+  }
+}
+
+/* ── 모달 : 보기 · 편집 ── */
+function openCurveModal(k) {
+  if (k) curveTab = k;
+  $('#curveModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+  renderCurveEditor();
+  const b = $('#curveModal').querySelector('.modal-x');
+  if (b) b.focus();
+}
+function closeCurveModal() {
+  $('#curveModal').hidden = true;
+  document.body.style.overflow = '';
+  $('#curveBtn').focus();
+}
+
+function renderCurveEditor() {
+  const c = CURVE[curveTab];
+
+  const tabs = $('#curveTabs');
+  tabs.innerHTML = '';
+  for (const k of CURVE_KEYS) {
+    const b = el('button', 'seg' + (k === curveTab ? ' on' : ''));
+    b.type = 'button';
+    b.appendChild(el('span', null, CURVE_SHORT[k]));
+    b.appendChild(el('span', 'c', CURVE[k].custom ? '사용자' : '내장'));
+    b.addEventListener('click', () => { curveTab = k; renderCurveEditor(); });
+    tabs.appendChild(b);
+  }
+
+  const body = $('#curveEdit');
+  body.innerHTML = '';
+
+  const note = el('p', 'cnote');
+  const [bn, bref] = CBENCH[curveTab];
+  note.innerHTML =
+    `값은 <strong>그 회차까지 살아 있던 건이 그 달에 폐지될 확률</strong>(월별 조건부)입니다 — 누적이 아닙니다. ` +
+    `<code>−</code><code>+</code> 는 ${CSTEP} 씩 움직이고, 칸에 직접 넣어도 됩니다.<br>` +
+    `정의 구간 뒤로는 <strong>꼬리값</strong>이 ${MAXT}회차까지 이어집니다. 고칠 때마다 즉시 재계산됩니다.`;
+  body.appendChild(note);
+
+  const st = el('div', 'cstat');
+  const mk = (a, b2) => { const d = el('div'); d.appendChild(el('div', 'k', a)); d.appendChild(el('div', 'v', b2)); return d; };
+  st.appendChild(mk('정의 회차', c.head.length + '회'));
+  st.appendChild(mk(bn + '개월 누적생존', pct(survOf(c.head, c.tail, bn), 2)));
+  st.appendChild(mk('내장 기준치', pct(bref, 2)));
+  st.appendChild(mk('평균 h (정의구간)', c.head.length
+    ? (c.head.reduce((a, b2) => a + b2, 0) / c.head.length).toFixed(6) : '—'));
+  st.appendChild(mk('상태', c.custom ? '사용자 곡선' : '내장 곡선'));
+  body.appendChild(st);
+
+  const wrap = el('div', 'cedwrap'), t = el('table', 'ced');
+  const thead = el('thead'), hr = el('tr');
+  for (const x of ['회차', '월별 폐지율 h', '조정', '누적생존 S', '삭제']) hr.appendChild(el('th', null, x));
+  thead.appendChild(hr); t.appendChild(thead);
+  const tb = el('tbody');
+
+  const commit = (i, v) => {
+    const x = Math.min(0.999999, Math.max(0, v));
+    if (!isFinite(x)) return;
+    c.head[i] = x;
+    c.custom = true;
+    if (!c.src) c.src = '직접 편집';
+    rebuildH(curveTab);
+    afterCurveChange();
+  };
+
+  c.head.forEach((h, i) => {
+    const base = H_BASE[curveTab].head;
+    const changed = i >= base.length || Math.abs(base[i] - h) > 1e-12;
+    const tr = el('tr', changed ? 'edited' : '');
+    tr.appendChild(el('td', null, i + 1));
+
+    const td = el('td');
+    const ip = el('input', 'h');
+    ip.type = 'number'; ip.step = CSTEP; ip.min = 0; ip.max = 0.999999;
+    ip.value = +h.toFixed(6);
+    ip.setAttribute('aria-label', (i + 1) + '회차 월별 폐지율');
+    ip.addEventListener('change', () => commit(i, parseFloat(ip.value)));
+    td.appendChild(ip);
+    tr.appendChild(td);
+
+    const tds = el('td');
+    const stp = el('span', 'stp');
+    for (const [lbl, d] of [['−', -CSTEP], ['+', CSTEP]]) {
+      const b = el('button', null, lbl);
+      b.type = 'button';
+      b.setAttribute('aria-label', (i + 1) + '회차 ' + (d > 0 ? '증가' : '감소'));
+      b.addEventListener('click', () => commit(i, +(c.head[i] + d).toFixed(6)));
+      stp.appendChild(b);
+    }
+    tds.appendChild(stp);
+    tr.appendChild(tds);
+
+    tr.appendChild(el('td', null, pct(cumS(c.head, i), 2)));
+
+    const tdd = el('td');
+    const del = el('button', 'del', '✕');
+    del.type = 'button';
+    del.setAttribute('aria-label', (i + 1) + '회차 삭제');
+    del.disabled = c.head.length <= 1;
+    del.addEventListener('click', () => {
+      c.head.splice(i, 1);
+      c.custom = true; if (!c.src) c.src = '직접 편집';
+      rebuildH(curveTab); afterCurveChange();
+    });
+    tdd.appendChild(del);
+    tr.appendChild(tdd);
+    tb.appendChild(tr);
+  });
+
+  // 꼬리 — 정의 구간 뒤 전 회차를 채우는 한 값
+  const trT = el('tr', 'tailrow');
+  trT.appendChild(el('td', null, `${c.head.length + 1}~${MAXT} 꼬리`));
+  const tdT = el('td');
+  const ipT = el('input', 'h');
+  ipT.type = 'number'; ipT.step = CSTEP; ipT.min = 0; ipT.max = 0.999999;
+  ipT.value = +c.tail.toFixed(6);
+  ipT.setAttribute('aria-label', '꼬리 월별 폐지율');
+  ipT.addEventListener('change', () => {
+    const x = Math.min(0.999999, Math.max(0, parseFloat(ipT.value)));
+    if (!isFinite(x)) return;
+    c.tail = x; c.custom = true; if (!c.src) c.src = '직접 편집';
+    rebuildH(curveTab); afterCurveChange();
+  });
+  tdT.appendChild(ipT);
+  trT.appendChild(tdT);
+  const tdTs = el('td');
+  const stpT = el('span', 'stp');
+  for (const [lbl, d] of [['−', -CSTEP], ['+', CSTEP]]) {
+    const b = el('button', null, lbl);
+    b.type = 'button';
+    b.setAttribute('aria-label', '꼬리 ' + (d > 0 ? '증가' : '감소'));
+    b.addEventListener('click', () => {
+      c.tail = Math.max(0, Math.min(0.999999, +(c.tail + d).toFixed(6)));
+      c.custom = true; if (!c.src) c.src = '직접 편집';
+      rebuildH(curveTab); afterCurveChange();
+    });
+    stpT.appendChild(b);
+  }
+  tdTs.appendChild(stpT);
+  trT.appendChild(tdTs);
+  trT.appendChild(el('td', null, pct(survOf(c.head, c.tail, MAXT), 2)));
+  trT.appendChild(el('td', null, ''));
+  tb.appendChild(trT);
+
+  t.appendChild(tb); wrap.appendChild(t); body.appendChild(wrap);
+
+  // 붙여넣기 입력
+  const pd = el('details', 'detail');
+  pd.style.marginTop = '14px';
+  pd.appendChild(el('summary', null, '엑셀에서 붙여넣기 · 형식 골라 넣기'));
+  const pw = el('div');
+  pw.style.marginTop = '9px';
+  const sel = el('select');
+  sel.style.cssText = 'padding:5px 8px;border:1px solid var(--rule-strong);border-radius:4px;background:var(--surface-2);font-size:12.5px;margin-bottom:8px';
+  for (const [k2, lb] of Object.entries(CFORM)) { const o = el('option', null, lb); o.value = k2; sel.appendChild(o); }
+  sel.value = curveForm;
+  sel.addEventListener('change', () => { curveForm = sel.value; });
+  pw.appendChild(sel);
+  const ta = el('textarea', 'paste');
+  ta.placeholder = '회차와 값을 붙여넣으세요 (한 줄에 값 하나, 또는 「회차<TAB>값」).\n예)\n1\t0.0119\n2\t0.0038\n3\t0.0040';
+  pw.appendChild(ta);
+  const pb = el('div');
+  pb.style.cssText = 'display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap';
+  const apply = el('button', 'tgl', CURVE_SHORT[curveTab] + ' 곡선에 넣기');
+  apply.type = 'button';
+  apply.addEventListener('click', () => {
+    try {
+      const r = toHazard(parseCurveText(ta.value), curveForm);
+      applyCurve(curveTab, r.head, r.tail,
+        `붙여넣기 · ${CFORM[curveForm]}${r.pct ? ' · 백분율로 읽어 100으로 나눔' : ''} · ${r.n}회차`);
+      pmsg.textContent = `${r.n}회차를 넣었습니다.`;
+      pmsg.style.color = 'var(--ok)';
+    } catch (e) { pmsg.textContent = e.message; pmsg.style.color = 'var(--bad)'; }
+  });
+  pb.appendChild(apply);
+  const pmsg = el('span');
+  pmsg.style.cssText = 'font-size:11.5px;color:var(--ink-faint)';
+  pb.appendChild(pmsg);
+  pw.appendChild(pb);
+  pd.appendChild(pw);
+  body.appendChild(pd);
+
+  // 바닥 도구
+  const ft = $('#curveFoot');
+  ft.innerHTML = '';
+  const addN = el('button', 'tgl', '회차 추가');
+  addN.type = 'button';
+  addN.disabled = c.head.length >= MAXT;
+  addN.addEventListener('click', () => {
+    c.head.push(c.tail);
+    c.custom = true; if (!c.src) c.src = '직접 편집';
+    rebuildH(curveTab); afterCurveChange();
+  });
+  ft.appendChild(addN);
+  const delN = el('button', 'tgl', '마지막 회차 삭제');
+  delN.type = 'button';
+  delN.disabled = c.head.length <= 1;
+  delN.addEventListener('click', () => {
+    c.head.pop();
+    c.custom = true; if (!c.src) c.src = '직접 편집';
+    rebuildH(curveTab); afterCurveChange();
+  });
+  ft.appendChild(delN);
+  const rs = el('button', 'tgl', '이 곡선 초기화');
+  rs.type = 'button';
+  rs.disabled = !c.custom;
+  rs.addEventListener('click', () => { resetCurve(curveTab); rebuildH(curveTab); afterCurveChange(); });
+  ft.appendChild(rs);
+  const ex = el('button', 'tgl', 'CSV 내보내기');
+  ex.type = 'button';
+  ex.addEventListener('click', exportCurveCsv);
+  ft.appendChild(ex);
+  ft.appendChild(el('span', 'sp'));
+  if (c.custom) ft.appendChild(el('span', 'warn', '사용자 곡선 — 검산의 설계서 기준치 대조는 이 곡선에 적용되지 않습니다'));
+  const cl = el('button', 'tgl', '닫기');
+  cl.type = 'button';
+  cl.addEventListener('click', closeCurveModal);
+  ft.appendChild(cl);
+}
+
+/* 3종을 한 파일로 — 회차, 곡선별 h, 곡선별 누적생존 */
+function exportCurveCsv() {
+  const n = Math.max(...CURVE_KEYS.map(k => CURVE[k].head.length));
+  const head = ['회차'];
+  for (const k of CURVE_KEYS) head.push(CURVE_SHORT[k] + ' h', CURVE_SHORT[k] + ' 누적생존');
+  const lines = [head.join(',')];
+  for (let i = 0; i < n; i++) {
+    const row = [i + 1];
+    for (const k of CURVE_KEYS) {
+      const c = CURVE[k];
+      row.push(i < c.head.length ? c.head[i] : '', i < c.head.length ? cumS(c.head, i).toFixed(8) : '');
+    }
+    lines.push(row.join(','));
+  }
+  const tail = ['꼬리'];
+  for (const k of CURVE_KEYS) tail.push(CURVE[k].tail, '');
+  lines.push(tail.join(','));
+  const blob = new Blob(['﻿' + lines.join(String.fromCharCode(13, 10))], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '실효폐지곡선_' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ── 배선 ── */
+function wireCurves() {
+  $('#curveBtn').addEventListener('click', () => openCurveModal(null));
+  $('#curveFile').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) handleCurveFile(f);
+  });
+  const md = $('#curveModal');
+  md.addEventListener('click', e => { if (e.target.hasAttribute('data-close')) closeCurveModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !md.hidden) closeCurveModal(); });
+}
+
+/* ══════════════════════ 레일 UI ══════════════════════ */
+function buildRail() {
+  const rail = $('#rail');
+  for (const [group, rows] of SPEC) {
+    const g = el('div', 'grp');
+    g.appendChild(el('h3', null, group));
+    for (const [key] of rows) {
+      const m = META[key];
+      const f = el('div', 'fld');
+      const id = 'f_' + key;
+      const lb = el('label', null, m.label); lb.htmlFor = id;
+      const ip = el('input'); ip.type = 'number'; ip.id = id; ip.dataset.key = key;
+      ip.step = m.step; ip.min = m.min; ip.max = m.max;
+      ip.value = toDisp(key, A[key]);
+      ip.addEventListener('input', () => {
+        const x = parseFloat(ip.value);
+        if (!isFinite(x)) return;
+        A[key] = fromDisp(key, Math.min(m.max, Math.max(m.min, x)));
+        ip.classList.toggle('dirty', A[key] !== DEF[activePreset][key]);
+        clearTimeout(ip._t); ip._t = setTimeout(recompute, 180);
+      });
+      f.appendChild(lb); f.appendChild(ip); f.appendChild(el('span', 'unit', m.unit));
+      g.appendChild(f);
+    }
+    rail.appendChild(g);
+  }
+}
+let activePreset = 'wb';
+function applyPreset(name) {
+  activePreset = name;
+  Object.assign(A, DEF[name]);
+  for (const ip of document.querySelectorAll('.fld input')) {
+    ip.value = toDisp(ip.dataset.key, A[ip.dataset.key]);
+    ip.classList.remove('dirty');
+  }
+  for (const b of document.querySelectorAll('.presets button')) b.classList.toggle('on', b.dataset.preset === name);
+  recompute();
+}
+
+/* ══════════════════════ 배선 ══════════════════════ */
+buildRail();
+wireFold();
+loadCurves();
+wireCurves();
+renderCurves();
+renderChecks();
+
+for (const b of document.querySelectorAll('.presets button'))
+  b.addEventListener('click', () => applyPreset(b.dataset.preset));
+
+$('#themeBtn').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const sysDark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const next = cur ? (cur === 'dark' ? 'light' : 'dark') : (sysDark ? 'light' : 'dark');
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('theme', next); } catch (e) {}
+});
+try { const t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+
+const drop = $('#drop'), input = $('#file');
+drop.addEventListener('click', () => input.click());
+drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
+input.addEventListener('change', () => { if (input.files.length) handleFiles([...input.files]); });
+for (const ev of ['dragenter', 'dragover']) drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); });
+for (const ev of ['dragleave', 'drop']) drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); });
+drop.addEventListener('drop', e => {
+  const fs = [...(e.dataTransfer?.files || [])].filter(f => /\.xlsx$/i.test(f.name));
+  if (fs.length) handleFiles(fs);
+  else { const d = el('div', 'err', '.xlsx 파일만 읽을 수 있습니다.'); $('#fileErr').innerHTML = ''; $('#fileErr').appendChild(d); }
+});
+</script>
+
+<script>
+/* ── 표 하나를 차트로: 회차별 현금흐름 PV 막대 (표시 열 기준, 계산·문구 미변경) ── */
+(function () {
+  const HOST = document.getElementById('cfBody');
+  if (!HOST) return;
+  const num = s => { const x = parseFloat(String(s).replace(/[^0-9.\-]/g, '')); return isFinite(x) ? x : 0; };
+  const eok = x => (x / 1e8).toLocaleString('ko-KR', { maximumFractionDigits: 1 }) + '억';
+  function decorate(t) {
+    if (t.dataset.charted || !t.tHead || !t.tBodies[0]) return;
+    t.dataset.charted = '1';
+    const rows = [...t.tBodies[0].rows];
+    const find = kw => rows.find(r => { const l = r.querySelector('td.lab'); return l && l.textContent.includes(kw); });
+    const pvRow = find('PV'), expRow = find('기대회수액');
+    if (!pvRow) return;
+    const heads = [...t.tHead.rows[0].cells].slice(2).map(th => th.textContent.trim());
+    const pv = [...pvRow.cells].slice(2).map(td => num(td.textContent));
+    const exp = expRow ? [...expRow.cells].slice(2).map(td => num(td.textContent)) : null;
+    if (!pv.length) return;
+    const max = Math.max(1, ...(exp || pv));
+    const peak = pv.indexOf(Math.max(...pv));
+    const box = document.createElement('div');
+    box.className = 'cfchart';
+    const hd = document.createElement('div');
+    hd.className = 'cfc-hd';
+    hd.innerHTML = '<span class="cfc-t">회차별 PV 분포</span>' +
+      '<span class="cfc-l"><i class="sw sw-e"></i>기대회수액</span>' +
+      '<span class="cfc-l"><i class="sw sw-p"></i>PV</span>' +
+      '<span class="cfc-r">최대 ' + eok(max) + ' · 표시된 ' + heads.length + '열 기준</span>';
+    box.appendChild(hd);
+    const bars = document.createElement('div');
+    bars.className = 'cfc-bars';
+    pv.forEach((v, i) => {
+      const c = document.createElement('i');
+      c.className = 'cfc-col' + (i === peak ? ' peak' : '');
+      c.title = heads[i] + ' — PV ' + Math.round(v).toLocaleString('ko-KR') + '원';
+      const e = document.createElement('b');
+      e.className = 'cfc-e';
+      e.style.height = ((exp ? exp[i] : v) / max * 100).toFixed(2) + '%';
+      const p = document.createElement('b');
+      p.className = 'cfc-p';
+      p.style.height = (v / max * 100).toFixed(2) + '%';
+      c.appendChild(e); c.appendChild(p);
+      bars.appendChild(c);
+    });
+    box.appendChild(bars);
+    const ax = document.createElement('div');
+    ax.className = 'cfc-ax';
+    ax.innerHTML = '<span>' + (heads[0] || '') + '</span><span>' + (heads[heads.length - 1] || '') + '</span>';
+    box.appendChild(ax);
+    const tw = t.closest('.tw');
+    if (tw && tw.parentNode) tw.parentNode.insertBefore(box, tw);
+  }
+  const scan = () => { try { HOST.querySelectorAll('table.cf').forEach(decorate); } catch (e) {} };
+  let tm = 0;
+  new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(scan, 60); }).observe(HOST, { childList: true, subtree: true });
+  scan();
+})();
+</script>
