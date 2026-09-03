@@ -40,14 +40,10 @@ const SECURITY_HEADERS = {
 
 function authorize(request, env) {
   const password = env.SITE_PASSWORD;
-  // 환경변수를 안 넣은 채 배포되면 통과시키지 않는다 — 열린 채 방치되는 쪽이 더 위험하다.
-  if (!password) {
-    return new Response(
-      'SITE_PASSWORD 환경변수가 설정되지 않았습니다.\n' +
-      '대시보드 → Settings → Variables and Secrets 에서 추가한 뒤 다시 배포하세요.',
-      { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
-    );
-  }
+  // SITE_PASSWORD 가 없으면 잠그지 않고 그냥 연다.
+  // 먼저 배포해서 화면을 확인하고, 나중에 잠그고 싶어지면 대시보드에서 SITE_PASSWORD 를
+  // 넣고 재배포하기만 하면 된다 — 코드는 손댈 필요 없다.
+  if (!password) return null;
   const username = env.SITE_USER || 'welrix';
 
   const header = request.headers.get('Authorization') || '';
