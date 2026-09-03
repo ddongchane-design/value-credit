@@ -1,12 +1,11 @@
-/* Cloudflare Pages Functions — 사이트 전체 비밀번호 게이트 (Basic Auth).
+/* 사이트 전체 비밀번호 게이트 (Basic Auth) — Cloudflare Worker + Static Assets.
  *
- * 이 파일 하나가 public/ 아래 모든 요청 앞에 붙는다. Git 연동 배포에서는 Cloudflare가
- * functions/ 를 빌드해 Worker로 만들어 준다 — 그래서 _worker.js 를 직접 두지 않는다.
- * (_worker.js 를 출력 디렉터리에 두면 컴파일되지 않고 정적 파일로 올라가, 게이트가
- *  동작하지 않으면서 소스만 URL로 노출된다.)
+ * ⚠ 이 파일이 동작하려면 wrangler.jsonc 의 assets.run_worker_first 가 true 여야 한다.
+ *   false(기본값)이면 정적 파일 요청이 Worker를 거치지 않고 바로 서빙되어,
+ *   이 코드가 실행조차 되지 않은 채 사이트 전체가 공개된다. 실제로 그 사고가 났었다.
  *
- * 비밀번호는 코드에 두지 않는다. Cloudflare 대시보드에서 환경변수로 넣는다:
- *   SITE_PASSWORD  (필수)  — 접속 비밀번호. 넣을 때 Type 을 Secret 으로
+ * 비밀번호는 코드에 두지 않는다. 대시보드 Settings → Variables and Secrets:
+ *   SITE_PASSWORD  (필수)  — 접속 비밀번호. Type 을 Secret 으로
  *   SITE_USER      (선택)  — 아이디. 안 넣으면 'welrix'
  *
  * 환경변수는 저장만으로는 반영되지 않는다 — 저장한 뒤 한 번 더 배포해야 적용된다.
@@ -31,8 +30,6 @@ function equals(a, b) {
   return diff === 0;
 }
 
-/* public/_headers 가 적용되더라도 한 번 더 덮어쓴다 — 게이트를 통과한 응답에는
-   무슨 일이 있어도 이 헤더들이 붙어 있어야 한다. */
 const SECURITY_HEADERS = {
   'X-Robots-Tag': 'noindex, nofollow, noarchive',
   'X-Content-Type-Options': 'nosniff',
@@ -47,7 +44,7 @@ function authorize(request, env) {
   if (!password) {
     return new Response(
       'SITE_PASSWORD 환경변수가 설정되지 않았습니다.\n' +
-      'Cloudflare 대시보드 → 프로젝트 → Settings → Variables and Secrets 에서 추가한 뒤 다시 배포하세요.',
+      '대시보드 → Settings → Variables and Secrets 에서 추가한 뒤 다시 배포하세요.',
       { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
     );
   }
@@ -77,13 +74,22 @@ function authorize(request, env) {
   return null;   // 통과
 }
 
-export const onRequest = async ({ request, env, next }) => {
-  const denied = authorize(request, env);
-  if (denied) return denied;
+export default {
+  async fetch(request, env) {
+    const denied = authorize(request, env);
+    if (denied) return denied;
 
-  const response = await next();
-  // next()가 돌려준 응답은 불변이라 헤더를 붙이려면 새로 감싼다.
-  const out = new Response(response.body, response);
-  for (const [k, v] of Object.entries(SECURITY_HEADERS)) out.headers.set(k, v);
-  return out;
+    const response = await env.ASSETS.fetch(request);
+    // ASSETS가 돌려준 응답은 불변이라 헤더를 고치려면 새로 감싼다.
+    const out = new Response(response.body, response);
+    for (const [k, v] of Object.entries(SECURITY_HEADERS)) out.headers.set(k, v);
+
+    // charset이 빠지면 브라우저가 레거시 인코딩으로 떨어져 한글이 깨진다.
+    // HTML 쪽에도 <meta charset>을 넣어 뒀지만, 헤더가 우선이라 여기서도 보장한다.
+    const ct = out.headers.get('Content-Type') || '';
+    if (/^text\/|\/(javascript|json|xml)/i.test(ct) && !/charset=/i.test(ct)) {
+      out.headers.set('Content-Type', ct + '; charset=utf-8');
+    }
+    return out;
+  },
 };
