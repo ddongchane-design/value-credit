@@ -1,10 +1,12 @@
-/* Cloudflare Pages — 사이트 전체 비밀번호 게이트 (Basic Auth).
+/* Cloudflare Pages Functions — 사이트 전체 비밀번호 게이트 (Basic Auth).
  *
- * functions/ 디렉터리 대신 _worker.js(고급 모드)를 쓴 이유: functions/ 라우팅은 Wrangler로
- * 빌드해야 하지만, _worker.js는 대시보드 드래그&드롭 업로드만으로 그대로 동작한다.
+ * 이 파일 하나가 public/ 아래 모든 요청 앞에 붙는다. Git 연동 배포에서는 Cloudflare가
+ * functions/ 를 빌드해 Worker로 만들어 준다 — 그래서 _worker.js 를 직접 두지 않는다.
+ * (_worker.js 를 출력 디렉터리에 두면 컴파일되지 않고 정적 파일로 올라가, 게이트가
+ *  동작하지 않으면서 소스만 URL로 노출된다.)
  *
  * 비밀번호는 코드에 두지 않는다. Cloudflare 대시보드에서 환경변수로 넣는다:
- *   SITE_PASSWORD  (필수)  — 접속 비밀번호. 넣을 때 반드시 Encrypt 를 누른다
+ *   SITE_PASSWORD  (필수)  — 접속 비밀번호. 넣을 때 Type 을 Secret 으로
  *   SITE_USER      (선택)  — 아이디. 안 넣으면 'welrix'
  *
  * 환경변수는 저장만으로는 반영되지 않는다 — 저장한 뒤 한 번 더 배포해야 적용된다.
@@ -29,7 +31,8 @@ function equals(a, b) {
   return diff === 0;
 }
 
-/* _headers 파일은 _worker.js 고급 모드에서 적용이 보장되지 않으므로 여기서 직접 붙인다. */
+/* public/_headers 가 적용되더라도 한 번 더 덮어쓴다 — 게이트를 통과한 응답에는
+   무슨 일이 있어도 이 헤더들이 붙어 있어야 한다. */
 const SECURITY_HEADERS = {
   'X-Robots-Tag': 'noindex, nofollow, noarchive',
   'X-Content-Type-Options': 'nosniff',
@@ -74,15 +77,13 @@ function authorize(request, env) {
   return null;   // 통과
 }
 
-export default {
-  async fetch(request, env) {
-    const denied = authorize(request, env);
-    if (denied) return denied;
+export const onRequest = async ({ request, env, next }) => {
+  const denied = authorize(request, env);
+  if (denied) return denied;
 
-    const response = await env.ASSETS.fetch(request);
-    // ASSETS가 돌려준 응답은 불변이라 헤더를 붙이려면 새로 감싼다.
-    const out = new Response(response.body, response);
-    for (const [k, v] of Object.entries(SECURITY_HEADERS)) out.headers.set(k, v);
-    return out;
-  },
+  const response = await next();
+  // next()가 돌려준 응답은 불변이라 헤더를 붙이려면 새로 감싼다.
+  const out = new Response(response.body, response);
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) out.headers.set(k, v);
+  return out;
 };
