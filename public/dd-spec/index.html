@@ -187,8 +187,37 @@ p{margin:0 0 13px}
               <td class="alt">채권진행상황</td><td class="use"><strong>폐지항고 판별</strong> — 없으면 폐지항고를 가려낼 수 없습니다</td></tr>
             <tr><td><span class="req opt">선택</span></td><td class="name">채권 가지급금잔액</td>
               <td class="alt">가지급금잔액</td><td class="use">있으면 원금잔액에 합산</td></tr>
+            <tr><td><span class="req opt">선택</span></td><td class="name">비고</td>
+              <td class="alt">—</td><td class="use"><strong>종속채권 표기</strong> — 아래 설명 참조</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <p style="margin:20px 0 10px"><strong>비고 — 종속채권 표기</strong></p>
+      <p>실 채권은 여럿인데 개인회생 사건은 하나로 진행되는 경우가 있습니다.
+        하나의 사건번호로 두 채무가 함께 탕감·변제되고, 변제계획 배당이 형제 채권 행에 실리면서
+        <strong>배당이 0인 채권 행</strong>은 이렇게 내려옵니다.</p>
+      <pre>총변제예정금액 = 0 · 기상환금액 = 0 · 납입회차 = 0
+<span class="cm">잔여회차만 24~60회로 채워져 있음</span></pre>
+      <p style="margin-top:13px">이 행의 비고에 <code>종속채권</code>이라고 적어 주세요.
+        평가판이 <strong>건수에는 포함하되 분모 OPB·명목 기대회수·PV를 0으로</strong> 둡니다.</p>
+      <pre><span class="ok">종속채권</span>                        <span class="cm">← 이렇게</span>
+<span class="ok">종속채권 / 2024개회0264997</span>      <span class="cm">← 다른 내용과 같이 적어도 됩니다 (포함되면 인식)</span></pre>
+
+      <div class="callout bad" style="margin-top:14px">
+        <p><strong>표기하지 않으면 회수 기대액이 잘못 생깁니다.</strong>
+          총변제예정금액이 0이면 평가판은 이를 <em>변제계획 정보가 없는 건</em>으로 보고
+          <code>원금잔액 × 변제율</code>을 표준회차에 뿌립니다. 실제로 한 DD에서
+          <strong>996건에 PV 39.96억이 허수로 붙었습니다.</strong></p>
+        <p>평가판은 이걸 스스로 가려낼 수 없습니다. 형제 행이 있는지는 차주번호로만 알 수 있는데,
+          차주번호는 계산에 쓰지 않기 때문입니다. <strong>표기가 유일한 단서입니다.</strong></p>
+      </div>
+
+      <div class="callout" style="margin-top:12px">
+        <p>표기가 맞는지는 평가판이 교차검증합니다.
+          <code>종속채권</code>이라 적혀 있는데 변제잔액이 남아 있으면 <strong>오표기</strong>로,
+          표기가 없는데 배당이 0으로 보이면 <strong>표기 누락 의심</strong>으로
+          「DD 데이터 품질」에 건수가 뜹니다.</p>
       </div>
       <p style="margin:18px 0 10px"><strong>채권구분 값</strong> — 폐지항고를 가려내려면 이 표기가 필요합니다.</p>
       <pre><span class="ok">폐지항고</span>   ← 이 글자가 포함되면 폐지항고로 분류합니다
@@ -329,6 +358,8 @@ p{margin:0 0 13px}
           <span class="why">텍스트인지 코드(815xxx)인지, 처음 보는 코드가 있는지</span></span></li>
         <li><span class="box"></span><span><strong>채권구분</strong>에 처음 보는 값이 있는가
           <span class="why">특히 폐지 관련 값 — 폐지항고 외에는 규칙이 없습니다</span></span></li>
+        <li><span class="box"></span><span>개인회생 <strong>총변제예정금액이 0인 행</strong>이 있는가
+          <span class="why">있으면 같은 차주번호에 형제 행이 있는지 보고, 종속채권이면 비고에 표기</span></span></li>
         <li><span class="box"></span><span>업로드 후 <strong>「컬럼 인식」 화면</strong>을 반드시 확인
           <span class="why">「평가 진행」을 누르기 전에. 여기가 마지막 방어선입니다</span></span></li>
         <li><span class="box"></span><span>평가 후 <strong>「검산」 B구획</strong>이 전부 통과인가

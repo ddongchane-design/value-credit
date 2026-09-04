@@ -850,6 +850,22 @@ function makeCurves() {
 function evalRehab(r, C, trace, accFor) {
   // 폐지항고는 일자로 표현되지 않는 '사건 상태'다. 인가일자·스케줄이 있어도 미인가로 본다.
   // → 일자 절대 우선 원칙은 인가/미인가 판별에 한한다 (설계서 V8 ⑲의 적용 범위를 좁힘).
+  // ── 종속채권 (비고 표기) ──
+  // 실 채권은 여럿인데 개인회생 사건은 하나로 진행되는 경우, 변제계획 배당이 형제 행에
+  // 실리고 이 행은 배당 0으로 내려온다. 컬럼만 봐서는 '변제계획 정보 없음'과 구별할 수
+  // 없어(차주번호를 읽지 않으므로) DD 비고에 적어 준 표기를 신뢰한다.
+  // 건수는 그대로 세고 분모·명목·PV만 0으로 둔다 — DD 건수와 대조가 되도록.
+  if (S(r.note).includes('종속채권')) {
+    return { stage: '종속채권', sched: '평가제외', denom: 0, tier: 4,
+             nominal: 0, pv: 0, zeroBase: false, probDev: 0, step1Diff: 0,
+             paid: Math.trunc(N(r.paid)), terms: 0, adjTerms: 0, opb: 0, perTerm: 0,
+             delay: 0, pre: 0, principal: N(r.principal) + N(r.advance),
+             appealed: false, dependent: true, settled: false, termsZero: false,
+             // 배당이 있는데 종속채권으로 표기됐다면 표기 쪽이 틀렸다는 뜻이다.
+             misflagged: N(r.totalPlan) - N(r.repaid) > 0,
+             trace: trace ? [] : null };
+  }
+
   const appealed = S(r.label).includes('폐지항고');
   let stage;
   if (appealed) stage = '폐지항고';
@@ -928,8 +944,12 @@ function evalRehab(r, C, trace, accFor) {
            // settled  : 회차는 남았는데 변제잔액이 0 → CF 0인데 분모만 원금잔액으로 폴다운
            // termsZero: 스케줄 정보는 있는데 잔여회차 0 → 무스케줄로 분류돼 원금잔액×변제율 CF가 생김.
            //            총변제예정 0인 '진짜 무스케줄'은 걸리지 않는다 (정상 경로).
+           // unflagged: 비고에 종속채권 표기가 없는데 배당 0으로 보이는 건 (표기 누락 의심).
+           //            무스케줄로 분류돼 원금잔액×변제율 CF가 생기므로 확인이 필요하다.
            settled: hasSched && totalPlan - repaid <= 0,
            termsZero: totalPlan > 0 && remain <= 0,
+           unflagged: totalPlan <= 0 && remain > 0,
+           dependent: false, misflagged: false,
            step1Diff: perTerm * adjTerms - opb,   // STEP1 검산: 쪼갠 뒤 합치면 잔여OPB
            paid, terms, adjTerms, opb, perTerm, delay, pre, principal, appealed, trace: tr };
 }
@@ -1241,6 +1261,7 @@ const MAP_REHAB = [
   ['totalPlan', '총변제예정금액', ['총변제예정금액']],
   ['repaid', '기상환금액', ['기상환금액']],
   ['opb', '미상환채권잔액(OPB)', ['자산확정일미상환채권잔액(OPB)', '미상환채권잔액(OPB)', '미상환채권잔액']],
+  ['note', '비고 (종속채권 표기)', ['비고'], true],
 ];
 const MAP_CCRS = [
   ['status', '신청인진행상태', ['신청인진행상태']],
@@ -1596,9 +1617,10 @@ function recompute() {
   const gR = new Map(), gC = new Map();
   let qZeroBase = 0, qLabelMismatch = 0, qBalZero = 0, qNoData = 0, qOtherClose = 0, qBadMethod = 0, qSchemeMismatch = 0;
   let qSettled = 0, qTermsZero = 0;
+  let qDependent = 0, qMisflag = 0, qUnflagged = 0;
   const D = {
     rehab: DATA.rehab ? { read: DATA.rehab.rows.length, routed: 0, step1Sum: 0, step1Max: 0,
-                          probDev: 0, tiers: [0, 0, 0], denomZero: 0 } : null,
+                          probDev: 0, tiers: [0, 0, 0, 0], denomZero: 0 } : null,
     ccrs: DATA.ccrs ? { read: DATA.ccrs.rows.length, routed: 0, strSum: 0, strMax: 0, strBase: 0,
                         probDev: 0, tiers: [0, 0, 0, 0], denomZero: 0, lostStage: 0, noData: 0 } : null,
   };
@@ -1612,16 +1634,21 @@ function recompute() {
     d.step1Sum += Math.abs(v.step1Diff);
     if (Math.abs(v.step1Diff) > d.step1Max) d.step1Max = Math.abs(v.step1Diff);
     if (v.probDev > d.probDev) d.probDev = v.probDev;
-    if (!(v.denom > 0)) d.denomZero++;
+    // 종속채권은 분모 0이 의도된 상태이므로 '분모 0' 경고에서 제외한다.
+    if (!(v.denom > 0) && !v.dependent) d.denomZero++;
     const k = v.stage + '|' + v.sched;
     const a = gR.get(k) || [0, 0, 0, 0]; gR.set(k, a);
     a[0]++; a[1] += v.denom; a[2] += v.nominal; a[3] += v.pv;
     if (v.zeroBase) qZeroBase++;
     if (v.settled) qSettled++;
     if (v.termsZero) qTermsZero++;
+    if (v.dependent) qDependent++;
+    if (v.misflagged) qMisflag++;
+    if (v.unflagged) qUnflagged++;
     const lab = S(r.label);
     if (lab.includes('폐지') && !lab.includes('폐지항고')) qOtherClose++;   // 미처리 폐지 상태값
-    else if (lab && v.stage !== '폐지항고' &&
+    // 종속채권은 진행단계가 '종속채권'으로 바뀌므로 라벨 불일치로 세지 않는다 (오탐).
+    else if (lab && !v.dependent && v.stage !== '폐지항고' &&
         ((lab.includes('미인가') && v.stage === '인가') || (lab === '인가' && v.stage !== '인가'))) qLabelMismatch++;
   }
   if (DATA.ccrs) for (const r of DATA.ccrs.rows) {
@@ -1651,7 +1678,7 @@ function recompute() {
   renderCF();
   renderChecks(C, D);
   renderQuality({ qZeroBase, qLabelMismatch, qBalZero, qNoData, qOtherClose, qBadMethod, qSchemeMismatch,
-                  qSettled, qTermsZero });
+                  qSettled, qTermsZero, qDependent, qMisflag, qUnflagged });
 }
 
 function tableFor(groups, cols, order) {
@@ -1933,7 +1960,7 @@ function renderPoolChecks(body, D) {
     const nr = el('tr', 'sub'), nd = el('td', 'dim', '순위: ' + names.join(' → '));
     nd.colSpan = 5; nd.style.whiteSpace = 'normal'; nr.appendChild(nd); tb2.appendChild(nr);
   };
-  if (R) line('개인회생', ['미상환채권잔액(OPB)', '총변제예정−기상환', '원금잔액'], R.tiers);
+  if (R) line('개인회생', ['미상환채권잔액(OPB)', '총변제예정−기상환', '원금잔액', '종속채권 (평가제외)'], R.tiers);
   if (Cc) line('신용회복', ['상환후잔액', '원금균등채무액', '조정후원금', '조정전원금'], Cc.tiers);
   t2.appendChild(tb2); tw2.appendChild(t2); body.appendChild(tw2);
 
@@ -1952,6 +1979,15 @@ function renderQuality(q) {
     ['신용회복 — 신복위 데이터 미매칭 (전 필드 공란)', q.qNoData, '평가제외(PV 0). 다음 DD 업로드 시 해당 행 제외 권장', 'warn'],
     ['개인회생 — 채권구분 라벨과 일자 라우팅 불일치', q.qLabelMismatch, '일자 기준으로 평가됨(정상). DD 라벨 갱신 권장', 'warn'],
     ['개인회생 — 스케줄無 & 원금잔액 0 (PV 0 탈락)', q.qZeroBase, '잔여OPB base가 없어 평가 불가. 원금잔액 확인 필요', 'bad'],
+    ['개인회생 — 종속채권 표기로 평가제외', q.qDependent,
+     '비고에 「종속채권」이 적힌 건입니다. 건수에는 포함하되 분모 OPB·명목 기대회수·PV를 0으로 둡니다 — ' +
+     '같은 사건의 형제 채권에 변제계획 배당이 실려 있어, 여기서 또 잡으면 이중 계상이 됩니다', 'neutral'],
+    ['개인회생 — 종속채권인데 변제잔액이 남아 있음', q.qMisflag,
+     '비고에 「종속채권」이 적혀 있는데 총변제예정금액−기상환금액이 0보다 큽니다. 배당이 있는 채권을 ' +
+     '종속채권으로 표기한 것으로 보입니다 — 표기를 지우거나 금액을 확인해 주세요. 지금은 표기를 따라 평가에서 빠집니다', 'bad'],
+    ['개인회생 — 종속채권 표기 없이 배당 0', q.qUnflagged,
+     '총변제예정금액이 0인데 잔여회차는 남아 있는 건입니다. 종속채권인데 비고 표기가 빠졌을 수 있습니다. ' +
+     '지금은 무스케줄로 분류되어 원금잔액×변제율로 추정 CF가 생성됩니다 — 종속채권이면 비고에 표기해 주세요', 'warn'],
     ['개인회생 — 잔여회차>0 인데 변제잔액 0 (실질 완제 의심)', q.qSettled,
      '기상환금액이 총변제예정금액과 같아 CF가 0인데, 분모는 원금잔액으로 폴다운되어 분모만 커집니다(회수율 0%). ' +
      '완제 여부를 확정해 매각대상에서 제외하거나, 기상환금액·총변제예정금액을 정정해 다시 올려주세요', 'bad'],
@@ -1993,7 +2029,7 @@ let LIST = [], CURVES = null;
 const LF = { q: '', kind: '', grp: '', sort: 'id', size: 100, page: 0, open: new Set() };
 
 const TIER_NAMES = {
-  '개인회생': ['미상환채권잔액(OPB)', '총변제예정−기상환', '원금잔액+가지급금'],
+  '개인회생': ['미상환채권잔액(OPB)', '총변제예정−기상환', '원금잔액+가지급금', '종속채권 (평가제외)'],
   '신용회복': ['상환후잔액', '원금균등채무액', '조정후원금', '조정전원금 (분자만 변제율)'],
 };
 const grpOf = e => !e.v ? '미분류' : (e.kind === '개인회생' ? e.v.stage : e.v.status);
@@ -2085,7 +2121,35 @@ function detailRehab(e) {
   const r = e.r, v = evalRehab(r, CURVES, true);
   const box = el('div', 'dpanel');
 
+  // 종속채권은 회차별 계산 자취가 없다 — 왜 빠졌는지만 보여준다.
+  if (v.dependent) {
+    box.appendChild(formula('비고에 「종속채권」이 적혀 있어 평가에서 제외했습니다. ' +
+      '건수에는 포함되지만 분모 OPB · 명목 기대회수 · PV는 모두 0입니다 — ' +
+      '같은 사건의 형제 채권에 변제계획 배당이 실려 있어, 여기서 또 잡으면 이중 계상이 됩니다.'));
+    if (v.misflagged) box.appendChild(formula(
+      '⚠ 다만 총변제예정금액 − 기상환금액 = ' + won(N(r.totalPlan) - N(r.repaid)) + '원으로 배당이 남아 있습니다. ' +
+      '종속채권 표기가 잘못됐을 수 있으니 DD를 확인해 주세요.'));
+    box.appendChild(block('DD 원본값', kvBox([
+      ['비고', S(r.note) || '—'],
+      ['채권구분', S(r.label) || '—'],
+      ['인가일자', fmtDate(r.dtApprove)],
+      ['납입회차', fmtNum(r.paid)],
+      ['잔여회차', fmtNum(r.remainTerms)],
+      ['총변제예정금액', fmtWon(r.totalPlan)],
+      ['기상환금액', fmtWon(r.repaid)],
+      ['미상환채권잔액(OPB)', fmtWon(r.opb)],
+    ])));
+    box.appendChild(block('평가 결과', kvBox([
+      ['진행단계', v.stage, 'hi'],
+      ['분모 OPB', '0원 (제외)'],
+      ['명목 기대회수', '0원 (제외)'],
+      ['PV', '0원 (제외)'],
+    ])));
+    return box;
+  }
+
   box.appendChild(block('DD 원본값', kvBox([
+    ['비고', S(r.note) || '—'],
     ['채권구분', S(r.label) || '—'],
     ['접수일자', fmtDate(r.dtFiling)],
     ['개시일자', fmtDate(r.dtOpen)],
