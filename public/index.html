@@ -79,6 +79,8 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
 .tag.공지{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent}
 .tag.업데이트{background:var(--ok-soft);color:var(--ok);border-color:transparent}
 .tag.점검{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.tag.필독{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.pin{flex:none;font-size:11px;color:var(--ink-faint);letter-spacing:.02em}
 
 .board{background:var(--surface);border:1px solid var(--rule);border-radius:7px;
   box-shadow:var(--shadow);margin-bottom:22px;overflow:hidden}
@@ -261,6 +263,7 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
       var li = el('li');
       var b = el('button', 'row');
       b.type = 'button';
+      if (n.pinned) b.appendChild(el('span', 'pin', '고정'));
       b.appendChild(tagEl(n.tag));
       b.appendChild(el('span', 'ttl', n.title));
       b.appendChild(el('span', 'dt', n.date || ''));
@@ -294,6 +297,7 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
     list.forEach(function (n) {
       var item = el('div', 'item');
       var ih = el('div', 'item-hd');
+      if (n.pinned) ih.appendChild(el('span', 'pin', '고정'));
       ih.appendChild(tagEl(n.tag));
       ih.appendChild(el('h3', null, n.title));
       ih.appendChild(el('span', 'dt', n.date || ''));
@@ -359,8 +363,9 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
       var list = data && Array.isArray(data.notices) ? data.notices : [];
       if (!list.length) return;
 
-      // 최신순. date가 없으면 순서를 그대로 둔다.
+      // 고정 공지를 맨 위로, 나머지는 최신순.
       list = list.slice().sort(function (a, b) {
+        if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
         return String(b.date || '').localeCompare(String(a.date || ''));
       });
       renderBoard(list);
