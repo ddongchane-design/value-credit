@@ -1326,6 +1326,18 @@ function findHeader(rows) {
   return best;
 }
 
+/* 제도 판별에 쓰는 신호. 컬럼명이 조금씩 달라도 걸리도록 부분일치로 센다
+   ('총변제예정'은 총변제예정금액·총변제예정액을 모두 잡는다). */
+const REHAB_SIGNS = ['접수일자', '접수일', '개시일자', '인가일자', '금지일자',
+  '채권구분', '채권진행상황', '채권현황', '총변제회차', '납입회차', '잔여회차',
+  '총변제예정', '기상환금액', '미상환채권잔액', '원금잔액'];
+const CCRS_SIGNS = ['신청인진행상태', '상환방식', '재조정횟수', '신청구분',
+  '조정전원금', '조정후원금', '원금균등채무액', '상환후잔액'];
+const countSigns = (header, signs) => {
+  const keys = header.map(norm).filter(Boolean);
+  return signs.reduce((n, s) => n + (keys.some(k => k.includes(s)) ? 1 : 0), 0);
+};
+
 /* 단계 컬럼명은 DD마다 '개인'이 붙기도, 빠지기도 한다.
    '1단계 개인채무조정2 월상환액'  (기존 DD·현대커머셜)
    '1단계 채무조정2 월상환액'      (JBC)  ← '개인' 없음 */
@@ -1413,7 +1425,6 @@ async function parseWorkbook(zip, onProg) {
     if (nm && rid && targets.has(rid[1])) sheets.push({ name: unesc(nm[1]), path: 'xl/' + targets.get(rid[1]) });
   }
 
-  const found = [];
   for (let s = 0; s < sheets.length; s++) {
     const sh = sheets[s];
     if (!zip.entries.has(sh.path)) continue;
@@ -1429,24 +1440,39 @@ async function parseWorkbook(zip, onProg) {
     for (const [c, v] of Object.entries(hit.cells)) header[+c] = v;
     const nset = new Set(header.map(norm));
     const sm = buildStageMap(header);
-    // 파생 시트(신용회복_평가 등)를 원본 DD로 오인하지 않도록 금액 컬럼으로 가른다.
-    // 단계 컬럼 유무는 판별에 쓰지 않는다 — 이름이 달라 못 찾았을 때도 수동 매핑을 열어줘야 하므로.
-    const kind = (nset.has('인가일자') && nset.has('총변제예정금액')) ? '개인회생'
-      : (nset.has('신청인진행상태') || (nset.has('상환방식') && (nset.has('조정전원금') || nset.has('원금균등채무액'))))
-        ? '신용회복' : null;
+    // 제도 판별 — 아는 컬럼이 몇 개나 모였는지로 가른다.
+    // 예전에는 '인가일자 + 총변제예정금액' 둘을 모두 요구했다. 그런데 컬럼명이 한 글자만
+    // 달라도(총변제예정금액 → 총변제예정액) 시트 전체가 걸러져 수동 매핑 화면에조차 닿지
+    // 못했다 — 컬럼명을 고치라고 만든 화면이 컬럼명 때문에 막히는 셈이었다.
+    // 이제 신호가 3개만 모이면 열어 주고, 못 잡은 컬럼은 매핑 화면에서 직접 고르게 한다.
+    const rScore = countSigns(header, REHAB_SIGNS);
+    const cScore = countSigns(header, CCRS_SIGNS) + (sm.found ? 3 : 0);
+    // 납입회차처럼 두 제도에 다 있는 컬럼 때문에 신용회복 시트가 개인회생으로 새지 않도록,
+    // 신용회복 신호가 같거나 많으면 신용회복으로 본다.
+    const kind = (cScore >= 3 && cScore >= rScore) ? '신용회복'
+      : rScore >= 3 ? '개인회생' : null;
     if (!kind) continue;
+
+    // 한 워크북에 같은 제도 시트가 여럿이면(원본 + 파생 시트) 신호가 가장 많은 쪽을 남긴다.
+    // 예전에는 뒤에 나온 시트가 앞의 것을 그냥 덮어썼다.
+    const slot = kind === '개인회생' ? 'rehab' : 'ccrs';
+    const strength = kind === '개인회생' ? rScore : cScore;
+    if (DATA[slot] && (DATA[slot].signals || 0) >= strength) continue;
 
     const spec = kind === '개인회생' ? MAP_REHAB : MAP_CCRS;
     const { map, report } = buildMap(header, spec);
-    const d = { kind, sheet: sh.name, header, report, map, sm, hdrRow, xml,
+    const d = { kind, sheet: sh.name, header, report, map, sm, hdrRow, xml, signals: strength,
                 anchor: findAnchor(header),
                 prefix: kind === '개인회생' ? 'A' : 'B' };
     extractRows(d);
-    if (kind === '개인회생') DATA.rehab = d; else DATA.ccrs = d;
-    found.push({ kind, rows: d.rows.length });
+    DATA[slot] = d;
     if (onProg) onProg((s + 1) / sheets.length);
     await yield_();
   }
+  // 시트를 훑는 도중 더 좋은 시트로 갈아탈 수 있으므로 결과는 마지막에 모은다.
+  const found = [];
+  if (DATA.rehab) found.push({ kind: '개인회생', rows: DATA.rehab.rows.length });
+  if (DATA.ccrs) found.push({ kind: '신용회복', rows: DATA.ccrs.rows.length });
   return found;
 }
 
