@@ -16,9 +16,13 @@
   --rule:#E1E6EB; --rule-strong:#CBD3DB;
   --accent:#0E5566; --accent-soft:#E4EFF2; --accent-ink:#0E5566;
   --ok:#1A7A55; --ok-soft:#E3F2EB;
+  --warn:#8F5F0E; --warn-soft:#FAF0DC;
+  --bad:#A8382F; --bad-soft:#FBE9E7;
   --on-accent:#FFFFFF;
   --shadow:0 1px 2px rgba(16,23,32,.05);
   --shadow-lift:0 6px 20px rgba(16,23,32,.09);
+  --shadow-modal:0 18px 50px rgba(16,23,32,.22);
+  --scrim:rgba(16,23,32,.42);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
@@ -27,9 +31,13 @@
     --rule:#232B34; --rule-strong:#323C47;
     --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
     --ok:#3FA97D; --ok-soft:#12291F;
+    --warn:#C9963C; --warn-soft:#2B2312;
+    --bad:#D2685C; --bad-soft:#2E1815;
     --on-accent:#0E1216;
     --shadow:0 1px 2px rgba(0,0,0,.3);
     --shadow-lift:0 6px 20px rgba(0,0,0,.45);
+    --shadow-modal:0 18px 50px rgba(0,0,0,.6);
+    --scrim:rgba(0,0,0,.6);
   }
 }
 :root[data-theme="dark"]{
@@ -38,9 +46,13 @@
   --rule:#232B34; --rule-strong:#323C47;
   --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
   --ok:#3FA97D; --ok-soft:#12291F;
+  --warn:#C9963C; --warn-soft:#2B2312;
+  --bad:#D2685C; --bad-soft:#2E1815;
   --on-accent:#0E1216;
   --shadow:0 1px 2px rgba(0,0,0,.3);
   --shadow-lift:0 6px 20px rgba(0,0,0,.45);
+  --shadow-modal:0 18px 50px rgba(0,0,0,.6);
+  --scrim:rgba(0,0,0,.6);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--ground);color:var(--ink);
@@ -60,6 +72,32 @@ header.top{background:var(--surface);border-bottom:1px solid var(--rule)}
 
 main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
 
+/* ── 공지사항 ── */
+.tag{display:inline-block;flex:none;font-size:10.5px;font-weight:600;letter-spacing:.04em;
+  padding:2px 7px;border-radius:3px;background:var(--surface-2);color:var(--ink-faint);
+  border:1px solid var(--rule)}
+.tag.공지{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent}
+.tag.업데이트{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.tag.점검{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+
+.board{background:var(--surface);border:1px solid var(--rule);border-radius:7px;
+  box-shadow:var(--shadow);margin-bottom:22px;overflow:hidden}
+.board-hd{display:flex;align-items:center;gap:10px;padding:12px 18px;
+  border-bottom:1px solid var(--rule)}
+.board-hd h2{font-size:13.5px}
+.board-hd .cnt{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint)}
+.board ul{list-style:none;margin:0;padding:0}
+.board li+li{border-top:1px solid var(--rule)}
+.board button.row{display:flex;align-items:center;gap:11px;width:100%;text-align:left;
+  background:none;border:0;padding:11px 18px;font:inherit;color:inherit;cursor:pointer}
+.board button.row:hover{background:var(--surface-2)}
+.board button.row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.board .ttl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:13.5px}
+.board .dt{flex:none;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+.board .empty{padding:14px 18px;font-size:13px;color:var(--ink-faint)}
+
+/* ── 도구 카드 ── */
 .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;
   list-style:none;margin:0;padding:0}
 .tool{background:var(--surface);border:1px solid var(--rule);border-radius:7px;
@@ -85,6 +123,39 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
 
 .foot{max-width:1000px;margin:0 auto;padding:0 28px 46px;
   color:var(--ink-faint);font-size:12px;line-height:1.7}
+
+/* ── 공지 팝업 ── */
+.scrim{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:center;
+  padding:22px;z-index:50}
+.modal{background:var(--surface);border:1px solid var(--rule);border-radius:9px;
+  box-shadow:var(--shadow-modal);width:min(560px,100%);max-height:min(78vh,720px);
+  display:flex;flex-direction:column;overflow:hidden}
+.modal-hd{display:flex;align-items:center;gap:10px;padding:15px 20px;
+  border-bottom:1px solid var(--rule);flex:none}
+.modal-hd h2{font-size:14.5px;flex:1}
+.modal-x{background:none;border:0;padding:4px 7px;font-size:19px;line-height:1;
+  color:var(--ink-faint);cursor:pointer;border-radius:4px}
+.modal-x:hover{background:var(--surface-2);color:var(--ink)}
+.modal-body{overflow-y:auto;padding:6px 20px 18px}
+.item{padding:16px 0}
+.item+.item{border-top:1px solid var(--rule)}
+.item-hd{display:flex;align-items:center;gap:9px;margin-bottom:8px;flex-wrap:wrap}
+.item h3{font-size:15px;flex:1;min-width:140px}
+.item .dt{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+.item p{margin:0;font-size:13.5px;color:var(--ink-mute);white-space:pre-wrap}
+.modal-ft{display:flex;align-items:center;gap:10px;padding:13px 20px;
+  border-top:1px solid var(--rule);background:var(--surface-2);flex:none;flex-wrap:wrap}
+.modal-ft label{display:flex;align-items:center;gap:7px;font-size:12.5px;
+  color:var(--ink-mute);cursor:pointer;margin-right:auto}
+.modal-ft input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
+.btn{background:var(--accent);color:var(--on-accent);border:0;border-radius:5px;
+  padding:8px 18px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:420px){
+  .modal-ft label{margin-right:0;width:100%}
+  .btn{width:100%}
+}
 </style>
 </head>
 <body>
@@ -102,6 +173,12 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
 </header>
 
 <main>
+  <!-- 공지 목록 — 팝업을 닫아도 여기서 다시 볼 수 있다 -->
+  <section class="board" id="board" hidden>
+    <div class="board-hd"><h2>공지사항</h2><span class="cnt" id="boardCnt"></span></div>
+    <ul id="boardList"></ul>
+  </section>
+
   <ul class="tools">
     <li class="tool">
       <a class="hit" href="/valuation/">
@@ -129,13 +206,173 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
     <p><strong>DD는 브라우저를 떠나지 않습니다.</strong>
       평가판은 업로드한 엑셀을 서버로 보내거나 저장하지 않습니다.
       파싱·계산·렌더링이 전부 접속한 브라우저 안에서 끝납니다.</p>
-    <p>이 사이트는 검색에 노출되지 않으며 비밀번호로 보호됩니다.</p>
+    <p>이 사이트는 검색에 노출되지 않습니다.</p>
   </div>
 </main>
 
 <p class="foot">
   평가판이 갱신되면 DD 컬럼 표준도 함께 갱신해야 합니다 — 명세는 평가판의 실제 인식 규칙에서 뽑은 것입니다.
 </p>
+
+<script>
+(function () {
+  'use strict';
+
+  var SEEN_KEY = 'notice.seen';       // 읽은 공지 id 목록
+  var HIDE_KEY = 'notice.hideUntil';  // '오늘 하루 보지 않기' 만료일 (YYYY-MM-DD)
+
+  /* 저장소는 시크릿 창·사이트 데이터 차단에서 읽기만 해도 예외를 던진다.
+     공지 때문에 페이지가 깨지면 안 되므로 전부 감싼다. */
+  function get(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function set(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) { /* 저장 못 해도 그냥 넘어간다 */ }
+  }
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+  function seenIds() {
+    var raw = get(SEEN_KEY);
+    if (!raw) return [];
+    try { var a = JSON.parse(raw); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+
+  var el = function (tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt != null) e.textContent = txt;
+    return e;
+  };
+
+  function tagEl(name) {
+    // 태그 이름을 그대로 클래스로 쓴다 — 색이 정의되지 않은 이름이면 기본 회색으로 떨어진다.
+    return el('span', 'tag ' + (name || ''), name || '공지');
+  }
+
+  function renderBoard(list) {
+    var board = document.getElementById('board');
+    var ul = document.getElementById('boardList');
+    document.getElementById('boardCnt').textContent = list.length + '건';
+    list.forEach(function (n) {
+      var li = el('li');
+      var b = el('button', 'row');
+      b.type = 'button';
+      b.appendChild(tagEl(n.tag));
+      b.appendChild(el('span', 'ttl', n.title));
+      b.appendChild(el('span', 'dt', n.date || ''));
+      b.addEventListener('click', function () { openModal([n], false); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    board.hidden = false;
+  }
+
+  var lastFocus = null;
+
+  function openModal(list, offerHide) {
+    lastFocus = document.activeElement;
+
+    var scrim = el('div', 'scrim');
+    var modal = el('div', 'modal');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', '공지사항');
+
+    var hd = el('div', 'modal-hd');
+    hd.appendChild(el('h2', null, '공지사항'));
+    var x = el('button', 'modal-x', '×');
+    x.type = 'button';
+    x.setAttribute('aria-label', '닫기');
+    hd.appendChild(x);
+    modal.appendChild(hd);
+
+    var body = el('div', 'modal-body');
+    list.forEach(function (n) {
+      var item = el('div', 'item');
+      var ih = el('div', 'item-hd');
+      ih.appendChild(tagEl(n.tag));
+      ih.appendChild(el('h3', null, n.title));
+      ih.appendChild(el('span', 'dt', n.date || ''));
+      item.appendChild(ih);
+      item.appendChild(el('p', null, n.body || ''));
+      body.appendChild(item);
+    });
+    modal.appendChild(body);
+
+    var ft = el('div', 'modal-ft');
+    var box = null;
+    if (offerHide) {
+      var lab = el('label');
+      box = document.createElement('input');
+      box.type = 'checkbox';
+      lab.appendChild(box);
+      lab.appendChild(document.createTextNode('오늘 하루 보지 않기'));
+      ft.appendChild(lab);
+    } else {
+      ft.appendChild(el('span', null, ' '));   // 버튼을 오른쪽으로 미는 자리
+      ft.firstChild.style.marginRight = 'auto';
+    }
+    var ok = el('button', 'btn', '확인');
+    ok.type = 'button';
+    ft.appendChild(ok);
+    modal.appendChild(ft);
+
+    scrim.appendChild(modal);
+    document.body.appendChild(scrim);
+    ok.focus();
+
+    function close() {
+      if (offerHide) {
+        // 확인을 누른 시점에 읽은 것으로 본다 — 새 공지가 올라오면 다시 뜬다.
+        var ids = seenIds();
+        list.forEach(function (n) { if (ids.indexOf(n.id) < 0) ids.push(n.id); });
+        set(SEEN_KEY, JSON.stringify(ids));
+        if (box && box.checked) set(HIDE_KEY, today());
+      }
+      document.removeEventListener('keydown', onKey);
+      scrim.remove();
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key !== 'Tab') return;
+      // 포커스를 모달 안에 가둔다
+      var f = modal.querySelectorAll('button, input, [href]');
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    ok.addEventListener('click', close);
+    x.addEventListener('click', close);
+    scrim.addEventListener('mousedown', function (e) { if (e.target === scrim) close(); });
+    document.addEventListener('keydown', onKey);
+  }
+
+  fetch('/notices.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      var list = data && Array.isArray(data.notices) ? data.notices : [];
+      if (!list.length) return;
+
+      // 최신순. date가 없으면 순서를 그대로 둔다.
+      list = list.slice().sort(function (a, b) {
+        return String(b.date || '').localeCompare(String(a.date || ''));
+      });
+      renderBoard(list);
+
+      if (get(HIDE_KEY) === today()) return;
+      var seen = seenIds();
+      var fresh = list.filter(function (n) { return seen.indexOf(n.id) < 0; });
+      if (fresh.length) openModal(fresh, true);
+    })
+    .catch(function () { /* 공지를 못 읽어도 사이트는 그대로 쓴다 */ });
+})();
+</script>
 
 </body>
 </html>
