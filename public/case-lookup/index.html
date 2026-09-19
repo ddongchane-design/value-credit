@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>개인회생 조회 프로그램</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F5F7F9; --surface:#FFFFFF; --surface-2:#FAFBFC;
+  --ink:#101720; --ink-mute:#5C6875; --ink-faint:#8A95A2;
+  --rule:#E1E6EB; --rule-strong:#CBD3DB;
+  --accent:#0E5566; --accent-soft:#E4EFF2; --accent-ink:#0E5566;
+  --ok:#1A7A55; --ok-soft:#E3F2EB;
+  --warn:#8F5F0E; --warn-soft:#FAF0DC;
+  --bad:#A8382F; --bad-soft:#FBE9E7;
+  --hot:#C2410C; --hot-soft:#FFF1E6; --hot-ink:#9A3412;
+  --on-accent:#FFFFFF;
+  --shadow:0 1px 2px rgba(16,23,32,.05);
+  --shadow-lift:0 6px 20px rgba(16,23,32,.09);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
+    --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
+    --rule:#232B34; --rule-strong:#323C47;
+    --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
+    --ok:#3FA97D; --ok-soft:#12291F;
+    --warn:#C9963C; --warn-soft:#2B2312;
+    --bad:#D2685C; --bad-soft:#2E1815;
+    --hot:#F59E4B; --hot-soft:#2C1A0C; --hot-ink:#FDBA74;
+    --on-accent:#0E1216;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+    --shadow-lift:0 6px 20px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
+  --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
+  --rule:#232B34; --rule-strong:#323C47;
+  --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
+  --ok:#3FA97D; --ok-soft:#12291F;
+  --warn:#C9963C; --warn-soft:#2B2312;
+  --bad:#D2685C; --bad-soft:#2E1815;
+  --hot:#F59E4B; --hot-soft:#2C1A0C; --hot-ink:#FDBA74;
+  --on-accent:#0E1216;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  --shadow-lift:0 6px 20px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
+  font-size:14.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:600;letter-spacing:-.01em}
+p{margin:0 0 13px}
+a{color:var(--accent-ink)}
+code{background:var(--surface-2);border:1px solid var(--rule);border-radius:3px;
+  padding:1px 5px;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+kbd{font-family:"IBM Plex Mono",monospace;font-size:12px;border:1px solid var(--rule-strong);
+  border-bottom-width:2px;border-radius:4px;padding:1px 6px;background:var(--surface)}
+.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+
+/* ── 상단 ── */
+header.top{background:var(--surface);border-bottom:1px solid var(--rule)}
+.top-in{max-width:1000px;margin:0 auto;padding:26px 28px 28px}
+.crumb{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px}
+.crumb a{color:var(--ink-faint);text-decoration:none}
+.crumb a:hover{color:var(--accent-ink);text-decoration:underline}
+.top h1{font-size:25px;margin-bottom:7px}
+.top .lede{color:var(--ink-mute);font-size:14px;max-width:62ch;margin:0}
+.top .meta{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;
+  background:var(--accent-soft);color:var(--accent-ink);padding:4px 9px;border-radius:3px}
+.chip.hot{background:var(--hot-soft);color:var(--hot-ink)}
+
+main{max-width:1000px;margin:0 auto;padding:30px 28px 80px;display:flex;flex-direction:column;gap:22px}
+
+/* ── 다운로드 박스 ── */
+.dl{background:var(--surface);border:2px solid var(--hot);border-radius:8px;
+  box-shadow:0 0 0 4px var(--hot-soft),var(--shadow);overflow:hidden}
+.dl-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;padding:22px 26px}
+.dl h2{font-size:18px;margin-bottom:6px}
+.dl p{margin:0;color:var(--ink-mute);font-size:13.5px}
+.dl .file{margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+.dl .file b{color:var(--ink);font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--hot);color:#fff;border:0;border-radius:6px;padding:13px 22px;
+  font:inherit;font-size:14.5px;font-weight:600;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn:hover{filter:brightness(1.08)}
+.btn:focus-visible{outline:2px solid var(--hot);outline-offset:2px}
+.btn.pending{background:var(--surface-2);color:var(--ink-faint);border:1px dashed var(--rule-strong);
+  cursor:default;pointer-events:none}
+.btn .arrow{font-size:16px}
+.dl-foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0;
+  border-top:1px solid var(--rule);background:var(--surface-2)}
+.dl-foot>div{padding:14px 26px;font-size:13px}
+.dl-foot>div+div{border-left:1px solid var(--rule)}
+.dl-foot .k{display:block;font-size:11px;letter-spacing:.05em;color:var(--ink-faint);
+  font-family:"IBM Plex Mono",monospace;margin-bottom:3px}
+.dl-foot .contact{font-weight:600}
+.dl-foot .contact a{color:inherit;text-decoration:none}
+.dl-foot .contact a:hover{text-decoration:underline}
+
+/* ── 섹션 ── */
+section{background:var(--surface);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.sec-hd{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--rule)}
+.sec-hd .n{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  width:22px;height:22px;display:grid;place-items:center;border-radius:3px;
+  background:var(--accent-soft);color:var(--accent-ink);align-self:center}
+.sec-hd h2{font-size:16px}
+.sec-hd .sub{margin-left:auto;font-size:12.5px;color:var(--ink-faint)}
+.sec-body{padding:18px 20px 8px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+.card{border:1px solid var(--rule);border-radius:5px;padding:13px 15px;background:var(--surface-2)}
+.card h3{font-size:14px;margin-bottom:5px}
+.card p{margin:0;font-size:13px;color:var(--ink-mute)}
+.callout{border-left:3px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 5px 5px 0;padding:11px 14px;margin:0 0 14px;font-size:13.5px}
+.callout.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.callout.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.callout.ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.callout p{margin:0}
+.callout p+p{margin-top:6px}
+
+/* 단계 목록 */
+.steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s}
+.steps li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:0 12px;padding:13px 0;
+  border-top:1px solid var(--rule)}
+.steps li>*{grid-column:2}
+.steps li:first-child{border-top:0;padding-top:4px}
+.steps li::before{counter-increment:s;content:counter(s);grid-column:1;grid-row:1 / span 20;
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  background:var(--accent);color:var(--on-accent);font-family:"IBM Plex Mono",monospace;
+  font-size:12px;font-weight:600;margin-top:1px}
+.steps.hot li::before{background:var(--hot);color:#fff}
+.steps h3{font-size:14.5px;margin-bottom:4px}
+.steps p{margin:0;font-size:13.5px;color:var(--ink-mute)}
+.steps p+p{margin-top:5px}
+.steps .shot{margin-top:8px;padding:9px 12px;background:var(--surface-2);border:1px solid var(--rule);
+  border-radius:5px;font-size:12.5px;color:var(--ink-mute)}
+.steps .shot b{color:var(--ink);font-weight:500}
+
+/* 표 */
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:12px;font-weight:600;color:var(--ink-mute);background:var(--surface-2);
+  letter-spacing:.02em;white-space:nowrap}
+tbody tr:hover{background:var(--surface-2)}
+td.k{white-space:nowrap;font-weight:600}
+.tablewrap{overflow-x:auto;margin-bottom:14px;border:1px solid var(--rule);border-radius:5px}
+.tablewrap table{margin:0}
+.tablewrap th,.tablewrap td{border-bottom:1px solid var(--rule)}
+.tablewrap tr:last-child td{border-bottom:0}
+
+/* 원장 양식 미리보기 */
+.sheet{font-family:"IBM Plex Mono",monospace;font-size:12px}
+.sheet th{background:#1F3864;color:#fff;font-family:"IBM Plex Sans KR",sans-serif}
+.sheet td{color:var(--ink-mute)}
+
+/* FAQ */
+details{border-top:1px solid var(--rule);padding:0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;padding:12px 0;font-weight:600;font-size:14px;list-style:none;
+  display:flex;gap:10px;align-items:baseline}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:"IBM Plex Mono",monospace;color:var(--accent-ink);
+  width:14px;flex:none}
+details[open] summary::before{content:"−"}
+details .a{padding:0 0 14px 24px;font-size:13.5px;color:var(--ink-mute)}
+details .a p:last-child{margin-bottom:0}
+
+.foot{max-width:1000px;margin:0 auto;padding:0 28px 46px;
+  color:var(--ink-faint);font-size:12px;line-height:1.7}
+
+@media (max-width:640px){
+  .top-in,main,.foot{padding-left:16px;padding-right:16px}
+  .dl-in{grid-template-columns:1fr;gap:16px;padding:18px}
+  .dl-in .btn{width:100%}
+  .dl-foot>div{padding:12px 18px}
+  .dl-foot>div+div{border-left:0;border-top:1px solid var(--rule)}
+  .sec-hd .sub{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="crumb"><a href="/">채무조정채권 평가</a> &nbsp;/&nbsp; 개인회생 조회 프로그램</div>
+    <h1>개인회생 조회 프로그램 — 설치 안내 · 사용 방법</h1>
+    <p class="lede">원장 엑셀에 있는 개인회생 사건을 대법원 「나의사건검색」에서 자동으로 조회해
+      진행 단계·인가일·변제 회차·미납 여부를 받아오고, 지난번과 달라진 사건만 따로 보여주는
+      Windows 프로그램입니다. 조회한 내용은 전부 사용자 PC 안에만 저장됩니다.</p>
+    <div class="meta">
+      <span class="chip hot">NEW · 평가판 오픈</span>
+      <span class="chip">버전 1.0.0</span>
+      <span class="chip">Windows 10 · 11 (64비트)</span>
+      <span class="chip">설치 파일 없음 — 압축 풀고 실행</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══ 다운로드 ══ -->
+  <div class="dl" id="download">
+    <div class="dl-in">
+      <div>
+        <h2>다운로드</h2>
+        <p>구글 드라이브에서 받습니다. 링크를 열면 드라이브 화면이 뜨고, 오른쪽 위 <b>⤓ 다운로드</b>를 누르면 됩니다.
+          「바이러스 검사를 할 수 없습니다」가 나오면 <b>계속 다운로드</b>를 누르세요 — 파일이 커서 드라이브가 검사를 건너뛰는 것입니다.</p>
+        <div class="file">
+          <span>파일 <b>개인회생조회_1.0.0.zip</b></span>
+          <span>압축 해제 후 <b>약 330MB</b></span>
+          <span>배포일 <b>2026-09-20</b></span>
+        </div>
+      </div>
+      <a class="btn" id="dlBtn" href="#" target="_blank" rel="noopener">
+        구글 드라이브에서 받기 <span class="arrow">→</span></a>
+    </div>
+    <div class="dl-foot">
+      <div>
+        <span class="k">라이선스 키</span>
+        프로그램을 처음 열면 <b>라이선스 키</b>를 묻습니다. 다운로드 후 아래로 연락 주시면
+        <b>사무실 이름 · 이메일</b> 기준으로 발급해 드립니다. 키는 메일로 보내 드립니다.
+      </div>
+      <div>
+        <span class="k">문의 · 키 발급</span>
+        <div class="contact">이동찬 &nbsp;·&nbsp; <a href="tel:01046177298">010-4617-7298</a>
+          &nbsp;·&nbsp; <a href="mailto:ddongchane@gmail.com">ddongchane@gmail.com</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 1. 무엇을 하나 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">1</span><h2>무엇을 하는 프로그램인가</h2>
+      <span class="sub">사람이 사건번호를 하나씩 검색하던 일을 대신합니다</span></div>
+    <div class="sec-body">
+      <div class="grid3">
+        <div class="card"><h3>자동 조회</h3>
+          <p>원장에 있는 사건을 하나씩 대법원 나의사건검색에 넣어 조회합니다.
+            보안문자(6자리 숫자)는 프로그램이 자동으로 읽습니다. 사람이 붙어 있을 필요가 없습니다.</p></div>
+        <div class="card"><h3>변제현황까지</h3>
+          <p>사건 진행내역(접수·금지명령·개시·인가·폐지)뿐 아니라, 상환계좌를 넣으면
+            변제 회차·미납 회차·회차별 변제예정금액·총변제예정금액까지 받아옵니다.</p></div>
+        <div class="card"><h3>변동만 골라서</h3>
+          <p>지난 조회와 비교해 <b>달라진 사건만</b> 따로 모아 보여줍니다.
+            폐지·면책 같은 종국 사건은 맨 위에 올라옵니다.</p></div>
+        <div class="card"><h3>이어서 조회</h3>
+          <p>1만 건이면 하루로 안 끝납니다. 창을 닫거나 PC를 꺼도 진행분은 저장되고,
+            다음에 켜면 남은 건부터 이어서 합니다.</p></div>
+        <div class="card"><h3>엑셀로 내보내기</h3>
+          <p>현황·사건 목록·변동·실패 목록을 언제든 엑셀로 내려받습니다.
+            같은 파일이 프로그램 폴더의 <code>OUTPUT\report</code>에도 남습니다.</p></div>
+        <div class="card"><h3>내 PC에만 저장</h3>
+          <p>조회한 사건 내용은 어떤 서버로도 가지 않습니다. 관리용으로 보내는 것은
+            「어느 사무실이 언제 몇 건 조회했나」뿐이고 사건 내용은 포함되지 않습니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 2. 준비물 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">2</span><h2>준비물</h2>
+      <span class="sub">설치 전에 확인</span></div>
+    <div class="sec-body">
+      <table>
+        <tbody>
+          <tr><td class="k">PC</td><td>Windows 10 또는 11, 64비트. 별도 프로그램(파이썬·엑셀 등) 설치는 필요 없습니다.
+            디스크 여유 1GB 이상.</td></tr>
+          <tr><td class="k">인터넷</td><td>대법원 사이트(<span class="mono">safind.scourt.go.kr</span>)에 접속됩니다. 회사 방화벽이 막고 있으면 조회가 안 됩니다.</td></tr>
+          <tr><td class="k">원장 엑셀</td><td>조회할 사건 목록. 아래 5개 열이면 됩니다 — 양식은 프로그램 안에서 받을 수 있습니다.</td></tr>
+          <tr><td class="k">라이선스 키</td><td><span class="mono">SSGO-</span>로 시작하는 긴 문자열. 위 연락처로 요청하시면 메일로 드립니다.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size:14px;margin-bottom:8px">원장 엑셀 양식</h3>
+      <div class="tablewrap">
+        <table class="sheet">
+          <thead><tr><th>법원</th><th>사건번호</th><th>당사자명</th><th>은행</th><th>상환계좌</th></tr></thead>
+          <tbody>
+            <tr><td>서울회생법원</td><td>2024개회12345</td><td>홍길동</td><td>농협은행</td><td>301-0000-0000-00</td></tr>
+            <tr><td>수원회생법원</td><td>2023개회67890</td><td>김철수</td><td>농협은행</td><td>301-0000-0000-00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <p><b>법원 이름은 정확히</b> 써 주세요. 「서울회생」처럼 줄이거나 「서울회생법원 (본원)」처럼 덧붙이면
+          법원 코드를 못 찾아 그 건은 조회에서 빠집니다. 반영 전 확인 화면에서 「법원코드 없음」 건수로 잡힙니다.</p>
+        <p><b>상환계좌</b>가 비어 있으면 사건 진행내역은 받지만 변제현황(회차·미납)은 못 받습니다.
+          같은 사건이 여러 행이면 한 건으로 합쳐집니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 3. 설치 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">3</span><h2>설치 — 5분</h2>
+      <span class="sub">설치 프로그램이 아니라 폴더째 풀어서 씁니다</span></div>
+    <div class="sec-body">
+      <ol class="steps hot">
+        <li>
+          <h3>다운로드</h3>
+          <p>위 「구글 드라이브에서 받기」로 <code>개인회생조회_1.0.0.zip</code>을 받습니다.</p>
+        </li>
+        <li>
+          <h3>압축 풀기</h3>
+          <p>zip을 우클릭 → <b>압축 풀기</b>. 풀린 <code>개인회생조회</code> 폴더를 쓰기 편한 곳에 둡니다.</p>
+          <div class="shot">권장 위치 <b>C:\개인회생조회</b> &nbsp;— OneDrive·구글드라이브 같은 <b>동기화 폴더 밖</b>에 두세요.
+            조회 결과에 사건 당사자 정보가 들어가므로 클라우드로 올라가지 않게 하는 편이 안전합니다.
+            (동기화 폴더 안에 두면 프로그램이 경고를 띄웁니다.)</div>
+        </li>
+        <li>
+          <h3>실행</h3>
+          <p>폴더 안 <code>개인회생조회.exe</code>를 더블클릭합니다. 잠시 후 프로그램 창이 열립니다.
+            바탕화면 바로가기를 만들어 두면 편합니다 (exe 우클릭 → 보내기 → 바탕 화면에 바로가기 만들기).</p>
+          <div class="shot"><b>「Windows의 PC 보호」</b> 파란 창이 뜨면 → <b>추가 정보</b> → <b>실행</b>.
+            코드 서명이 없는 프로그램에 Windows가 처음 한 번 묻는 것이고, 다음부터는 뜨지 않습니다.
+            백신이 격리하면 폴더를 예외에 추가해 주세요.</div>
+        </li>
+        <li>
+          <h3>라이선스 키 등록</h3>
+          <p>처음 열면 키를 묻는 화면이 전부를 덮습니다. 메일로 받은 키를 <b>전부 선택해 복사</b>(<kbd>Ctrl</kbd>+<kbd>C</kbd>)한 뒤
+            칸에 붙여넣고(<kbd>Ctrl</kbd>+<kbd>V</kbd>) <b>등록</b>을 누릅니다.
+            키가 사무실 이름·만료일과 함께 등록되면 바로 현황 화면으로 넘어갑니다.</p>
+        </li>
+        <li>
+          <h3>끝</h3>
+          <p>이제 원장을 올리고 조회하면 됩니다. 아래 사용 순서로 이어집니다.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══ 4. 사용 순서 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">4</span><h2>사용 순서</h2>
+      <span class="sub">처음 한 번은 ①→②→③, 그 뒤로는 ③만</span></div>
+    <div class="sec-body">
+      <ol class="steps">
+        <li>
+          <h3>원장 올리기 — 「조회 실행」 메뉴</h3>
+          <p><b>양식 받기</b>로 빈 엑셀을 받아 5개 열을 채웁니다 (기존 원장이 열 이름만 맞으면 그대로 써도 됩니다).
+            <b>새 원장 파일 선택…</b>으로 올리면 확인 화면이 뜹니다.</p>
+          <div class="shot">확인 화면에서 볼 것 — <b>조회 대상 건수</b> · <b>법원코드 없음</b>(조회 불가) · <b>사건번호 오류</b> · <b>계좌 비어 있음</b>(변제현황 못 봄).
+            숫자가 이상하면 취소하고 엑셀을 고쳐서 다시 올리세요. 괜찮으면 <b>이 내용으로 반영</b>.</div>
+          <p>반영하면 이전 원장과 데이터는 백업 파일로 남고, 새 원장으로 처음부터 시작합니다.</p>
+        </li>
+        <li>
+          <h3>50건만 시험 조회</h3>
+          <p>처음에는 <b>50건만 시험 조회</b>를 눌러 보세요. 5분 정도 걸립니다.
+            성공 건수가 올라가고 「실시간 기록」에 사건이 하나씩 찍히면 정상입니다.
+            실패가 많으면 원장의 법원명·사건번호를 먼저 확인하세요.</p>
+        </li>
+        <li>
+          <h3>조회 시작</h3>
+          <p><b>조회 시작</b>을 누르면 남은 건 전부를 돕니다. 건당 4~9초이므로
+            <b>1,000건 ≈ 2시간, 10,000건 ≈ 하루</b>입니다. 예상 소요 시간은 버튼 위에 나옵니다.</p>
+          <p>조회 중에 창을 닫아도 됩니다 — 조회는 계속 돌고, 창을 다시 열면 진행 상황이 그대로 보입니다.
+            PC를 꺼도 진행한 만큼 저장되어 다음에 이어서 합니다. <b>중지</b>를 눌러도 조회한 건은 모두 남습니다.</p>
+          <p>한 바퀴가 끝나면 실패한 건을 자동으로 두 번 더 시도합니다. 그래도 실패하면 대개 원장 문제이며
+            「실패한 사건」 표에서 사유를 볼 수 있습니다.</p>
+        </li>
+        <li>
+          <h3>결과 보기</h3>
+          <p><b>현황</b> — 관리 중인 사건 수, 오늘 조회한 수, 확인이 필요한 변동, 실패 건, 총변제예정금액.<br>
+            <b>사건 목록</b> — 사건마다 접수·금지·개시·인가일, 상태, 회차, 미납, 변제금액. 법원·상태로 거를 수 있습니다.<br>
+            <b>변동</b> — 지난 조회와 달라진 건. 종국(폐지·면책) → 미납 → 변제계획 순으로 봅니다.<br>
+            <b>사건 찾기</b> — 사건번호 하나를 넣으면 변제현황·변동 이력·법원 진행내역 전체가 나옵니다.</p>
+        </li>
+        <li>
+          <h3>엑셀로 내보내기</h3>
+          <p>각 화면 오른쪽 위 <b>⤓ 내보내기</b>를 누르면 그 화면의 표가 엑셀로 내려옵니다.
+            같은 파일이 프로그램 폴더 <code>OUTPUT\report</code>에도 저장됩니다.</p>
+        </li>
+      </ol>
+      <div class="callout ok">
+        <p><b>매일 쓰는 방법</b> — 아침에 프로그램을 열고 <b>조회 시작</b>만 누르면 됩니다.
+          어제 못 끝낸 건부터 이어서 돌고, 끝나면 <b>변동</b> 메뉴에서 달라진 사건만 확인하세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 5. 화면 구성 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">5</span><h2>화면 구성</h2>
+      <span class="sub">왼쪽 메뉴 6개</span></div>
+    <div class="sec-body">
+      <table>
+        <thead><tr><th>메뉴</th><th>무엇을 보나</th><th>언제 보나</th></tr></thead>
+        <tbody>
+          <tr><td class="k">현황</td><td>사건 수 · 오늘 진행률 · 상태 분포 · 최근 실행 기록</td><td>매일 아침</td></tr>
+          <tr><td class="k">사건 목록</td><td>전 사건 표. 검색·법원·채권구분·상태로 거르기, 엑셀 내보내기</td><td>매일</td></tr>
+          <tr><td class="k">조회 실행</td><td>원장 올리기 · 조회 시작/중지 · 실시간 기록 · 실패한 사건 재조회</td><td>매일</td></tr>
+          <tr><td class="k">변동</td><td>지난 조회 대비 달라진 채권. 종국 / 미납 / 변제계획 필터, 기간 선택</td><td>매일</td></tr>
+          <tr><td class="k">사건 찾기</td><td>사건번호·채권번호 하나를 깊게. 변제현황 · 변동 이력 · 법원 진행내역 전체</td><td>필요할 때</td></tr>
+          <tr><td class="k">설정</td><td>조회 간격 · 캡차 재시도 · 차단 대응 · 라이선스 · 버전 · 데이터 폴더</td><td>필요할 때</td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size:14px;margin:4px 0 8px">사건 목록의 주요 열</h3>
+      <table>
+        <tbody>
+          <tr><td class="k">접수 · 금지 · 개시 · 인가일자</td><td>법원 진행내역에서 가져온 날짜. 금지일자는 금지명령 <b>신청일</b>입니다 (결정일은 법원이 등재하지 않습니다).</td></tr>
+          <tr><td class="k">상태</td><td>개시전 · 개시·인가전 · 정상변제 · 미납 · 종국(폐지) 중 하나. 미납과 종국은 색으로 표시됩니다.</td></tr>
+          <tr><td class="k">전체 · 현재 · 잔여회차</td><td>변제계획상 총 회차, 오늘 기준 몇 회차인지, 남은 회차.</td></tr>
+          <tr><td class="k">미납회차</td><td>미납액 ÷ 월변제액. 금액 비율이라 소수가 나옵니다 — 0.99면 한 회차 거의 전액 미납, 1.98이면 두 회차 미납.</td></tr>
+          <tr><td class="k">납입 · 분배회차</td><td>채무자가 변제계좌에 넣은 회차(납입)와 채권자에게 실제로 나간 회차(분배). 보통 같고, 분배가 잠깐 작을 수 있습니다.</td></tr>
+          <tr><td class="k">회차별 · 총변제예정금액</td><td>우리 채권 몫의 월 변제액과 총액. 채무자 전체 금액이 아닙니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ 6. 주의사항 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">6</span><h2>꼭 지켜 주세요</h2>
+      <span class="sub">차단과 개인정보</span></div>
+    <div class="sec-body">
+      <div class="callout bad">
+        <p><b>조회 간격(4~9초)을 줄이지 마세요.</b> 대법원 서버가 「너무 자주 조회한다」고 판단하면
+          사무실 인터넷 회선 자체를 며칠 막습니다. 막히면 보안문자를 아무리 잘 읽어도 조회가 안 되고,
+          프로그램은 차단 응답이 3번 쌓이면 스스로 멈춘 뒤 3일간 실행을 거부합니다. 4~9초는 수백 건 연속 조회에서
+          한 번도 막히지 않은 값입니다.</p>
+      </div>
+      <div class="callout warn">
+        <p><b>결과 폴더를 클라우드 동기화에서 빼 주세요.</b> 프로그램 폴더 안 <code>OUTPUT</code>에 사건 당사자 정보가 들어갑니다.
+          OneDrive 안에 두었다면 OneDrive 설정 → 계정 → 폴더 선택에서 그 폴더의 체크를 해제하세요.
+          가장 간단한 방법은 처음부터 <code>C:\개인회생조회</code>처럼 동기화 밖에 두는 것입니다.</p>
+      </div>
+      <div class="grid2">
+        <div class="card"><h3>PC 두 대로 나눠 돌릴 때</h3>
+          <p>같은 원장을 두 PC에서 동시에 돌리면 같은 사건을 두 번 조회합니다. 나눠 돌리려면 담당자에게 알려 주세요 —
+            설정 파일에서 PC별 담당(예: 집·회사)을 지정해 드립니다.</p></div>
+        <div class="card"><h3>보안문자 인식률이 떨어지면</h3>
+          <p>설정 화면의 「최근 인식률」이 60% 밑으로 내려가면 대법원이 보안문자를 바꾼 것일 수 있습니다.
+            담당자에게 알려 주세요. 프로그램을 고쳐서 새 버전을 드립니다.</p></div>
+        <div class="card"><h3>새 버전 알림</h3>
+          <p>새 버전이 나오면 프로그램 위쪽에 띠가 뜨고 <b>다운로드</b> 버튼이 나옵니다.
+            받아서 압축을 푼 뒤 기존 폴더의 <code>OUTPUT</code> 폴더를 새 폴더로 옮겨 넣으면 조회 데이터가 이어집니다.
+            라이선스 키는 메일에 있으니 다시 등록하면 됩니다.</p></div>
+        <div class="card"><h3>라이선스 만료</h3>
+          <p>만료가 가까워지면 프로그램 위쪽에 안내가 뜹니다. 만료 후에도 유예 기간에는 쓸 수 있고, 그 뒤로는 조회가 막힙니다.
+            연장 키를 받아 설정 → 라이선스 → <b>키 다시 등록</b>에 붙여넣으면 됩니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 7. 자주 묻는 것 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">7</span><h2>자주 묻는 것</h2></div>
+    <div class="sec-body" style="padding-top:6px">
+      <details>
+        <summary>실행했는데 아무것도 안 뜹니다</summary>
+        <div class="a"><p>처음 실행은 몇 초 걸릴 수 있습니다. 한참 기다려도 안 뜨면
+          백신이 <code>개인회생조회.exe</code>를 막았을 가능성이 큽니다. 백신 격리함을 확인하고 폴더를 예외에 넣어 주세요.
+          그래도 안 되면 폴더 안 <code>OUTPUT</code>의 최신 로그 파일을 담당자에게 보내 주세요.</p></div>
+      </details>
+      <details>
+        <summary>「이 앱은 PC를 보호하기 위해 차단되었습니다」</summary>
+        <div class="a"><p>Windows SmartScreen입니다. 파란 창에서 <b>추가 정보</b>를 누르면 <b>실행</b> 버튼이 나옵니다.
+          코드 서명 인증서가 없는 프로그램에는 항상 이렇게 묻습니다. 한 번 실행하면 다음부터는 묻지 않습니다.</p></div>
+      </details>
+      <details>
+        <summary>조회 결과가 어디에 저장되나요? 서버로 가나요?</summary>
+        <div class="a"><p>프로그램 폴더 안 <code>OUTPUT</code>에만 저장됩니다 (사건 DB <code>cases.db</code>, 내보낸 엑셀 <code>report</code>, 로그 파일).
+          서버로 보내는 것은 「어느 사무실이 언제 몇 건 조회했나」 하는 사용 기록뿐이고, 사건번호·당사자·금액 같은 사건 내용은
+          어떤 경우에도 나가지 않습니다. 설정 → 프로그램 → 데이터 폴더에서 <b>폴더 열기</b>로 바로 열 수 있습니다.</p></div>
+      </details>
+      <details>
+        <summary>실패한 사건이 있습니다</summary>
+        <div class="a"><p>대부분 법원 서버의 일시 오류라 다시 조회하면 됩니다. 조회 실행 → 실패한 사건 → <b>실패한 사건만 재조회</b>.
+          두 번 더 해도 실패하면 원장의 법원명이나 사건번호가 틀린 것입니다. 「사유」 열을 보고 원장을 고쳐서 다시 올리세요.</p></div>
+      </details>
+      <details>
+        <summary>원장을 갱신하고 싶습니다 (사건이 추가됐습니다)</summary>
+        <div class="a"><p>조회 실행 → <b>새 원장 파일 선택…</b>으로 새 엑셀을 올리고 반영하면 됩니다.
+          지금 버전은 새 원장으로 <b>처음부터 다시</b> 시작하며, 이전 데이터는 백업 파일로 남습니다.
+          기존 조회 결과를 유지한 채 추가분만 붙이는 기능은 다음 버전에 넣을 예정입니다.</p></div>
+      </details>
+      <details>
+        <summary>회사 방화벽·프록시 환경입니다</summary>
+        <div class="a"><p><code>safind.scourt.go.kr</code>(대법원 나의사건검색)로 나가는 HTTPS(443)가 열려 있어야 합니다.
+          프로그램 자체는 <code>127.0.0.1</code>(내 PC 안)에서만 돌고 외부에서 접속할 수 있는 포트를 열지 않습니다.
+          관리 연결(사용 기록·새 버전 확인)은 <code>script.google.com</code>을 쓰며, 막혀 있어도 조회에는 영향이 없습니다.</p></div>
+      </details>
+      <details>
+        <summary>프로그램을 지우고 싶습니다</summary>
+        <div class="a"><p>레지스트리나 시스템 폴더를 건드리지 않으므로 폴더를 통째로 지우면 끝입니다.
+          조회 결과를 남기려면 <code>OUTPUT</code> 폴더만 따로 옮겨 두세요.</p></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ══ 8. 문의 ══ -->
+  <section>
+    <div class="sec-hd"><span class="n">8</span><h2>문의</h2></div>
+    <div class="sec-body">
+      <p>키 발급, 오류, 기능 요청 모두 아래로 연락 주세요. 오류는 <b>어느 화면에서 무엇을 눌렀을 때</b>
+        어떤 메시지가 떴는지와, 가능하면 <code>OUTPUT</code> 폴더의 최신 로그 파일을 함께 보내 주시면 빠릅니다.</p>
+      <p style="font-size:15px;font-weight:600;margin-bottom:6px">이동찬 &nbsp;·&nbsp;
+        <a href="tel:01046177298">010-4617-7298</a> &nbsp;·&nbsp;
+        <a href="mailto:ddongchane@gmail.com">ddongchane@gmail.com</a></p>
+    </div>
+  </section>
+
+</main>
+
+<p class="foot">
+  개인회생 조회 1.0.0 · 2026-09-20 · 이 안내는 프로그램의 실제 화면과 설정 파일을 기준으로 작성했습니다.
+  버전이 올라가면 이 페이지도 함께 갱신합니다.
+</p>
+
+<script>
+(function () {
+  'use strict';
+  /* ★ 다운로드 링크는 여기 한 줄만 바꾸면 됩니다.
+     구글 드라이브에서 zip 우클릭 → 공유 → 「링크가 있는 모든 사용자」 → 링크 복사 → 아래에 붙여넣기.
+     비워 두면 버튼이 「링크 준비 중」으로 바뀝니다. */
+  var DOWNLOAD_URL = '';
+
+  var btn = document.getElementById('dlBtn');
+  if (DOWNLOAD_URL) {
+    btn.href = DOWNLOAD_URL;
+  } else {
+    btn.className = 'btn pending';
+    btn.removeAttribute('href');
+    btn.removeAttribute('target');
+    btn.setAttribute('aria-disabled', 'true');
+    btn.textContent = '다운로드 링크 준비 중 — 연락처로 문의해 주세요';
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -18,6 +18,7 @@
   --ok:#1A7A55; --ok-soft:#E3F2EB;
   --warn:#8F5F0E; --warn-soft:#FAF0DC;
   --bad:#A8382F; --bad-soft:#FBE9E7;
+  --hot:#C2410C; --hot-soft:#FFF1E6; --hot-ink:#9A3412;   /* 신규 오픈 강조 — 청록의 보색 */
   --on-accent:#FFFFFF;
   --shadow:0 1px 2px rgba(16,23,32,.05);
   --shadow-lift:0 6px 20px rgba(16,23,32,.09);
@@ -33,6 +34,7 @@
     --ok:#3FA97D; --ok-soft:#12291F;
     --warn:#C9963C; --warn-soft:#2B2312;
     --bad:#D2685C; --bad-soft:#2E1815;
+    --hot:#F59E4B; --hot-soft:#2C1A0C; --hot-ink:#FDBA74;
     --on-accent:#0E1216;
     --shadow:0 1px 2px rgba(0,0,0,.3);
     --shadow-lift:0 6px 20px rgba(0,0,0,.45);
@@ -48,6 +50,7 @@
   --ok:#3FA97D; --ok-soft:#12291F;
   --warn:#C9963C; --warn-soft:#2B2312;
   --bad:#D2685C; --bad-soft:#2E1815;
+  --hot:#F59E4B; --hot-soft:#2C1A0C; --hot-ink:#FDBA74;
   --on-accent:#0E1216;
   --shadow:0 1px 2px rgba(0,0,0,.3);
   --shadow-lift:0 6px 20px rgba(0,0,0,.45);
@@ -117,6 +120,32 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
   font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
 .tool .path .arrow{margin-left:auto;color:var(--accent-ink);font-size:14px}
 
+/* ── 3번: 신규 오픈 — 두 칸을 가로로 차지하고 테두리로 튄다 ── */
+.tool.new{grid-column:1 / -1;border:2px solid var(--hot);
+  box-shadow:0 0 0 4px var(--hot-soft),var(--shadow)}
+.tool.new:hover{border-color:var(--hot);box-shadow:0 0 0 4px var(--hot-soft),var(--shadow-lift)}
+.tool.new a.hit{display:flex;align-items:center;gap:26px;padding:22px 26px}
+.tool.new a.hit:focus-visible{outline-color:var(--hot)}
+.tool.new .num{background:var(--hot);color:#fff;margin:0;flex:none;width:26px;height:26px;font-size:12px}
+.tool.new .body{flex:1;min-width:0}
+.tool.new .kicker{display:inline-flex;align-items:center;gap:7px;margin-bottom:7px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;font-weight:600;
+  color:var(--hot-ink)}
+.tool.new .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--hot);
+  box-shadow:0 0 0 3px var(--hot-soft)}
+.tool.new h2{font-size:19px}
+.tool.new .cta{flex:none;display:inline-flex;align-items:center;gap:8px;
+  background:var(--hot);color:#fff;border-radius:6px;padding:11px 18px;
+  font-size:13.5px;font-weight:600;white-space:nowrap}
+.tool.new .cta .arrow{font-size:15px}
+@media (max-width:640px){
+  .tool.new a.hit{flex-wrap:wrap;gap:14px}
+  .tool.new .num{order:0}
+  .tool.new .body{flex-basis:calc(100% - 40px)}
+  .tool.new .cta{width:100%;justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){.tool{transition:none}}
+
 .note{margin:26px 0 0;background:var(--surface);border:1px solid var(--rule);
   border-left:3px solid var(--ok);border-radius:0 6px 6px 0;padding:15px 18px;font-size:13.5px}
 .note strong{font-weight:600}
@@ -165,11 +194,13 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
 <header class="top">
   <div class="top-in">
     <h1>채무조정채권 평가</h1>
-    <p class="lede">개인회생·신용회복 채권의 기대회수와 현재가치를 산출하는 평가판과,
-      그 평가판이 DD 엑셀을 읽기 위해 필요한 컬럼 표준입니다.</p>
+    <p class="lede">개인회생·신용회복 채권의 기대회수와 현재가치를 산출하는 평가판,
+      그 평가판이 DD 엑셀을 읽기 위해 필요한 컬럼 표준, 그리고 개인회생 사건의 진행 상황을
+      법원에서 자동으로 받아오는 조회 프로그램입니다.</p>
     <div class="meta">
       <span class="chip">설계 V8.4</span>
       <span class="chip">개인회생 · 신용회복</span>
+      <span class="chip">개인회생 조회 1.0.0</span>
     </div>
   </div>
 </header>
@@ -200,6 +231,19 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
           단계 컬럼 30개의 정확한 이름, 실제 DD에서 나온 사고 사례, 업로드 전 점검표를 담았습니다.
           DD 제공처 전달용으로 그대로 쓸 수 있습니다.</p>
         <div class="path"><span>/dd-spec/</span><span class="arrow">→</span></div>
+      </a>
+    </li>
+    <li class="tool new">
+      <a class="hit" href="/case-lookup/">
+        <div class="num">3</div>
+        <div class="body">
+          <div class="kicker"><span class="dot"></span>NEW · 2026-09 오픈</div>
+          <h2>개인회생 스크래핑 서비스 오픈</h2>
+          <p>원장 엑셀(법원·사건번호·상환계좌)만 올리면 대법원 나의사건검색을 자동으로 돌아
+            진행 단계·인가일·변제 회차·미납 여부를 사건마다 받아옵니다.
+            PC에 설치하는 프로그램이며, 어제와 달라진 사건만 따로 보여줍니다.</p>
+        </div>
+        <span class="cta">설치 안내 · 다운로드 <span class="arrow">→</span></span>
       </a>
     </li>
   </ul>
