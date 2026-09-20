@@ -7,258 +7,289 @@
 <title>채무조정채권 평가</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;800;900&display=swap">
 
 <style>
 :root{
-  --ground:#F5F7F9; --surface:#FFFFFF; --surface-2:#FAFBFC;
-  --ink:#101720; --ink-mute:#5C6875; --ink-faint:#8A95A2;
-  --rule:#E1E6EB; --rule-strong:#CBD3DB;
-  --accent:#0E5566; --accent-soft:#E4EFF2; --accent-ink:#0E5566;
-  --ok:#1A7A55; --ok-soft:#E3F2EB;
-  --warn:#8F5F0E; --warn-soft:#FAF0DC;
-  --bad:#A8382F; --bad-soft:#FBE9E7;
-  --hot:#C2410C; --hot-soft:#FFF1E6; --hot-ink:#9A3412;   /* 신규 오픈 강조 — 청록의 보색 */
-  --on-accent:#FFFFFF;
-  --shadow:0 1px 2px rgba(16,23,32,.05);
-  --shadow-lift:0 6px 20px rgba(16,23,32,.09);
-  --shadow-modal:0 18px 50px rgba(16,23,32,.22);
-  --scrim:rgba(16,23,32,.42);
+  --ground:#E8E8E5; --surface:#F4F4F1; --surface-2:#FFFFFF;
+  --ink:#171716; --ink-2:#4A4A46; --ink-3:#6B6B66;
+  --rule:#C9C9C4;
+  --panel:#1C1C1A; --panel-ink:#F2F2EE; --panel-ink-2:#B9B9B2; --panel-ink-3:#8E8E87; --panel-rule:#4A4A46;
+  --lime:#E4FF5C;
+  --ok:#1B6B44; --ok-soft:#E4F3E9;
+  --warn:#8A5200; --warn-soft:#FBEFD9;
+  --bad:#A32219; --bad-soft:#F9E3E0;
+  --scrim:rgba(23,23,22,.5);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
-    --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
-    --rule:#232B34; --rule-strong:#323C47;
-    --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
-    --ok:#3FA97D; --ok-soft:#12291F;
-    --warn:#C9963C; --warn-soft:#2B2312;
-    --bad:#D2685C; --bad-soft:#2E1815;
-    --hot:#F59E4B; --hot-soft:#2C1A0C; --hot-ink:#FDBA74;
-    --on-accent:#0E1216;
-    --shadow:0 1px 2px rgba(0,0,0,.3);
-    --shadow-lift:0 6px 20px rgba(0,0,0,.45);
-    --shadow-modal:0 18px 50px rgba(0,0,0,.6);
-    --scrim:rgba(0,0,0,.6);
+    --ground:#161614; --surface:#1F1F1D; --surface-2:#292927;
+    --ink:#EDEDE8; --ink-2:#B9B9B2; --ink-3:#8E8E87;
+    --rule:#3A3A37;
+    --panel:#0E0E0D; --panel-ink:#F2F2EE; --panel-ink-2:#B9B9B2; --panel-ink-3:#8E8E87; --panel-rule:#3A3A37;
+    --ok:#7ED3A3; --ok-soft:#173A28;
+    --warn:#E5B36A; --warn-soft:#3A2A10;
+    --bad:#F09A90; --bad-soft:#3F1A16;
+    --scrim:rgba(0,0,0,.65);
   }
 }
 :root[data-theme="dark"]{
-  --ground:#0E1216; --surface:#151A21; --surface-2:#1A2027;
-  --ink:#E4E9EF; --ink-mute:#8794A3; --ink-faint:#68737F;
-  --rule:#232B34; --rule-strong:#323C47;
-  --accent:#52AEBE; --accent-soft:#14303A; --accent-ink:#7FCBD8;
-  --ok:#3FA97D; --ok-soft:#12291F;
-  --warn:#C9963C; --warn-soft:#2B2312;
-  --bad:#D2685C; --bad-soft:#2E1815;
-  --hot:#F59E4B; --hot-soft:#2C1A0C; --hot-ink:#FDBA74;
-  --on-accent:#0E1216;
-  --shadow:0 1px 2px rgba(0,0,0,.3);
-  --shadow-lift:0 6px 20px rgba(0,0,0,.45);
-  --shadow-modal:0 18px 50px rgba(0,0,0,.6);
-  --scrim:rgba(0,0,0,.6);
+  --ground:#161614; --surface:#1F1F1D; --surface-2:#292927;
+  --ink:#EDEDE8; --ink-2:#B9B9B2; --ink-3:#8E8E87;
+  --rule:#3A3A37;
+  --panel:#0E0E0D; --panel-ink:#F2F2EE; --panel-ink-2:#B9B9B2; --panel-ink-3:#8E8E87; --panel-rule:#3A3A37;
+  --ok:#7ED3A3; --ok-soft:#173A28;
+  --warn:#E5B36A; --warn-soft:#3A2A10;
+  --bad:#F09A90; --bad-soft:#3F1A16;
+  --scrim:rgba(0,0,0,.65);
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--ground);color:var(--ink);
-  font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
-  font-size:14.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
-h1,h2,h3{margin:0;text-wrap:balance;font-weight:600;letter-spacing:-.01em}
-.mono{font-family:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,monospace;
-  font-variant-numeric:tabular-nums}
+  font-family:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:800;letter-spacing:-.025em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--lime);outline-offset:3px;border-radius:6px}
 
-header.top{background:var(--surface);border-bottom:1px solid var(--rule)}
-.top-in{max-width:1000px;margin:0 auto;padding:34px 28px 28px}
-.top h1{font-size:25px;margin-bottom:7px}
-.top .lede{color:var(--ink-mute);font-size:14px;max-width:60ch;margin:0}
-.top .meta{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
-.chip{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;
-  background:var(--accent-soft);color:var(--accent-ink);padding:4px 9px;border-radius:3px}
+.wrap{max-width:1152px;margin:0 auto;padding:0 64px}
+@media (max-width:760px){.wrap{padding:0 20px}}
 
-main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
+/* ── 상단 바 ── */
+.top{display:flex;align-items:center;justify-content:space-between;height:44px;padding-top:36px;padding-bottom:0}
+.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;letter-spacing:-.01em;text-decoration:none}
+.brand i{width:14px;height:14px;border-radius:50%;background:var(--ink)}
+.menu{display:flex;align-items:center;gap:26px;font-size:14px;font-weight:500}
+.menu a{text-decoration:none}
+.menu a:hover{text-decoration:underline;text-underline-offset:5px}
+.menu .cnt{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
+  background:var(--ink);color:var(--ground);font-size:11px;font-weight:800;margin-left:6px}
+@media (max-width:760px){.menu a:not(.notice-link){display:none}.top{padding-top:22px}}
 
-/* ── 공지사항 ── */
-.tag{display:inline-block;flex:none;font-size:10.5px;font-weight:600;letter-spacing:.04em;
-  padding:2px 7px;border-radius:3px;background:var(--surface-2);color:var(--ink-faint);
-  border:1px solid var(--rule)}
-.tag.공지{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent}
-.tag.업데이트{background:var(--ok-soft);color:var(--ok);border-color:transparent}
-.tag.점검{background:var(--warn-soft);color:var(--warn);border-color:transparent}
-.tag.필독{background:var(--bad-soft);color:var(--bad);border-color:transparent}
-.pin{flex:none;font-size:11px;color:var(--ink-faint);letter-spacing:.02em}
-
-.board{background:var(--surface);border:1px solid var(--rule);border-radius:7px;
-  box-shadow:var(--shadow);margin-bottom:22px;overflow:hidden}
-.board-hd{display:flex;align-items:center;gap:10px;padding:12px 18px;
-  border-bottom:1px solid var(--rule)}
-.board-hd h2{font-size:13.5px}
-.board-hd .cnt{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-faint)}
-.board ul{list-style:none;margin:0;padding:0}
-.board li+li{border-top:1px solid var(--rule)}
-.board button.row{display:flex;align-items:center;gap:11px;width:100%;text-align:left;
-  background:none;border:0;padding:11px 18px;font:inherit;color:inherit;cursor:pointer}
-.board button.row:hover{background:var(--surface-2)}
-.board button.row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.board .ttl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-size:13.5px}
-.board .dt{flex:none;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
-.board .empty{padding:14px 18px;font-size:13px;color:var(--ink-faint)}
-
-/* ── 도구 카드 ── */
-.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;
-  list-style:none;margin:0;padding:0}
-.tool{background:var(--surface);border:1px solid var(--rule);border-radius:7px;
-  box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .16s,border-color .16s,transform .16s}
-.tool:hover{box-shadow:var(--shadow-lift);border-color:var(--rule-strong);transform:translateY(-2px)}
-.tool a.hit{display:block;color:inherit;text-decoration:none;padding:22px 22px 20px;height:100%}
-.tool a.hit:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.tool .num{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
-  width:22px;height:22px;display:grid;place-items:center;border-radius:3px;
-  background:var(--accent-soft);color:var(--accent-ink);margin-bottom:13px}
-.tool h2{font-size:17px;margin-bottom:7px}
-.tool p{margin:0;font-size:13.5px;color:var(--ink-mute)}
-.tool .path{margin-top:15px;padding-top:13px;border-top:1px solid var(--rule);
-  display:flex;align-items:center;gap:7px;
-  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
-.tool .path .arrow{margin-left:auto;color:var(--accent-ink);font-size:14px}
-
-/* ── 3번: 신규 오픈 — 두 칸을 가로로 차지하고 테두리로 튄다 ── */
-.tool.new{grid-column:1 / -1;border:2px solid var(--hot);
-  box-shadow:0 0 0 4px var(--hot-soft),var(--shadow)}
-.tool.new:hover{border-color:var(--hot);box-shadow:0 0 0 4px var(--hot-soft),var(--shadow-lift)}
-.tool.new a.hit{display:flex;align-items:center;gap:26px;padding:22px 26px}
-.tool.new a.hit:focus-visible{outline-color:var(--hot)}
-.tool.new .num{background:var(--hot);color:#fff;margin:0;flex:none;width:26px;height:26px;font-size:12px}
-.tool.new .body{flex:1;min-width:0}
-.tool.new .kicker{display:inline-flex;align-items:center;gap:7px;margin-bottom:7px;
-  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;font-weight:600;
-  color:var(--hot-ink)}
-.tool.new .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--hot);
-  box-shadow:0 0 0 3px var(--hot-soft)}
-.tool.new h2{font-size:19px}
-.tool.new .cta{flex:none;display:inline-flex;align-items:center;gap:8px;
-  background:var(--hot);color:#fff;border-radius:6px;padding:11px 18px;
-  font-size:13.5px;font-weight:600;white-space:nowrap}
-.tool.new .cta .arrow{font-size:15px}
-@media (max-width:640px){
-  .tool.new a.hit{flex-wrap:wrap;gap:14px}
-  .tool.new .num{order:0}
-  .tool.new .body{flex-basis:calc(100% - 40px)}
-  .tool.new .cta{width:100%;justify-content:center}
+/* ── 헤드라인 ── */
+.hero{position:relative;margin-top:96px;display:flex;flex-direction:column;gap:26px}
+.hero h1{font-size:clamp(38px,6.5vw,84px);line-height:1.04;font-weight:900;letter-spacing:-.035em;max-width:1000px;word-break:keep-all}
+@media (max-width:760px){.hero h1 br{display:none}}
+.hero p{margin:0;font-size:clamp(16px,1.6vw,21px);line-height:1.55;font-weight:500;color:var(--ink-2);max-width:640px}
+.sticker{position:absolute;right:0;top:-76px;transform:rotate(6deg);text-decoration:none;
+  display:inline-flex;align-items:center;gap:10px;background:var(--lime);color:#171716;border-radius:999px;
+  padding:16px 26px;font-size:18px;font-weight:900;letter-spacing:-.01em;box-shadow:0 10px 30px rgba(23,23,22,.18);
+  transition:transform .18s}
+.sticker:hover{transform:rotate(4deg) scale(1.03)}
+.sticker i{width:10px;height:10px;border-radius:50%;background:#171716}
+@media (max-width:1040px){
+  .hero{margin-top:44px;gap:18px}
+  .sticker{position:static;align-self:flex-start;transform:rotate(-4deg);padding:11px 16px;font-size:13px;order:-1}
+  .sticker i{width:8px;height:8px}
 }
-@media (prefers-reduced-motion:reduce){.tool{transition:none}}
 
-.note{margin:26px 0 0;background:var(--surface);border:1px solid var(--rule);
-  border-left:3px solid var(--ok);border-radius:0 6px 6px 0;padding:15px 18px;font-size:13.5px}
-.note strong{font-weight:600}
-.note p{margin:0;color:var(--ink-mute)}
-.note p+p{margin-top:7px}
+/* ── 조회 프로그램 패널 ── */
+.panel{margin-top:72px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px;align-items:center;
+  background:var(--panel);color:var(--panel-ink);border-radius:32px;padding:56px 56px 56px 60px}
+.panel .copy{display:flex;flex-direction:column;gap:22px}
+.pill{align-self:flex-start;background:var(--lime);color:#171716;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:800}
+.panel h2{font-size:clamp(28px,3.4vw,44px);line-height:1.12;letter-spacing:-.03em}
+.panel p{margin:0;font-size:17px;line-height:1.6;color:var(--panel-ink-2);max-width:460px}
+.actions{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;padding:16px 26px;
+  font-size:16px;font-weight:800;text-decoration:none;border:1.5px solid transparent;transition:filter .15s,background .15s}
+.btn.lime{background:var(--lime);color:#171716}
+.btn.lime:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent;color:var(--panel-ink);border-color:var(--panel-rule);font-weight:700}
+.btn.ghost:hover{border-color:var(--panel-ink-2)}
+.facts{display:flex;gap:10px 22px;margin-top:10px;font-size:13px;color:var(--panel-ink-3);font-weight:500;flex-wrap:wrap}
 
-.foot{max-width:1000px;margin:0 auto;padding:0 28px 46px;
-  color:var(--ink-faint);font-size:12px;line-height:1.7}
+/* 미니 화면 목업 — 실제 데이터가 아니라 화면 구성을 보여주는 그림 */
+.shot{background:#F2F2EE;color:#171716;border-radius:20px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:14px;
+  box-shadow:0 30px 60px rgba(0,0,0,.35);transform:rotate(-1.5deg)}
+.shot-hd{display:flex;align-items:center;justify-content:space-between}
+.shot-hd b{font-size:14px;font-weight:800}
+.shot-hd span{font-size:12px;color:#6B6B66;font-weight:500}
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;
+  background:#FFFFFF;border-radius:12px;padding:12px 14px;font-size:12.5px}
+.row b{font-weight:700;white-space:nowrap}
+.row span{color:#4A4A46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{justify-self:end;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;white-space:nowrap;font-style:normal}
+.badge.ok{background:#E4F3E9;color:#1B6B44}.badge.warn{background:#FBEFD9;color:#8A5200}
+.badge.bad{background:#F9E3E0;color:#A32219}.badge.mute{background:#E6E6E2;color:#4A4A46}
+.bar{display:flex;align-items:center;gap:10px;margin-top:2px}
+.bar .track{flex-grow:1;height:8px;border-radius:999px;background:#E0E0DB;overflow:hidden}
+.bar .track i{display:block;width:62%;height:100%;background:#171716;border-radius:999px}
+.bar span{font-size:12px;font-weight:700;color:#4A4A46;white-space:nowrap}
+@media (max-width:1040px){
+  .panel{grid-template-columns:1fr;gap:26px;padding:36px 32px;border-radius:28px;margin-top:48px}
+  .shot{transform:none;box-shadow:0 16px 40px rgba(0,0,0,.3)}
+  .row{grid-template-columns:minmax(0,1fr) auto}
+  .row span{display:none}
+}
+@media (max-width:760px){
+  .panel{padding:28px 24px 26px;border-radius:26px;margin-top:40px}
+  .btn{width:100%}
+  .btn.ghost{display:none}
+}
+
+/* ── 평가판 · DD 표준 ── */
+.tools{margin-top:40px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;list-style:none;padding:0}
+.tool{background:var(--surface);border-radius:28px;padding:40px 40px 36px;display:flex;flex-direction:column;gap:16px;
+  min-height:300px;text-decoration:none;color:inherit;transition:background .15s}
+.tool:hover{background:var(--surface-2)}
+.tool .eyebrow{font-size:13px;font-weight:700;color:var(--ink-3)}
+.tool h2{font-size:32px;line-height:1.15}
+.tool p{margin:0;font-size:16px;line-height:1.6;color:var(--ink-2);flex-grow:1}
+.tool .go{font-size:16px;font-weight:800;text-decoration:underline;text-underline-offset:5px}
+@media (max-width:760px){
+  .tools{grid-template-columns:1fr;gap:14px;margin-top:20px}
+  .tool{border-radius:22px;padding:26px 24px 24px;min-height:0;gap:10px}
+  .tool h2{font-size:24px}.tool p{font-size:14px}.tool .go{font-size:14px}
+}
+
+/* ── 공지 ── */
+.board{margin-top:56px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:48px;align-items:start}
+.board-hd h2{font-size:28px}
+.board-hd p{margin:10px 0 0;font-size:15px;color:var(--ink-3);line-height:1.5}
+.board ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.board li:first-child button{border-top:1.5px solid var(--ink)}
+.board li:last-child button{border-bottom:1px solid var(--rule)}
+.board button{display:grid;grid-template-columns:72px minmax(0,1fr) 96px;gap:16px;align-items:center;
+  width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--rule);padding:16px 0;
+  font:inherit;color:inherit;font-size:16px;cursor:pointer}
+.board button:hover .ttl{text-decoration:underline;text-underline-offset:5px}
+.board .ttl{font-weight:500;min-width:0}
+.board li.pinned .ttl{font-weight:700}
+.board .dt{justify-self:end;color:var(--ink-3);font-size:14px;font-weight:500;white-space:nowrap}
+.tag{display:inline-block;border-radius:999px;padding:4px 0;text-align:center;font-size:12px;font-weight:800;
+  background:var(--rule);color:var(--ink)}
+.tag.공지{background:var(--lime);color:#171716}
+.tag.필독{background:var(--ink);color:var(--ground)}
+.tag.업데이트{background:var(--rule);color:var(--ink)}
+.tag.점검{background:var(--warn-soft);color:var(--warn)}
+.board .empty{padding:14px 0;font-size:14px;color:var(--ink-3)}
+@media (max-width:900px){
+  .board{grid-template-columns:1fr;gap:16px;margin-top:40px}
+  .board button{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tag dt" "ttl ttl";gap:6px 10px;padding:14px 0}
+  .board .tag{grid-area:tag;padding:3px 10px}
+  .board .dt{grid-area:dt;font-size:12px}
+  .board .ttl{grid-area:ttl;font-size:15px;line-height:1.4;white-space:normal}
+}
+
+/* ── 푸터 ── */
+.foot{margin:72px 0 56px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+  font-size:13px;color:var(--ink-3);line-height:1.6}
+.foot span:first-child{max-width:560px}
+@media (max-width:760px){.foot{flex-direction:column;align-items:flex-start;margin:48px 0 36px;font-size:12px}}
 
 /* ── 공지 팝업 ── */
-.scrim{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:center;
-  padding:22px;z-index:50}
-.modal{background:var(--surface);border:1px solid var(--rule);border-radius:9px;
-  box-shadow:var(--shadow-modal);width:min(560px,100%);max-height:min(78vh,720px);
-  display:flex;flex-direction:column;overflow:hidden}
-.modal-hd{display:flex;align-items:center;gap:10px;padding:15px 20px;
-  border-bottom:1px solid var(--rule);flex:none}
-.modal-hd h2{font-size:14.5px;flex:1}
-.modal-x{background:none;border:0;padding:4px 7px;font-size:19px;line-height:1;
-  color:var(--ink-faint);cursor:pointer;border-radius:4px}
+.scrim{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:center;padding:22px;z-index:50}
+.modal{background:var(--surface);color:var(--ink);border-radius:24px;width:min(600px,100%);max-height:min(80vh,760px);
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal-hd{display:flex;align-items:center;gap:10px;padding:22px 26px 14px}
+.modal-hd h2{font-size:22px;flex:1}
+.modal-x{background:none;border:0;padding:4px 8px;font-size:24px;line-height:1;color:var(--ink-3);cursor:pointer;border-radius:8px}
 .modal-x:hover{background:var(--surface-2);color:var(--ink)}
-.modal-body{overflow-y:auto;padding:6px 20px 18px}
-.item{padding:16px 0}
-.item+.item{border-top:1px solid var(--rule)}
-.item-hd{display:flex;align-items:center;gap:9px;margin-bottom:8px;flex-wrap:wrap}
-.item h3{font-size:15px;flex:1;min-width:140px}
-.item .dt{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
-.item p{margin:0;font-size:13.5px;color:var(--ink-mute);white-space:pre-wrap}
-.modal-ft{display:flex;align-items:center;gap:10px;padding:13px 20px;
-  border-top:1px solid var(--rule);background:var(--surface-2);flex:none;flex-wrap:wrap}
-.modal-ft label{display:flex;align-items:center;gap:7px;font-size:12.5px;
-  color:var(--ink-mute);cursor:pointer;margin-right:auto}
-.modal-ft input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
-.btn{background:var(--accent);color:var(--on-accent);border:0;border-radius:5px;
-  padding:8px 18px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
-.btn:hover{filter:brightness(1.08)}
-.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media (max-width:420px){
+.modal-body{overflow-y:auto;padding:0 26px 10px}
+.item{padding:18px 0;border-top:1px solid var(--rule)}
+.item-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-hd .tag{padding:3px 10px}
+.item h3{font-size:17px;flex:1;min-width:160px;line-height:1.35}
+.item .dt{font-size:13px;color:var(--ink-3);font-weight:500}
+.item p{margin:0;font-size:14.5px;line-height:1.65;color:var(--ink-2);white-space:pre-wrap}
+.modal-ft{display:flex;align-items:center;gap:12px;padding:16px 26px 22px;flex-wrap:wrap}
+.modal-ft label{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-2);cursor:pointer;margin-right:auto}
+.modal-ft input{accent-color:#171716;width:16px;height:16px;cursor:pointer}
+.modal-ft .btn{padding:12px 22px;font-size:14px}
+@media (max-width:480px){
+  .modal{border-radius:18px}
   .modal-ft label{margin-right:0;width:100%}
-  .btn{width:100%}
+  .modal-ft .btn{width:100%}
 }
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="top-in">
-    <h1>채무조정채권 평가</h1>
-    <p class="lede">개인회생·신용회복 채권의 기대회수와 현재가치를 산출하는 평가판,
-      그 평가판이 DD 엑셀을 읽기 위해 필요한 컬럼 표준, 그리고 개인회생 사건의 진행 상황을
-      법원에서 자동으로 받아오는 조회 프로그램입니다.</p>
-    <div class="meta">
-      <span class="chip">설계 V8.4</span>
-      <span class="chip">개인회생 · 신용회복</span>
-      <span class="chip">개인회생 조회 1.0.0</span>
-    </div>
-  </div>
-</header>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="/"><i></i>채무조정채권 평가</a>
+    <nav class="menu" aria-label="바로가기">
+      <a href="/valuation/">평가판</a>
+      <a href="/dd-spec/">DD 컬럼 표준</a>
+      <a href="/case-lookup/">개인회생 조회</a>
+      <a class="notice-link" href="#notice">공지<span class="cnt" id="menuCnt" hidden></span></a>
+    </nav>
+  </header>
 
-<main>
-  <!-- 공지 목록 — 팝업을 닫아도 여기서 다시 볼 수 있다 -->
-  <section class="board" id="board" hidden>
-    <div class="board-hd"><h2>공지사항</h2><span class="cnt" id="boardCnt"></span></div>
-    <ul id="boardList"></ul>
+  <section class="hero">
+    <a class="sticker" href="#lookup"><i></i>개인회생 조회 프로그램, 새로 나왔어요</a>
+    <h1>개인회생·신용회복 채권,<br>평가부터 사건 추적까지.</h1>
+    <p>DD 엑셀을 올리면 기대회수와 현재가치가 나오고, 원장을 올리면 법원 사건의 진행 상황을 대신 조회합니다.
+      어느 쪽이든 데이터는 사무실 밖으로 나가지 않습니다.</p>
   </section>
 
-  <ul class="tools">
-    <li class="tool">
-      <a class="hit" href="/valuation/">
-        <div class="num">1</div>
+  <section class="panel" id="lookup" aria-labelledby="lookupTitle">
+    <div class="copy">
+      <span class="pill">2026년 9월 오픈</span>
+      <h2 id="lookupTitle">개인회생 사건,<br>이제 프로그램이 대신 조회합니다</h2>
+      <p>원장 엑셀만 올리면 대법원 나의사건검색을 자동으로 돌아 진행 단계·인가일·변제 회차·미납 여부를
+        사건마다 받아옵니다. 어제와 달라진 사건만 따로 보여줍니다.</p>
+      <div class="actions">
+        <a class="btn lime" href="/case-lookup/">설치 안내와 다운로드</a>
+        <a class="btn ghost" href="/case-lookup/#how">어떻게 동작하나요</a>
+      </div>
+      <div class="facts">
+        <span>Windows 10·11</span>
+        <span>설치 파일 없음, 압축 풀고 실행</span>
+        <span>조회 내용은 내 PC에만</span>
+      </div>
+    </div>
+
+    <div class="shot" aria-hidden="true">
+      <div class="shot-hd"><b>오늘 변동 18건</b><span>마지막 조회 09:32</span></div>
+      <div class="rows">
+        <div class="row"><b>2024개회xxxxx</b><span>서울회생법원 · 인가결정</span><em class="badge ok">정상변제</em></div>
+        <div class="row"><b>2023개회xxxxx</b><span>수원회생법원 · 2회차 미납</span><em class="badge warn">미납</em></div>
+        <div class="row"><b>2022개회xxxxx</b><span>부산회생법원 · 폐지결정</span><em class="badge bad">종국</em></div>
+        <div class="row"><b>2025개회xxxxx</b><span>대전회생법원 · 개시결정</span><em class="badge mute">개시전</em></div>
+      </div>
+      <div class="bar"><div class="track"><i></i></div><span>6,214 / 10,025</span></div>
+    </div>
+  </section>
+
+  <ul class="tools" id="tools">
+    <li>
+      <a class="tool" href="/valuation/">
+        <span class="eyebrow">브라우저에서 바로</span>
         <h2>채무조정채권 평가판</h2>
-        <p>DD 엑셀을 올리면 컬럼을 인식해 진행단계별로 라우팅하고,
-          폐지율 곡선과 변제계획 스케줄로 기대회수·PV·회수율을 산출합니다.
-          채권별 계산 자취와 검산·DD 품질 점검까지 한 화면에서 확인합니다.</p>
-        <div class="path"><span>/valuation/</span><span class="arrow">→</span></div>
+        <p>DD 엑셀을 올리면 컬럼을 인식해 진행단계별로 나누고, 폐지율 곡선과 변제계획으로 기대회수·PV·회수율을 냅니다.
+          채권별 계산 자취와 검산까지 한 화면에서.</p>
+        <span class="go">평가판 열기</span>
       </a>
     </li>
-    <li class="tool">
-      <a class="hit" href="/dd-spec/">
-        <div class="num">2</div>
+    <li>
+      <a class="tool" href="/dd-spec/">
+        <span class="eyebrow">DD 제공처에 그대로 전달</span>
         <h2>DD 컬럼 표준 명세</h2>
-        <p>평가판이 읽는 컬럼과 표기 규칙입니다. 개인회생 9필수·신용회복 8필수와
-          단계 컬럼 30개의 정확한 이름, 실제 DD에서 나온 사고 사례, 업로드 전 점검표를 담았습니다.
-          DD 제공처 전달용으로 그대로 쓸 수 있습니다.</p>
-        <div class="path"><span>/dd-spec/</span><span class="arrow">→</span></div>
-      </a>
-    </li>
-    <li class="tool new">
-      <a class="hit" href="/case-lookup/">
-        <div class="num">3</div>
-        <div class="body">
-          <div class="kicker"><span class="dot"></span>NEW · 2026-09 오픈</div>
-          <h2>개인회생 스크래핑 서비스 오픈</h2>
-          <p>원장 엑셀(법원·사건번호·상환계좌)만 올리면 대법원 나의사건검색을 자동으로 돌아
-            진행 단계·인가일·변제 회차·미납 여부를 사건마다 받아옵니다.
-            PC에 설치하는 프로그램이며, 어제와 달라진 사건만 따로 보여줍니다.</p>
-        </div>
-        <span class="cta">설치 안내 · 다운로드 <span class="arrow">→</span></span>
+        <p>평가판이 읽는 컬럼과 표기 규칙. 개인회생 9필수·신용회복 8필수와 단계 컬럼 30개의 정확한 이름,
+          실제 DD에서 나온 사고 사례, 업로드 전 점검표.</p>
+        <span class="go">명세 보기</span>
       </a>
     </li>
   </ul>
 
-  <div class="note">
-    <p><strong>DD는 브라우저를 떠나지 않습니다.</strong>
-      평가판은 업로드한 엑셀을 서버로 보내거나 저장하지 않습니다.
-      파싱·계산·렌더링이 전부 접속한 브라우저 안에서 끝납니다.</p>
-    <p>이 사이트는 검색에 노출되지 않습니다.</p>
-  </div>
-</main>
+  <section class="board" id="notice" aria-labelledby="noticeTitle">
+    <div class="board-hd">
+      <h2 id="noticeTitle">공지</h2>
+      <p>새 기능과 바뀐 규칙은 여기에 먼저 올립니다.</p>
+    </div>
+    <ul id="boardList"><li class="empty">공지를 불러오는 중입니다.</li></ul>
+  </section>
 
-<p class="foot">
-  평가판이 갱신되면 DD 컬럼 표준도 함께 갱신해야 합니다 — 명세는 평가판의 실제 인식 규칙에서 뽑은 것입니다.
-</p>
+  <footer class="foot">
+    <span>DD는 브라우저를 떠나지 않습니다. 평가판은 업로드한 엑셀을 서버로 보내거나 저장하지 않습니다.
+      이 사이트는 검색에 노출되지 않습니다.</span>
+    <span>문의 010-4617-7298</span>
+  </footer>
+</div>
 
 <script>
 (function () {
@@ -294,20 +325,23 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
     return e;
   };
 
+  // 태그 이름을 그대로 클래스로 쓴다 — 색이 정의되지 않은 이름이면 기본 회색으로 떨어진다.
+  // 화면에는 '공지' 대신 '새 기능'으로 보여 준다 (공지 목록 안에서 '공지'라는 태그는 정보가 없다).
+  var TAG_LABEL = { '공지': '새 기능' };
   function tagEl(name) {
-    // 태그 이름을 그대로 클래스로 쓴다 — 색이 정의되지 않은 이름이면 기본 회색으로 떨어진다.
-    return el('span', 'tag ' + (name || ''), name || '공지');
+    return el('span', 'tag ' + (name || ''), TAG_LABEL[name] || name || '공지');
   }
 
   function renderBoard(list) {
-    var board = document.getElementById('board');
     var ul = document.getElementById('boardList');
-    document.getElementById('boardCnt').textContent = list.length + '건';
+    ul.textContent = '';
+    var cnt = document.getElementById('menuCnt');
+    cnt.textContent = list.length;
+    cnt.hidden = false;
     list.forEach(function (n) {
-      var li = el('li');
-      var b = el('button', 'row');
+      var li = el('li', n.pinned ? 'pinned' : '');
+      var b = el('button');
       b.type = 'button';
-      if (n.pinned) b.appendChild(el('span', 'pin', '고정'));
       b.appendChild(tagEl(n.tag));
       b.appendChild(el('span', 'ttl', n.title));
       b.appendChild(el('span', 'dt', n.date || ''));
@@ -315,7 +349,6 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
       li.appendChild(b);
       ul.appendChild(li);
     });
-    board.hidden = false;
   }
 
   var lastFocus = null;
@@ -330,7 +363,7 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
     modal.setAttribute('aria-label', '공지사항');
 
     var hd = el('div', 'modal-hd');
-    hd.appendChild(el('h2', null, '공지사항'));
+    hd.appendChild(el('h2', null, '공지'));
     var x = el('button', 'modal-x', '×');
     x.type = 'button';
     x.setAttribute('aria-label', '닫기');
@@ -341,7 +374,6 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
     list.forEach(function (n) {
       var item = el('div', 'item');
       var ih = el('div', 'item-hd');
-      if (n.pinned) ih.appendChild(el('span', 'pin', '고정'));
       ih.appendChild(tagEl(n.tag));
       ih.appendChild(el('h3', null, n.title));
       ih.appendChild(el('span', 'dt', n.date || ''));
@@ -364,7 +396,7 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
       ft.appendChild(el('span', null, ' '));   // 버튼을 오른쪽으로 미는 자리
       ft.firstChild.style.marginRight = 'auto';
     }
-    var ok = el('button', 'btn', '확인');
+    var ok = el('button', 'btn lime', '확인');
     ok.type = 'button';
     ft.appendChild(ok);
     modal.appendChild(ft);
@@ -405,7 +437,10 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
       var list = data && Array.isArray(data.notices) ? data.notices : [];
-      if (!list.length) return;
+      if (!list.length) {
+        document.getElementById('boardList').innerHTML = '<li class="empty">아직 올라온 공지가 없습니다.</li>';
+        return;
+      }
 
       // 고정 공지를 맨 위로, 나머지는 최신순.
       list = list.slice().sort(function (a, b) {
@@ -419,7 +454,9 @@ main{max-width:1000px;margin:0 auto;padding:30px 28px 80px}
       var fresh = list.filter(function (n) { return seen.indexOf(n.id) < 0; });
       if (fresh.length) openModal(fresh, true);
     })
-    .catch(function () { /* 공지를 못 읽어도 사이트는 그대로 쓴다 */ });
+    .catch(function () {
+      document.getElementById('boardList').innerHTML = '<li class="empty">공지를 불러오지 못했습니다. 새로고침해 주세요.</li>';
+    });
 })();
 </script>
 
