@@ -93,6 +93,24 @@ main{max-width:1152px;margin:0 auto;padding:48px 64px 80px;display:flex;flex-dir
 .dl-foot .contact a{text-decoration:none}
 .dl-foot .contact a:hover{text-decoration:underline;text-underline-offset:4px}
 
+/* ── 차단 해제 경고 (다운로드 박스 안) ── */
+.dl-alert{margin:0 44px 0;padding:22px 26px;border-radius:20px;background:var(--bad-soft);color:#171716;
+  border:3px solid #E0362B;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;align-items:start}
+.dl-alert .ic{font-size:30px;line-height:1;font-weight:900;color:#E0362B;grid-row:1 / span 3;margin-top:2px}
+.dl-alert .t{font-size:20px;font-weight:900;letter-spacing:-.02em;line-height:1.3;color:#A32219}
+.dl-alert .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 6px;font-size:16px;font-weight:800}
+.dl-alert .flow span{background:#FFFFFF;border:2px solid #E0362B;border-radius:10px;padding:7px 13px;color:#171716}
+.dl-alert .flow i{font-style:normal;color:#E0362B;font-weight:900}
+.dl-alert .flow span.hot{background:#E0362B;color:#FFFFFF;border-color:#E0362B}
+.dl-alert p{margin:0;font-size:14.5px;color:#4A4A46;max-width:none}
+.dl-alert p b{color:#A32219}
+:root[data-theme="dark"] .dl-alert,:root:not([data-theme="light"]) .dl-alert{color:var(--panel-ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dl-alert p{color:var(--panel-ink-2)} :root:not([data-theme="light"]) .dl-alert .t,:root:not([data-theme="light"]) .dl-alert p b{color:#F09A90} :root:not([data-theme="light"]) .dl-alert .flow span{background:#292927;color:var(--panel-ink)} :root:not([data-theme="light"]) .dl-alert .flow span.hot{background:#E0362B;color:#FFFFFF}}
+:root[data-theme="dark"] .dl-alert p{color:var(--panel-ink-2)} :root[data-theme="dark"] .dl-alert .t,:root[data-theme="dark"] .dl-alert p b{color:#F09A90} :root[data-theme="dark"] .dl-alert .flow span{background:#292927;color:var(--panel-ink)} :root[data-theme="dark"] .dl-alert .flow span.hot{background:#E0362B;color:#FFFFFF}
+.dl-alert+.dl-foot{margin-top:24px}
+.steps .shot.bad{background:var(--bad-soft);border:2px solid #E0362B;color:var(--ink)}
+.steps .shot.bad b{color:var(--bad)}
+
 /* ── 섹션 ── */
 section{background:var(--surface);border-radius:28px;overflow:hidden}
 .sec-hd{display:flex;align-items:baseline;gap:14px;padding:32px 40px 0}
@@ -160,6 +178,9 @@ details .a p:last-child{margin-bottom:0}
   .dl-in{grid-template-columns:1fr;gap:20px;padding:28px 24px}
   .dl h2{font-size:26px}
   .dl-in .btn{width:100%;max-width:none}
+  .dl-alert{margin:0 16px;padding:18px 18px;grid-template-columns:1fr}
+  .dl-alert .ic{grid-row:auto}
+  .dl-alert .t{font-size:18px}
   .dl-foot>div{padding:18px 24px}
   .dl-foot>div+div{border-left:0;border-top:1px solid #33332F}
   section{border-radius:22px}
@@ -208,6 +229,20 @@ details .a p:last-child{margin-bottom:0}
       </div>
       <a class="btn" id="dlBtn" href="#" target="_blank" rel="noopener">
         구글 드라이브에서 받기</a>
+    </div>
+    <div class="dl-alert" role="alert">
+      <span class="ic">!</span>
+      <div class="t">압축을 풀기 전에 반드시 「차단 해제」부터 — 이걸 안 하면 프로그램이 실행되지 않습니다</div>
+      <div class="flow">
+        <span>받은 ZIP 파일 <b>우클릭</b></span><i>→</i>
+        <span>속성</span><i>→</i>
+        <span class="hot">☑ 차단 해제 체크</span><i>→</i>
+        <span>확인</span><i>→</i>
+        <span>그다음 압축 풀기</span>
+      </div>
+      <p>인터넷에서 받은 파일에 Windows가 「차단」 표시를 붙이는데, 그 상태로 압축을 풀면 안에 있는 파일 수백 개에 전부 차단이 붙어
+        <b>실행이 안 되거나 창이 떴다가 바로 꺼집니다.</b> 이미 압축을 풀었다면 폴더를 지우고, ZIP에서 차단 해제를 한 뒤 다시 푸세요.
+        (속성 창 아래쪽에 「차단 해제」 항목이 없으면 이미 해제된 것이니 그대로 풀면 됩니다.)</p>
     </div>
     <div class="dl-foot">
       <div>
@@ -296,8 +331,17 @@ details .a p:last-child{margin-bottom:0}
           <p>위 「구글 드라이브에서 받기」로 <code>개인회생조회_1.0.0.zip</code>을 받습니다.</p>
         </li>
         <li>
+          <h3>차단 해제 — 압축 풀기 전에 꼭</h3>
+          <p>받은 <code>개인회생조회_1.0.0.zip</code>을 <b>우클릭 → 속성</b> → 창 맨 아래 「보안」 줄의
+            <b>☑ 차단 해제</b>에 체크 → <b>확인</b>.</p>
+          <div class="shot bad"><b>이 단계를 건너뛰면 프로그램이 실행되지 않습니다.</b>
+            ZIP에 붙은 「인터넷에서 받은 파일」 차단 표시가 압축을 풀 때 안의 모든 파일로 번지기 때문입니다.
+            이미 풀었다면 풀린 폴더를 지우고, ZIP에서 차단 해제 후 다시 푸세요.
+            속성 창에 「차단 해제」 항목이 안 보이면 이미 해제된 상태입니다.</div>
+        </li>
+        <li>
           <h3>압축 풀기</h3>
-          <p>zip을 우클릭 → <b>압축 풀기</b>. 풀린 <code>개인회생조회</code> 폴더를 쓰기 편한 곳에 둡니다.</p>
+          <p>차단 해제를 마친 zip을 우클릭 → <b>압축 풀기</b>. 풀린 <code>개인회생조회</code> 폴더를 쓰기 편한 곳에 둡니다.</p>
           <div class="shot">권장 위치 <b>C:\개인회생조회</b> &nbsp;— OneDrive·구글드라이브 같은 <b>동기화 폴더 밖</b>에 두세요.
             조회 결과에 사건 당사자 정보가 들어가므로 클라우드로 올라가지 않게 하는 편이 안전합니다.
             (동기화 폴더 안에 두면 프로그램이 경고를 띄웁니다.)</div>
@@ -308,7 +352,8 @@ details .a p:last-child{margin-bottom:0}
             바탕화면 바로가기를 만들어 두면 편합니다 (exe 우클릭 → 보내기 → 바탕 화면에 바로가기 만들기).</p>
           <div class="shot"><b>「Windows의 PC 보호」</b> 파란 창이 뜨면 → <b>추가 정보</b> → <b>실행</b>.
             코드 서명이 없는 프로그램에 Windows가 처음 한 번 묻는 것이고, 다음부터는 뜨지 않습니다.
-            백신이 격리하면 폴더를 예외에 추가해 주세요.</div>
+            백신이 격리하면 폴더를 예외에 추가해 주세요.
+            <b>더블클릭해도 아무 창이 안 뜨거나 바로 꺼지면</b> 2단계 「차단 해제」를 빼먹은 것입니다 — 폴더를 지우고 ZIP부터 다시 하세요.</div>
         </li>
         <li>
           <h3>라이선스 키 등록</h3>
@@ -441,7 +486,9 @@ details .a p:last-child{margin-bottom:0}
     <div class="sec-body" style="padding-top:6px">
       <details>
         <summary>실행했는데 아무것도 안 뜹니다</summary>
-        <div class="a"><p>처음 실행은 몇 초 걸릴 수 있습니다. 한참 기다려도 안 뜨면
+        <div class="a"><p><b>가장 흔한 원인은 ZIP 「차단 해제」를 안 하고 압축을 푼 것입니다.</b>
+          풀린 폴더를 지우고, ZIP 우클릭 → 속성 → <b>☑ 차단 해제</b> → 확인 → 다시 압축을 푸세요. (설치 2단계 참고)</p>
+          <p>그게 아니라면: 처음 실행은 몇 초 걸릴 수 있습니다. 한참 기다려도 안 뜨면
           백신이 <code>개인회생조회.exe</code>를 막았을 가능성이 큽니다. 백신 격리함을 확인하고 폴더를 예외에 넣어 주세요.
           그래도 안 되면 폴더 안 <code>OUTPUT</code>의 최신 로그 파일을 담당자에게 보내 주세요.</p></div>
       </details>
