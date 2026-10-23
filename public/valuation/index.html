@@ -586,6 +586,39 @@ button.run.caution{background:var(--warn);border-color:var(--warn);color:#fff}
 .cfc-ax{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;
   font-size:10px;color:var(--ink-faint);padding-top:5px}
 
+
+/* ─── 평가 안내 팝업 ─── */
+.guide-btn{background:none;border:1px solid var(--rule-strong);color:var(--ink-mute);cursor:pointer;
+  font-size:10.5px;letter-spacing:.06em;padding:3px 9px;align-self:center}
+.guide-btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+.guide-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#guideModal .modal-box{width:min(880px,calc(100vw - 24px));min-width:0;border-radius:0}
+#guideModal .modal-tabs{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+#guideModal .modal-tabs .seg{flex:none}
+#guideModal .modal-ft{border-radius:0}
+.gd{font-size:13px;line-height:1.7;color:var(--ink-mute)}
+.gd p,.gd ul{max-width:80ch}
+.gd .tw{overflow-x:auto}
+.gd h3{font-size:13.5px;color:var(--ink);margin:18px 0 6px}
+.gd h3:first-child{margin-top:2px}
+.gd p{margin:0 0 9px}
+.gd ul{margin:0 0 10px;padding-left:18px}
+.gd li{margin:0 0 4px}
+.gd strong{color:var(--ink);font-weight:600}
+.gd code{font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--surface-2);padding:1px 5px}
+.gd .lead{font-size:13.5px;color:var(--ink)}
+.gd .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0 14px}
+.gd .card{border:1px solid var(--rule);background:var(--surface-2);padding:11px 13px}
+.gd .card .t{font-size:10.5px;letter-spacing:.12em;color:var(--ink-faint);font-weight:600;margin-bottom:4px}
+.gd .card .b{font-size:12.5px;color:var(--ink)}
+.gd .note{border-left:2px solid var(--accent);background:var(--accent-soft);padding:9px 12px;margin:12px 0;color:var(--ink)}
+.gd .tw{margin:6px 0 12px}
+.gd table{width:100%;border-collapse:collapse;font-size:12px}
+.gd th,.gd td{border-bottom:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
+.gd th{font-size:10.5px;letter-spacing:.05em;color:var(--ink-faint);font-weight:600}
+.gd td.n{text-align:right;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gd .up{color:var(--ok)} .gd .dn{color:var(--bad)}
+@media (max-width:640px){#guideModal{padding:12px}.gd{font-size:12.5px}}
 </style>
 
 
@@ -595,6 +628,7 @@ button.run.caution{background:var(--warn);border-color:var(--warn);color:#fff}
       <div class="brand-top">
         <h1>채무조정채권 평가판</h1>
         <span class="ver">설계 V8.1</span>
+        <button type="button" class="guide-btn" id="guideBtn">평가 안내</button>
       </div>
       <span class="sub">DD가 브라우저를 떠나지 않습니다 — 전송·저장 없음</span>
     </div>
@@ -629,7 +663,7 @@ button.run.caution{background:var(--warn);border-color:var(--warn);color:#fff}
     <div class="railcurve">
       <button type="button" class="curvebtn" id="curveBtn">
         <span class="cb-t">실효폐지 데이터</span>
-        <span class="cb-s" id="curveBtnSub">내장 곡선 3종</span>
+        <span class="cb-s" id="curveBtnSub">기본 곡선 3종</span>
         <span class="cb-x">열기</span>
       </button>
     </div>
@@ -735,6 +769,24 @@ button.run.caution{background:var(--warn);border-color:var(--warn);color:#fff}
   </div>
 </div>
 
+<div class="modal" id="guideModal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="modal-hd">
+      <h2 id="guideTitle">평가 안내</h2>
+      <span class="modal-sub">평가판을 쓰기 전에 알아 두실 내용</span>
+      <button type="button" class="modal-x" data-close aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-tabs" id="guideTabs" role="tablist"></div>
+    <div class="modal-body"><div class="gd" id="guideBody"></div></div>
+    <div class="modal-ft">
+      <span style="font-size:11.5px;color:var(--ink-faint)">이 안내는 하루에 한 번 처음 접속할 때 표시됩니다. 상단 「평가 안내」에서 언제든 다시 볼 수 있습니다.</span>
+      <span class="sp"></span>
+      <button type="button" class="run" id="guideOk" style="padding:8px 22px;font-size:12px">확인</button>
+    </div>
+  </div>
+</div>
+
 <p class="foot">
   누적생존 <code>S_t = Π(1−h_k)</code> · 곡선 읽기 시작점 <code>납입회차+1</code> · 지연구간 곡선 미소비 ·
   분모는 OPB 기준 일관(변제율 미적용). 개인회생 라우팅은 일자 3종만 사용하며 채권구분 라벨은 참조용입니다.
@@ -743,13 +795,46 @@ button.run.caution{background:var(--warn);border-color:var(--warn);color:#fff}
 <script>
 "use strict";
 
-/* ══════════════════════ 곡선 (부록 A, 꼬리 마지막값 유지) ══════════════════════ */
+/* ══════════════════════ 곡선 (기본 = 회계법인 평가 곡선, 꼬리 마지막값 유지) ══════════════════════ */
 const MAXT = 400;
 const expand = (head, tail) => { const a = head.slice(); while (a.length < MAXT) a.push(tail); return a; };
-/* 내장 곡선 (설계서 부록 A) — 값은 월별 조건부 폐지율(해저드) h 다.
-   누적생존은 엔진이 S_t = Π(1−h_k) 로 직접 만든다. 꼬리는 마지막 값을 MAXT 까지 유지.
+/* 기본 곡선 — 회계법인 평가보고서 별첨 「경과회차에 따른 실효율·폐지율」(신복 일반·프리, 개인회생).
+   공정가치 평가에서 가장 많이 쓰이는 곡선이라 기본으로 둔다. 다른 곡선을 쓰려면 ② 구획에서 올린다.
+   값은 월별 조건부 폐지율(해저드) h 다 — 키움 DD로 보고서 생존율(정상회수÷스케줄)을 1%p 안에서
+   재현하는 해석이 조건부였다 (최초 대비로 읽으면 프리 생존율이 6%p 벌어진다).
+   표가 끝난 뒤(개인회생 61회~, 신복 121회~)는 꼬리 0 — 보고서 표도 끝 구간이 0%다.
+   누적생존은 엔진이 S_t = Π(1−h_k) 로 직접 만든다.
    사용자가 곡선을 올리거나 고치면 CURVE 만 바뀌고 이 원본은 초기화용으로 남는다. */
 const H_BASE = {
+  rehab: { head: [   // 6-3 개인회생채권 (1~60회)
+    .0007,.0013,.0009,.0014,.0013,.0021,.0017,.0018,.0021,.0019,.0017,.0020,.0019,.0018,.0018,.0021,
+    .0020,.0019,.0022,.0020,.0020,.0020,.0018,.0019,.0020,.0021,.0021,.0021,.0019,.0020,.0022,.0019,
+    .0021,.0020,.0022,.0022,.0019,.0019,.0022,.0024,.0025,.0018,.0015,.0014,.0019,.0013,.0017,.0015,
+    .0016,.0010,.0017,.0015,0,0,0,0,0,0,0,0
+  ], tail: 0 },
+  A: { head: [       // 6-1 신용회복채권 - 일반 (1~120회)
+    .0005,.0007,.0007,.0011,.0048,.0110,.0119,.0069,.0064,.0061,.0055,.0067,.0054,.0047,.0038,.0035,
+    .0030,.0029,.0026,.0023,.0024,.0023,.0020,.0017,.0018,.0014,.0015,.0016,.0013,.0011,.0009,.0010,
+    .0010,.0009,.0010,.0010,.0009,.0008,.0009,.0007,.0007,.0007,.0007,.0006,.0006,.0005,.0006,.0006,
+    .0006,.0005,.0004,.0003,.0003,.0006,.0004,.0005,.0008,.0003,.0002,.0003,.0004,.0003,.0005,.0004,
+    .0004,.0003,.0004,.0005,.0002,.0005,.0002,.0002,.0001,.0002,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0
+  ], tail: 0 },
+  B: { head: [       // 6-2 신용회복채권 - 프리 (1~120회)
+    .0013,.0021,.0021,.0032,.0138,.0313,.0341,.0198,.0182,.0174,.0156,.0192,.0153,.0135,.0109,.0099,
+    .0086,.0082,.0073,.0067,.0068,.0067,.0057,.0049,.0052,.0041,.0043,.0044,.0037,.0032,.0025,.0030,
+    .0030,.0026,.0028,.0030,.0026,.0023,.0025,.0020,.0019,.0021,.0021,.0016,.0016,.0015,.0017,.0016,
+    .0016,.0015,.0012,.0010,.0010,.0018,.0012,.0013,.0021,.0008,.0006,.0007,.0011,.0010,.0013,.0011,
+    .0012,.0010,.0012,.0015,.0006,.0014,.0005,.0006,.0004,.0006,.0004,.0004,.0004,.0004,.0004,.0004,
+    .0004,.0004,.0004,.0004,.0004,.0004,.0004,.0004,.0004,.0004,.0004,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  ], tail: 0 },
+};
+/* 설계서 부록 A 곡선 — 평가에는 쓰지 않는다. ⑦ 검산의 엔진 자체점검(부록 A·J 기준치 재현) 전용이다.
+   기본 곡선이 바뀌어도 '엔진이 누적생존을 제대로 계산하는가'는 이 곡선으로 따로 확인한다. */
+const H_SPEC = {
   rehab: { head: [
     .0119,.0038,.004,.0054,.0057,.005,.0062,.0048,.0049,.0057,.005,.0043,.0044,.004,.0035,.0034,
     .0029,.0036,.0032,.0034,.0026,.0021,.0021,.0021,.0027,.0023,.0035,.0038
@@ -770,7 +855,7 @@ const CURVE_KEYS = ['rehab', 'A', 'B'];
 const CURVE_LABEL = { rehab: '개인회생', A: '개인워크아웃 · 곡선 A', B: '프리·신속 · 곡선 B' };
 const CURVE_SHORT = { rehab: '개인회생', A: '개인워크', B: '프리·신속' };
 
-/* 지금 평가에 쓰이는 곡선. custom=false 면 내장값 그대로다. */
+/* 지금 평가에 쓰이는 곡선. custom=false 면 기본값(회계법인 곡선) 그대로다. */
 const CURVE = {};
 const H = {};
 const resetCurve = k => { CURVE[k] = { head: H_BASE[k].head.slice(), tail: H_BASE[k].tail, custom: false, src: '' }; };
@@ -1814,21 +1899,23 @@ const gap = px => Object.assign(el('div'), { style: 'height:' + px + 'px' });
 
 function renderChecks(C, D) {
   const body = $('#chkBody'); body.innerHTML = '';
-  const cv = C || makeCurves();
   $('#chkStage').dataset.state = 'live';
   body.appendChild(secTitle('A. 엔진 자체점검', '평가판이 설계서대로 짜였는가 — 올린 DD와 무관'));
 
-  // 마지막 칸은 이 행이 어느 곡선을 쓰는가 — 사용자 곡선이면 설계서 기준치와 대조할 수 없다
+  // 평가에 쓰는 곡선(기본 = 회계법인 곡선, 또는 사용자 곡선)과 무관하게 설계서 부록 A 곡선으로 따로 돌린다.
+  // 기준치는 그 곡선에서만 성립하므로, 이렇게 해야 '엔진의 누적생존 계산'만 떼어 점검할 수 있다.
+  const sp = k => expand(H_SPEC[k].head, H_SPEC[k].tail);
+  const cv = { rehab: buildLS(sp('rehab'), 1), 1: buildLS(sp('A'), 1), 2: buildLS(sp('B'), 1) };
   const rows = [
-    ['곡선 개인회생 전구간', 0, 122, surv(cv.rehab, 0, 122), .671, 'rehab'],
-    ['곡선 개인워크 A 전구간', 0, 140, surv(cv[1], 0, 140), .718, 'A'],
-    ['곡선 프리·신속 B 전구간', 0, 140, surv(cv[2], 0, 140), .626, 'B'],
-    ['개인회생 인가 납입 7 · 잔여 62', 7, 62, surv(cv.rehab, 7, 62), .821, 'rehab'],
-    ['개인회생 인가 납입 30 · 잔여 36', 30, 36, surv(cv.rehab, 30, 36), .897, 'rehab'],
-    ['신복 개인워크 A 확정 납입 12 · 72', 12, 72, surv(cv[1], 12, 72), .870, 'A'],
-    ['신복 프리·신속 B 확정 납입 12 · 72', 12, 72, surv(cv[2], 12, 72), .812, 'B'],
-    ['신복 미확정 84개월 (부록 J 시나리오)', 0, 84, surv(cv[1], 0, 84), .763, 'A'],
-    ['신복 개인워크 A × 1.5 (배수 고정 시나리오)', 12, 72, surv(buildLS(H.A, 1.5), 12, 72), .812, 'A'],
+    ['곡선 개인회생 전구간', 0, 122, surv(cv.rehab, 0, 122), .671],
+    ['곡선 개인워크 A 전구간', 0, 140, surv(cv[1], 0, 140), .718],
+    ['곡선 프리·신속 B 전구간', 0, 140, surv(cv[2], 0, 140), .626],
+    ['개인회생 인가 납입 7 · 잔여 62', 7, 62, surv(cv.rehab, 7, 62), .821],
+    ['개인회생 인가 납입 30 · 잔여 36', 30, 36, surv(cv.rehab, 30, 36), .897],
+    ['신복 개인워크 A 확정 납입 12 · 72', 12, 72, surv(cv[1], 12, 72), .870],
+    ['신복 프리·신속 B 확정 납입 12 · 72', 12, 72, surv(cv[2], 12, 72), .812],
+    ['신복 미확정 84개월 (부록 J 시나리오)', 0, 84, surv(cv[1], 0, 84), .763],
+    ['신복 개인워크 A × 1.5 (배수 고정 시나리오)', 12, 72, surv(buildLS(sp('A'), 1.5), 12, 72), .812],
   ];
   const tw = el('div', 'tw'), t = el('table');
   t.appendChild(Object.assign(el('caption'), { textContent: '곡선·생존계산 자체점검 — 설계서 기준치 대조 (DD 무관)' }));
@@ -1838,21 +1925,18 @@ function renderChecks(C, D) {
   thead.appendChild(hr); t.appendChild(thead);
   const tb = el('tbody');
   let bad = 0;
-  for (const [name, o, n, got, ref, ck] of rows) {
-    const cust = ck && CURVE[ck].custom;
+  for (const [name, o, n, got, ref] of rows) {
     const d = got - ref, ok = Math.abs(d) < 6e-4;
-    if (!ok && !cust) bad++;                 // 사용자 곡선은 불일치로 세지 않는다
+    if (!ok) bad++;
     const tr = el('tr');
     tr.appendChild(el('td', null, name));
     tr.appendChild(el('td', 'n mono', o));
     tr.appendChild(el('td', 'n mono', n));
     tr.appendChild(el('td', 'n mono', got.toFixed(6)));
-    tr.appendChild(el('td', 'n mono dim', cust ? '—' : ref.toFixed(3)));
-    tr.appendChild(el('td', 'n mono' + (cust ? ' dim' : ''), cust ? '—' : (d >= 0 ? '+' : '') + d.toFixed(6)));
+    tr.appendChild(el('td', 'n mono dim', ref.toFixed(3)));
+    tr.appendChild(el('td', 'n mono', (d >= 0 ? '+' : '') + d.toFixed(6)));
     const td = el('td');
-    td.appendChild(cust
-      ? el('span', 'pill neutral', '사용자 곡선 — 대조 불가')
-      : el('span', 'pill ' + (ok ? 'ok' : 'bad'), ok ? '일치' : '불일치'));
+    td.appendChild(el('span', 'pill ' + (ok ? 'ok' : 'bad'), ok ? '일치' : '불일치'));
     tr.appendChild(td); tb.appendChild(tr);
   }
   t.appendChild(tb); tw.appendChild(t); body.appendChild(tw);
@@ -1877,8 +1961,8 @@ function renderChecks(C, D) {
     '마지막 행은 배수를 <strong>1.5로 고정</strong>해 넣은 시나리오라 사이드 패널의 <code>cr_remult</code> 설정을 따르지 않습니다. ' +
     '설정값은 <strong>실제 평가에는 정상 반영</strong>됩니다 (재조정 대상 건의 곡선이 바뀝니다). ' +
     '워크북은 이 행이 <code>가정!B23</code>에 묶여 있어 배수를 1.0으로 두면 불일치로 뜹니다.<br>' +
-    '<strong>사용자 곡선을 올린 행은 대조하지 않습니다</strong> — 설계서 부록 A 기준치는 내장 곡선에만 성립하기 때문입니다. ' +
-    '그 곡선이 맞는지는 ② 실효폐지 곡선 구획에서 누적생존으로 확인하세요.';
+    '이 점검은 <strong>설계서 부록 A 곡선으로 따로 돌립니다</strong> — 평가에 쓰는 곡선(기본 = 회계법인 곡선, 또는 올린 곡선)과 무관하게 ' +
+    '엔진의 누적생존 계산만 떼어 봅니다. 평가에 쓰는 곡선의 모양은 ② 실효폐지 곡선 구획에서 누적생존으로 확인하세요.';
   body.appendChild(note);
 
   const poolBad = renderPoolChecks(body, D);
@@ -2861,8 +2945,14 @@ let curveForm = 'h';                 // 업로드 해석 형식
 let curveTab = 'rehab';              // 모달에서 보고 있는 곡선
 const CSTEP = 0.0005;                // ± 버튼 한 번의 증감폭
 
-/* 설계서 부록 A 기준점 — 사용자 곡선이 얼마나 센지 가늠하는 잣대 */
-const CBENCH = { rehab: [122, .671], A: [140, .718], B: [140, .626] };
+/* 기본 곡선(회계법인)의 누적생존 — 올린 곡선이 기본보다 얼마나 센지 가늠하는 잣대.
+   개인회생은 60회, 신복은 120회까지 정의돼 있으므로 그 끝에서 잰다. */
+const CBENCH = {};
+for (const k of CURVE_KEYS) {
+  const n = H_BASE[k].head.length;
+  let s = 1; for (let i = 0; i < n; i++) s *= 1 - H_BASE[k].head[i];
+  CBENCH[k] = [n, s];
+}
 
 const survOf = (head, tail, n) => {   // 곡선 자체의 누적생존 (엔진과 같은 식)
   let s = 1;
@@ -2991,9 +3081,9 @@ let curveTarget = null;               // 업로드 버튼이 누른 슬롯
 function renderCurves() {
   const lead = $('#curveLead');
   lead.innerHTML = anyCustom()
-    ? '사용자 곡선이 적용돼 있습니다. <strong>올리지 않은 곡선은 내장 곡선(설계서 부록 A)을 그대로 씁니다.</strong> ' +
+    ? '사용자 곡선이 적용돼 있습니다. <strong>올리지 않은 곡선은 기본 곡선(회계법인 평가 곡선)을 그대로 씁니다.</strong> ' +
       '값은 <strong>월별 조건부 폐지율</strong>이며, 누적생존은 <code>S_t = Π(1−h)</code> 로 엔진이 직접 만듭니다.'
-    : '<strong>올리지 않으면 내장 곡선(설계서 부록 A)을 그대로 사용합니다</strong> — 지금은 3종 모두 내장 곡선입니다. ' +
+    : '<strong>올리지 않으면 기본 곡선을 그대로 사용합니다</strong> — 회계법인 평가에서 쓰는 경과회차별 실효율·폐지율입니다. ' +
       '채무자 특성(은행·카드·저축은행, 지역, 연령 등)에 따라 곡선이 다르면 여기서 갈아 끼우세요. ' +
       '값은 <strong>월별 조건부 폐지율</strong>이며, 누적생존은 <code>S_t = Π(1−h)</code> 로 엔진이 직접 만듭니다.';
 
@@ -3005,7 +3095,7 @@ function renderCurves() {
     const d = el('div', 'slot' + (c.custom ? ' custom' : ''));
     const hd = el('div', 'slot-hd');
     hd.appendChild(el('span', 'nm', CURVE_LABEL[k]));
-    hd.appendChild(el('span', 'pill ' + (c.custom ? 'warn' : 'neutral'), c.custom ? '사용자 곡선' : '내장'));
+    hd.appendChild(el('span', 'pill ' + (c.custom ? 'warn' : 'neutral'), c.custom ? '사용자 곡선' : '기본 (회계법인)'));
     d.appendChild(hd);
 
     const dl = el('dl');
@@ -3013,7 +3103,7 @@ function renderCurves() {
     kv('정의 회차', c.head.length + '회 (이후 꼬리값 유지)');
     kv('꼬리값 h', c.tail.toFixed(6));
     kv(bn + '개월 누적생존', pct(sv, 1));
-    kv('내장 기준치', pct(bref, 1));
+    kv('기본 곡선 기준', pct(bref, 1));
     d.appendChild(dl);
 
     const ax = el('div', 'slot-ax');
@@ -3041,8 +3131,8 @@ function renderCurves() {
   const n = CURVE_KEYS.filter(k => CURVE[k].custom).length;
   $('#curveNote').innerHTML = '';
   $('#curveNote').appendChild(el('span', 'pill ' + (n ? 'warn' : 'ok'),
-    n ? `사용자 곡선 ${n}/3` : '내장 곡선 3종'));
-  $('#curveBtnSub').textContent = n ? `사용자 곡선 ${n}/3 적용` : '내장 곡선 3종';
+    n ? `사용자 곡선 ${n}/3` : '기본 곡선 3종'));
+  $('#curveBtnSub').textContent = n ? `사용자 곡선 ${n}/3 적용` : '기본 곡선 3종';
   $('#curveBtn').classList.toggle('on', !!n);
 }
 
@@ -3093,7 +3183,7 @@ function renderCurveEditor() {
     const b = el('button', 'seg' + (k === curveTab ? ' on' : ''));
     b.type = 'button';
     b.appendChild(el('span', null, CURVE_SHORT[k]));
-    b.appendChild(el('span', 'c', CURVE[k].custom ? '사용자' : '내장'));
+    b.appendChild(el('span', 'c', CURVE[k].custom ? '사용자' : '기본'));
     b.addEventListener('click', () => { curveTab = k; renderCurveEditor(); });
     tabs.appendChild(b);
   }
@@ -3113,10 +3203,10 @@ function renderCurveEditor() {
   const mk = (a, b2) => { const d = el('div'); d.appendChild(el('div', 'k', a)); d.appendChild(el('div', 'v', b2)); return d; };
   st.appendChild(mk('정의 회차', c.head.length + '회'));
   st.appendChild(mk(bn + '개월 누적생존', pct(survOf(c.head, c.tail, bn), 2)));
-  st.appendChild(mk('내장 기준치', pct(bref, 2)));
+  st.appendChild(mk('기본 곡선 기준', pct(bref, 2)));
   st.appendChild(mk('평균 h (정의구간)', c.head.length
     ? (c.head.reduce((a, b2) => a + b2, 0) / c.head.length).toFixed(6) : '—'));
-  st.appendChild(mk('상태', c.custom ? '사용자 곡선' : '내장 곡선'));
+  st.appendChild(mk('상태', c.custom ? '사용자 곡선' : '기본 곡선 (회계법인)'));
   body.appendChild(st);
 
   const wrap = el('div', 'cedwrap'), t = el('table', 'ced');
@@ -3327,6 +3417,201 @@ function wireCurves() {
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !md.hidden) closeCurveModal(); });
 }
 
+/* ══════════════════════ 평가 안내 팝업 ══════════════════════ */
+/* 대주단·증권사도 쓰는 화면이라 평가 방식과 가정의 역할을 먼저 보여 준다.
+   하루에 한 번, 그날 처음 접속할 때 자동으로 띄우고 상단 버튼으로 언제든 다시 연다. */
+const GUIDE_KEY = 'guideShownOn';
+
+/* 가정값 표의 '역할'과 '올리면 평가액' 방향. 현재값은 열 때마다 A에서 읽는다. */
+const GUIDE_ROLE = {
+  r:            ['미래 현금흐름을 현재가치로 바꾸는 연 할인율 (월할 적용)', -1],
+  recovery:     ['실효·폐지된 몫 가운데 매각 등으로 다시 회수하는 비율', 1],
+  mgmtCost:     ['회수액에서 빼는 관리비용 비율', -1],
+  notifyCost:   ['채권 한 건당 평가시점에 한 번 빠지는 양도통지비용', -1],
+  kpRehab:      ['개인회생 조정계수 — 아래 설명 참고', 1],
+  payRate:      ['변제계획 정보가 없는 미인가 건의 원금잔액 대비 예상 변제율', 1],
+  stdTerms:     ['변제계획 정보가 없는 미인가 건을 나눠 받는 회차 수', -1],
+  preFail:      ['미인가 건이 인가 전에 폐지될 확률', -1],
+  delayFiling:  ['접수·금지명령 단계 건의 변제 시작 지연', -1],
+  delayOpen:    ['개시결정 단계 건의 변제 시작 지연', -1],
+  pjDelay:      ['폐지항고 건에 더하는 추가 지연', -1],
+  kpA:          ['신복 원금균등(개인워크아웃) 조정계수 — 아래 설명 참고', 1],
+  kpB:          ['신복 원리금균등(프리워크아웃·신속채무조정) 조정계수', 1],
+  kpUncf:       ['신복 미확정 건 조정계수', 1],
+  crRemult:     ['재조정 이력이 있는 신복 건의 실효율에 곱하는 배수', -1],
+  fee:          ['신복위에 내는 분담금 — 정상 회수분에만 부과', -1],
+  payRateCr:    ['조정 금액이 없는 미확정 건의 조정전원금 대비 예상 변제율', 1],
+  uncfMonths:   ['스케줄이 없는 미확정 건을 나눠 받는 개월 수', -1],
+  preFailCr:    ['미확정 건이 확정 전에 실효될 확률', -1],
+  delayConfirm: ['미확정 건의 변제 시작 지연', -1],
+};
+
+function guideAssumptions() {
+  const rows = [];
+  for (const [group, list] of SPEC) for (const [k] of list) {
+    const g = GUIDE_ROLE[k]; if (!g) continue;
+    const m = META[k], v = toDisp(k, A[k]);
+    const unit = m.unit === '%' ? '%' : m.unit === '배' ? '' : ' ' + m.unit;
+    rows.push(`<tr><td>${group}</td><td>${m.label}</td><td>${g[0]}</td>` +
+      `<td class="${g[1] > 0 ? 'up' : 'dn'}">${g[1] > 0 ? '올라감 ▲' : '내려감 ▼'}</td>` +
+      `<td class="n">${v.toLocaleString('ko-KR')}${unit}</td></tr>`);
+  }
+  return `<div class="tw"><table><thead><tr><th>구분</th><th>항목</th><th>역할</th><th>값을 올리면 평가액</th><th>현재값</th></tr></thead>` +
+    `<tbody>${rows.join('')}</tbody></table></div>`;
+}
+
+const GUIDE_TABS = [
+  ['요약', () => `
+    <p class="lead">이 평가판은 개인회생·신용회복 채권 DD를 읽어 채권 한 건씩
+      <strong>변제스케줄 → 실효·폐지 반영 → 현재가치 할인</strong> 순서로 평가하고 POOL로 합산합니다.</p>
+    <div class="cards">
+      <div class="card"><div class="t">① 변제스케줄</div><div class="b">DD에 담긴 계약 그대로 깝니다 — 신용회복은 단계별 월상환액, 개인회생은 잔여 변제액.</div></div>
+      <div class="card"><div class="t">② 실효·폐지율</div><div class="b">회계법인 평가에서 쓰는 경과회차별 실효율·폐지율이 기본입니다. 다른 곡선으로 바꿀 수 있습니다.</div></div>
+      <div class="card"><div class="t">③ 현재가치</div><div class="b">매월 현금흐름을 할인합니다. 할인율·조정계수 등 가정은 왼쪽 패널에서 바꿉니다.</div></div>
+    </div>
+    <div class="note"><strong>DD는 브라우저를 떠나지 않습니다.</strong> 올린 파일은 이 화면 안에서만 계산되며 서버로 전송되거나 저장되지 않습니다.</div>
+    <p>결과는 의사결정을 돕기 위한 <strong>참고 자료</strong>입니다. 가정에 따라 값이 달라지며, 회계법인의 공식 평가를 대체하지 않습니다.
+      채권별 계산 과정은 「채권별 평가」에서, 엔진 자체 검산은 「검산」에서 확인할 수 있습니다.</p>`],
+
+  ['변제스케줄', () => `
+    <h3>개인회생</h3>
+    <ul>
+      <li><strong>인가</strong> — 잔여 변제액(총변제예정금액 − 기상환금액)을 잔여회차로 균등하게 나눠 매월 받습니다.</li>
+      <li><strong>미인가</strong> — 변제계획 정보가 있으면 같은 방식으로, 없으면 원금잔액 × 변제율을 표준회차로 나눕니다.
+        진행 단계(개시결정, 접수·금지명령, 폐지항고)에 따라 변제 시작 시점을 늦춥니다.</li>
+      <li>인가·미인가는 <strong>인가일자·개시일자·접수일자</strong>로 판단합니다. 채권구분 라벨은 참고만 합니다(폐지항고 제외).</li>
+      <li>같은 사건에 묶여 배당이 0인 <strong>종속채권</strong>은 비고에 표기하면 평가에서 제외합니다.</li>
+    </ul>
+    <h3>신용회복 — 확정 (정상이행)</h3>
+    <ul>
+      <li>DD의 <strong>1~10단계 스케줄</strong>(시작회차·종료회차·월상환액)을 <strong>납입회차 다음 회차부터</strong> 그대로 깝니다.
+        월상환액은 「개인채무조정2 월상환액」을 씁니다.</li>
+      <li>유예기간(월상환액 0원 구간)은 그대로 두어, 유예가 끝난 뒤부터 현금이 들어옵니다.</li>
+      <li>프리워크아웃·신속채무조정의 <strong>단계별 이율 인하</strong>가 반영된 월상환액을 그대로 쓰므로, 이자를 다시 계산하지 않습니다.</li>
+    </ul>
+    <h3>신용회복 — 미확정</h3>
+    <ul>
+      <li>스케줄이 있으면 확정 건과 같은 방식으로 깔고, 확정 지연과 확정 전 실효율을 더합니다.</li>
+      <li>스케줄이 없으면 기준금액을 <strong>상환후잔액 → 원금균등채무액 → 조정후원금 → 조정전원금 × 변제율</strong> 순서로 잡아 미확정 변제기간으로 나눕니다.</li>
+    </ul>
+    <div class="note">평가율의 분모(OPB)에는 변제율을 적용하지 않습니다. 분모는 DD의 잔액 그대로이고, 변제율은 현금흐름에만 들어갑니다.</div>`],
+
+  ['실효·폐지율', () => `
+    <h3>정의 — 월별 조건부 실효·폐지율</h3>
+    <p>k회차 실효·폐지율 h<sub>k</sub> = <strong>k회차에 실효·폐지된 건수 ÷ k회차 직전까지 남아 있던 건수</strong>.
+      누적 생존율은 회차마다 곱해 만듭니다: <code>S = (1 − h₁) × (1 − h₂) × …</code></p>
+    <div class="tw"><table>
+      <thead><tr><th>회차</th><th>직전 생존 건수</th><th>실효·폐지 건수</th><th>h</th><th>누적 생존율</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="n">1,000</td><td class="n">3</td><td class="n">0.30%</td><td class="n">99.70%</td></tr>
+        <tr><td>2</td><td class="n">997</td><td class="n">5</td><td class="n">0.50%</td><td class="n">99.20%</td></tr>
+        <tr><td>3</td><td class="n">992</td><td class="n">8</td><td class="n">0.81%</td><td class="n">98.40%</td></tr>
+      </tbody></table></div>
+    <h3>변제스케줄에 적용하는 방식</h3>
+    <ul>
+      <li>채권마다 <strong>현재 납입회차 다음 회차부터</strong> 곡선을 읽습니다. 이미 지나온 회차의 실효율은 다시 적용하지 않습니다.</li>
+      <li>매월 기대회수액 = 스케줄 금액 × 생존율 × (1 − 신복위 분담금) + 실효·폐지된 몫 × 재회수율</li>
+      <li>미인가·미확정 건은 인가 전·확정 전 실효율을 따로 더합니다.</li>
+      <li>곡선은 세 가지입니다 — 개인회생 / 신용회복 원금균등(개인워크아웃) / 신용회복 원리금균등(프리워크아웃·신속채무조정).</li>
+    </ul>
+    <h3>기본 곡선과 변경</h3>
+    <ul>
+      <li>기본값은 <strong>회계법인 평가에서 쓰는 경과회차별 실효율·폐지율</strong>입니다.</li>
+      <li>다른 곡선을 쓰려면 왼쪽 「실효폐지 데이터」 또는 「실효폐지 곡선」 구획에서 파일을 올리거나 값을 직접 고치세요. 「초기화」하면 기본 곡선으로 돌아옵니다.</li>
+      <li>곡선을 올릴 때는 형식(<strong>조건부 실효율 / 누적 실효율 / 누적 생존율</strong>)을 정확히 고르세요. 형식을 잘못 고르면 결과가 크게 달라집니다.
+        건수 기준인지 금액 기준인지도 함께 확인하시기 바랍니다.</li>
+    </ul>`],
+
+  ['가정값', () => `
+    <p>왼쪽 패널의 가정값은 바꾸는 즉시 다시 계산됩니다. 아래 표의 현재값은 지금 화면에 적용된 값입니다.</p>
+    <h3>조정계수</h3>
+    <p>실제 회수가 변제스케줄보다 <strong>얼마나 늦게 들어오는지</strong>를 반영합니다.
+      예를 들어 0.8이면 남은 회차를 1 ÷ 0.8배로 늘려, <strong>같은 총액을 더 오래 나눠 받는 것</strong>으로 봅니다.</p>
+    <ul>
+      <li>총액은 그대로이고 시기만 뒤로 가므로, 할인과 실효 노출이 늘어 평가액이 내려갑니다.</li>
+      <li>1.0이면 스케줄을 늘리지 않고 그대로 씁니다.</li>
+      <li>유예기간(0원 구간)은 늘리지 않습니다.</li>
+    </ul>
+    <h3>전체 가정값</h3>
+    ${guideAssumptions()}`],
+
+  ['신용회복 재조정', () => `
+    <p>신용회복 채무자가 기존 조정안을 이행하지 못해 <strong>재조정</strong>을 받으면, DD의 <strong>납입회차가 1회차부터 다시 시작</strong>합니다.
+      기존에 50회차까지 냈더라도 재조정 후에는 1회차로 표시됩니다.</p>
+    <h3>평가판의 적용 방식</h3>
+    <p>이전 납입 이력을 이어 세지 않고, <strong>재조정 후 현재 납입회차부터</strong> 실효율 곡선을 적용합니다.
+      재조정 직후의 높은 초기 실효율을 다시 거치게 됩니다.</p>
+    <h3>의견</h3>
+    <div class="note">재조정은 상환 여력이 한 번 약해졌다는 신호입니다. 이전에 오래 납입했다는 이유로 실효 위험을 낮춰 볼 근거는 부족하며,
+      <strong>재조정 채권은 첫 조정 채권보다 보수적으로 보는 것이 타당하다</strong>고 판단합니다.</div>
+    <p>더 보수적으로 보려면 왼쪽 패널의 <strong>재조정 배수</strong>를 1보다 크게 두세요. 재조정 이력이 있는 건의 실효율에 그 배수를 곱합니다.</p>`],
+
+  ['유의사항', () => `
+    <h3>DD 준비</h3>
+    <ul>
+      <li>개인회생·신용회복 시트를 자동으로 찾아 읽습니다. 업로드 후 <strong>컬럼 인식 결과를 확인한 뒤</strong> 「평가 진행」을 누르세요.</li>
+      <li>DRM 등으로 암호화된 엑셀은 읽을 수 없습니다. 암호를 해제한 파일을 올려 주세요.</li>
+      <li>종속채권은 비고에 「종속채권」으로 표기해 주세요.</li>
+    </ul>
+    <h3>회계법인 평가와 차이가 날 수 있는 지점</h3>
+    <ul>
+      <li>프리워크아웃·신속채무조정의 단계별 이율 인하 반영 여부</li>
+      <li>유예기간 처리</li>
+      <li>조정계수 적용 방식 — 기간을 늘리는지, 금액·실효율을 보정하는지</li>
+      <li>미인가·미확정 건의 기준금액과 변제율</li>
+      <li>신탁보수 등 정액 비용 — 평가판에는 별도 항목이 없습니다</li>
+    </ul>
+    <h3>한계</h3>
+    <ul>
+      <li>현재 연체 상태는 반영하지 않습니다. 실효율은 납입회차 기준으로만 적용됩니다.</li>
+      <li>실효·폐지율 곡선은 외부 통계에 기반하며, 개별 POOL의 실적과 다를 수 있습니다.</li>
+    </ul>`],
+];
+
+let guideTab = 0;
+function renderGuide() {
+  const tabs = $('#guideTabs');
+  tabs.innerHTML = '';
+  GUIDE_TABS.forEach(([name], i) => {
+    const b = el('button', 'seg' + (i === guideTab ? ' on' : ''), name);
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', String(i === guideTab));
+    b.addEventListener('click', () => { guideTab = i; renderGuide(); });
+    tabs.appendChild(b);
+  });
+  $('#guideBody').innerHTML = GUIDE_TABS[guideTab][1]();
+  $('#guideBody').parentElement.scrollTop = 0;
+}
+function openGuide() {
+  guideTab = 0;
+  renderGuide();
+  $('#guideModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+  $('#guideOk').focus();
+}
+function closeGuide() {
+  $('#guideModal').hidden = true;
+  document.body.style.overflow = '';
+  $('#guideBtn').focus();
+}
+function wireGuide() {
+  $('#guideBtn').addEventListener('click', openGuide);
+  $('#guideOk').addEventListener('click', closeGuide);
+  const md = $('#guideModal');
+  md.addEventListener('click', e => { if (e.target.hasAttribute('data-close')) closeGuide(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !md.hidden) closeGuide(); });
+  // 하루 한 번 — 그날 처음 접속하면 띄운다. 저장소를 못 쓰는 환경이면 매번 띄운다.
+  const d = new Date();
+  const today = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  let seen = null;
+  try { seen = localStorage.getItem(GUIDE_KEY); } catch (e) {}
+  if (seen !== today) {
+    openGuide();
+    try { localStorage.setItem(GUIDE_KEY, today); } catch (e) {}
+  }
+}
+
 /* ══════════════════════ 레일 UI ══════════════════════ */
 function buildRail() {
   const rail = $('#rail');
@@ -3373,6 +3658,7 @@ loadCurves();
 wireCurves();
 renderCurves();
 renderChecks();
+wireGuide();
 
 for (const b of document.querySelectorAll('.presets button'))
   b.addEventListener('click', () => applyPreset(b.dataset.preset));
